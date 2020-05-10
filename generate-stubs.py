@@ -41,6 +41,15 @@ class Settings:
     # Overwrites:
     OVERWRITES: Dict[str, Dict[str, Any]] = {}
 
+    # Output stream:
+    Output = sys.stdout
+
+    @staticmethod
+    def print(*args, **kwargs):
+        """ Wrapper for print() to change output automatically. """
+        kwargs.update({"file": Settings.Output})
+        print(*args, **kwargs)
+
     @staticmethod
     def load_from_file(fp):
         data = json.load(fp)
@@ -1058,7 +1067,7 @@ def print_function(fn: Function, indent: str = ""):
     """ Print the given Function object at the given indentation level. """
 
     if fn.has_overloads():
-        print("{}@overload".format(indent))
+        Settings.print("{}@overload".format(indent))
 
     srtype = ""
     if not fn.rtype.is_none():
@@ -1073,23 +1082,23 @@ def print_function(fn: Function, indent: str = ""):
 
     if isinstance(fn, Method):
         if fn.is_static():
-            print("{}@staticmethod".format(indent))
+            Settings.print("{}@staticmethod".format(indent))
         else:
             largs[0] = "self"
     sargs = ", ".join(largs)
 
-    print("{}def {}({}){}: pass".format(indent, fn.name, sargs, srtype))
+    Settings.print("{}def {}({}){}: pass".format(indent, fn.name, sargs, srtype))
 
 
 def print_property(prop: Property, indent: str):
     """ Print the given Property object at the given indentation level. """
 
-    print("{}@property".format(indent))
-    print("{}def {}(self) -> {}: pass".format(indent, prop.name, prop.type.typing()))
+    Settings.print("{}@property".format(indent))
+    Settings.print("{}def {}(self) -> {}: pass".format(indent, prop.name, prop.type.typing()))
     if not prop.is_read_only():
-        print("{}@{}.setter".format(indent, prop.name))
-        print("{}def {}(self, arg0: {}): pass".format(indent, prop.name, prop.type.typing()))
-    print()
+        Settings.print("{}@{}.setter".format(indent, prop.name))
+        Settings.print("{}def {}(self, arg0: {}): pass".format(indent, prop.name, prop.type.typing()))
+    Settings.print()
 
 
 def print_class(cls: Class, indent: str = ""):
@@ -1100,22 +1109,22 @@ def print_class(cls: Class, indent: str = ""):
         bc = "(" + ", ".join(cls.bases) + ")"
 
     # Class declaration:
-    print("{}class {}{}:".format(indent, cls.name, bc))
+    Settings.print("{}class {}{}:".format(indent, cls.name, bc))
 
     # Inner classes:
     for iclass in cls.inner_classes:
         print_class(iclass, indent=indent + "    ")
-        print()
+        Settings.print()
 
     # Constants:
     for constant in cls.constants:
         value = constant.value
         if isinstance(value, int):
             value = int(value)
-        print("{}{} = {}".format(indent + "    ", constant.name, value))
+        Settings.print("{}{} = {}".format(indent + "    ", constant.name, value))
 
     if cls.constants and (cls.properties or cls.methods):
-        print()
+        Settings.print()
 
     # Properties:
     for prop in cls.properties:
@@ -1128,7 +1137,7 @@ def print_class(cls: Class, indent: str = ""):
         print_function(method, indent=indent + "    ")
 
     if cls.methods:
-        print()
+        Settings.print()
 
 
 # MAIN CODE:
@@ -1152,7 +1161,7 @@ if args.verbose:
     logger.setLevel(logging.INFO)
 
 if args.output is not None:
-    sys.stdout = args.output
+    Settings.Output = args.output
 
 if args.mobase is not None:
     moddir = os.path.abspath(os.path.dirname(args.mobase))
@@ -1176,14 +1185,14 @@ IMPORTS = [
 
 for imp in IMPORTS:
     if isinstance(imp, str):
-        print("import {}".format(imp))
+        Settings.print("import {}".format(imp))
     else:
-        print("from {} import {}".format(imp[0], ", ".join(imp[1])))
-print()
+        Settings.print("from {} import {}".format(imp[0], ", ".join(imp[1])))
+Settings.print()
 
 # This is a class to represent interface not implemented:
-print("class InterfaceNotImplemented: pass")
-print()
+Settings.print("class InterfaceNotImplemented: pass")
+Settings.print()
 
 # List of objects:
 objects = []
@@ -1230,9 +1239,5 @@ for n, o in objects:
     # Print the class:
     print_class(c)
     if isinstance(c, Enum):
-        print()
-    print()
-
-
-# Reset, in case of called with -i:
-sys.stdout = sys.__stdout__
+        Settings.print()
+    Settings.print()
