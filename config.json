@@ -1,0 +1,35 @@
+{
+    "ignores": ["toPyQt"],
+
+    "replacements": {
+        "Organizer::FileInfo": "FileInfo",
+        "IOrganizer::FileInfo": "FileInfo",
+        "IPluginInstaller::EInstallResult": "InstallResult"
+    },
+
+    "overwrites": {
+        "IFileTree": {
+            "__iter__": {
+                "rtype": "Iterator[FileTreeEntry]",
+                "args": [],
+                "static": false,
+                "overloads": false
+            }
+        },
+        "FileInfo": {
+            "[properties]": {
+                "filePath": "str",
+                "archive": "str",
+                "origins": "List[str]"
+            }
+        },
+        "Mapping": {
+            "[properties]": {
+                "source": "str",
+                "destination": "str",
+                "isDirectory": "bool",
+                "createTarget": "bool"
+            }
+        }
+    }
+}

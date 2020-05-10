@@ -1,0 +1,5 @@
+# Mypy generated files:
+.mypy_cache
+
+# The 'bin/' directory:
+bin
