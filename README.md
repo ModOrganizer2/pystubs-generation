@@ -14,17 +14,19 @@ Some words of warning:
 
 ## Generating the stubs
 
+The stubs are generated using python by parsing the `mobase` module.
+You need the version of python that matches your current MO2 installation: e.g., if you have a `python38.dll` in
+your MO2 installation path, then you need **python 3.8**.
+
+
 To generate the stubs, you first need to setup the directory:
 
 ```
-# Note: I only tested with python 3.8:
-pip install PyQt5
 python bootstrap.py ${MO2_INSTALL_PATH}
 ```
 
 Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one containing `ModOrganizer.exe`).
-This will first install `PyQt5` and then copy the required files from your installation folder to a `bin/`
-directory (DLLs, the actual `mobase.pyd` module, etc.).
+This copy the required files from your installation folder to a `bin/` directory (DLLs, the actual `mobase.pyd` module, etc.).
 
 To generate the stubs, you can then run:
 

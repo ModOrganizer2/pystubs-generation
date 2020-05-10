@@ -22,8 +22,6 @@ import os
 import re
 import sys
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-
 from typing import Tuple, Dict, List, Union, Optional, Any
 
 
@@ -192,6 +190,9 @@ class Type:
     """ Class representing a python type. """
 
     def __init__(self, name: str):
+        # Import only here since we change the path to find them:
+        from PyQt5 import QtCore, QtGui, QtWidgets
+
         self.name = name.strip()
 
         # Find PyQt types:
