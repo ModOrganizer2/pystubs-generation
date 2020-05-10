@@ -508,84 +508,84 @@ class ModRepositoryBridge:
 
 class ModRepositoryFileInfo:
     @property
-    def categoryID(self) -> Any: pass
+    def categoryID(self) -> int: pass
     @categoryID.setter
-    def categoryID(self, arg0: Any): pass
+    def categoryID(self, arg0: int): pass
 
     @property
-    def description(self) -> Any: pass
+    def description(self) -> str: pass
     @description.setter
-    def description(self, arg0: Any): pass
+    def description(self, arg0: str): pass
 
     @property
-    def fileCategory(self) -> Any: pass
+    def fileCategory(self) -> int: pass
     @fileCategory.setter
-    def fileCategory(self, arg0: Any): pass
+    def fileCategory(self, arg0: int): pass
 
     @property
-    def fileID(self) -> Any: pass
+    def fileID(self) -> int: pass
     @fileID.setter
-    def fileID(self, arg0: Any): pass
+    def fileID(self, arg0: int): pass
 
     @property
-    def fileName(self) -> Any: pass
+    def fileName(self) -> str: pass
     @fileName.setter
-    def fileName(self, arg0: Any): pass
+    def fileName(self, arg0: str): pass
 
     @property
-    def fileSize(self) -> Any: pass
+    def fileSize(self) -> int: pass
     @fileSize.setter
-    def fileSize(self, arg0: Any): pass
+    def fileSize(self, arg0: int): pass
 
     @property
-    def fileTime(self) -> Any: pass
+    def fileTime(self) -> PyQt5.QtCore.QDateTime: pass
     @fileTime.setter
-    def fileTime(self, arg0: Any): pass
+    def fileTime(self, arg0: PyQt5.QtCore.QDateTime): pass
 
     @property
-    def gameName(self) -> Any: pass
+    def gameName(self) -> str: pass
     @gameName.setter
-    def gameName(self, arg0: Any): pass
+    def gameName(self, arg0: str): pass
 
     @property
-    def modID(self) -> Any: pass
+    def modID(self) -> int: pass
     @modID.setter
-    def modID(self, arg0: Any): pass
+    def modID(self, arg0: int): pass
 
     @property
-    def modName(self) -> Any: pass
+    def modName(self) -> str: pass
     @modName.setter
-    def modName(self, arg0: Any): pass
+    def modName(self, arg0: str): pass
 
     @property
-    def name(self) -> Any: pass
+    def name(self) -> str: pass
     @name.setter
-    def name(self, arg0: Any): pass
+    def name(self, arg0: str): pass
 
     @property
-    def newestVersion(self) -> Any: pass
+    def newestVersion(self) -> VersionInfo: pass
     @newestVersion.setter
-    def newestVersion(self, arg0: Any): pass
+    def newestVersion(self, arg0: VersionInfo): pass
 
     @property
-    def repository(self) -> Any: pass
+    def repository(self) -> str: pass
     @repository.setter
-    def repository(self, arg0: Any): pass
+    def repository(self, arg0: str): pass
 
     @property
-    def uri(self) -> Any: pass
+    def uri(self) -> str: pass
     @uri.setter
-    def uri(self, arg0: Any): pass
+    def uri(self, arg0: str): pass
 
     @property
-    def userData(self) -> Any: pass
+    def userData(self) -> PyQt5.QtCore.QVariant: pass
     @userData.setter
-    def userData(self, arg0: Any): pass
+    def userData(self, arg0: PyQt5.QtCore.QVariant): pass
 
     @property
-    def version(self) -> Any: pass
+    def version(self) -> VersionInfo: pass
     @version.setter
-    def version(self, arg0: Any): pass
+    def version(self, arg0: VersionInfo): pass
 
     @overload
     def __init__(self): pass

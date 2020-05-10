@@ -30,6 +30,26 @@
                 "isDirectory": "bool",
                 "createTarget": "bool"
             }
+        },
+        "ModRepositoryFileInfo": {
+            "[properties]": {
+                "name": "str",
+                "uri": "str",
+                "description": "str",
+                "version": "VersionInfo",
+                "newestVersion": "VersionInfo",
+                "categoryID": "int",
+                "modName": "str",
+                "gameName": "str",
+                "modID": "int",
+                "fileID": "int",
+                "fileSize": "int",
+                "fileName": "str",
+                "fileCategory": "int",
+                "fileTime": "PyQt5.QtCore.QDateTime",
+                "repository": "str",
+                "userData": "PyQt5.QtCore.QVariant"
+            }
         }
     }
 }
