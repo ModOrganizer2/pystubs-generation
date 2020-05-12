@@ -1,0 +1,149 @@
+# -*- encoding: utf-8 -*-
+
+import json
+
+from collections import OrderedDict, defaultdict
+from typing import List, Dict, Any, Tuple
+
+from . import logger
+from .types import Class, Arg, Type, Method, Constant
+
+
+# This is a 100% static class:
+class Settings:
+
+    # Name to ignore:
+    IGNORE_NAMES: List[str] = []
+
+    # Extra replacements (with warnings):
+    REPLACEMENTS: Dict[str, str] = {}
+
+    # Overwrites:
+    OVERWRITES: Dict[str, Dict[str, Any]] = {}
+
+    @staticmethod
+    def load_from_file(fp):
+        data = json.load(fp)
+        Settings.IGNORE_NAMES.extend(data.get("ignores", []))
+        Settings.REPLACEMENTS.update(data.get("replacements", {}))
+        Settings.OVERWRITES.update(data.get("overwrites", {}))
+
+    @staticmethod
+    def parse_method(cls: "Class", name: str, config: Dict[str, Any]):
+        args = []
+        if not config["static"]:
+            args.append(Arg(Type(cls.name)))
+        for arg in config["args"]:
+            if isinstance(arg, str):
+                args.append(Arg(Type(arg)))
+            elif isinstance(arg, dict):
+                args.append(Arg(Type(arg["type"]), arg["default"]))
+            else:
+                args.append(Arg(Type(arg[0]), arg[1]))
+        return Method(
+            cls.name,
+            name,
+            Type(config["rtype"]),
+            args,
+            config["static"],
+            config["overloads"],
+        )  # type: ignore
+
+
+def clean_class(cls: Class):
+    """ Clean the given class object.
+
+    Args:
+        cls: The class object to clean.
+    """
+    from .register import MOBASE_REGISTER
+
+    # Note: This currently only remove duplicates that are added by wrapping
+    # C++ classes with boost::python::wrapper.
+
+    methods: Dict[Tuple[str, Tuple[Arg, ...]], List[Method]] = OrderedDict()
+    methods_by_name = defaultdict(list)
+    for m in cls.methods:
+        k = (m.name, tuple(m.args[1:]))
+        if k not in methods:
+            methods[k] = []
+        methods[k].append(m)
+        methods_by_name[m.name].append(m)
+
+    clean_methods: List[Method] = []
+    for name, args in methods:
+        ms = methods[name, args]
+        method: Method = ms[0]
+        if len(ms) > 1:
+
+            # If we have more than two methods, there is a problem...
+            assert len(methods[name, args]) == 2
+            assert ms[0].rtype.is_none() or ms[1].rtype.is_none()
+
+            if ms[0].rtype.is_none():
+                method = ms[1]
+            else:
+                method = ms[0]
+
+            # If those were the only two, we need to remove the overload:
+            if len(methods_by_name[name]) == 2:
+                method.overloads = False
+
+        # Filter methods from parent class:
+
+        if method.is_static():
+            clean_methods.append(method)
+        else:
+            arg0_name = method.args[0].type.name
+            if arg0_name in MOBASE_REGISTER.cpp2py:
+                arg0_name = MOBASE_REGISTER.cpp2py[arg0_name].name
+            if arg0_name in [cls.name, "object"]:
+                clean_methods.append(method)
+            else:
+                logger.info(
+                    "Removing {}({}) from {} (already in base {}).".format(
+                        name,
+                        ", ".join(a.type.typing() for a in args),
+                        cls.name,
+                        method.args[0].type.typing(),
+                    )
+                )
+
+    # We need to filter-out __eq__(X, object) and __ne__(X, object) because these won't
+    # be filtered since the first arg is not of the right type:
+    for name in ("__eq__", "__ne__"):
+        fns = [m for m in clean_methods if m.name == name]
+        if len(fns) == 1 and fns[0].args[1].type.is_object():
+            clean_methods.remove(fns[0])
+
+    cls.methods = clean_methods
+
+
+def patch_class(cls: Class, ow: Dict[str, Any]):
+    """ Patch the given class using the given overwrites.
+
+    See config.json for some examples of valid overwrites.
+
+    Args:
+        cls: The class to patch.
+        ow: The overwrite dictionary.
+    """
+
+    logger.info("Patching class {}.".format(cls.name))
+
+    if "[bases]" in ow:
+        cls.bases = ow["[bases]"]
+
+    for i, m in enumerate(cls.methods):
+        if m.name in ow:
+            cls.methods[i] = Settings.parse_method(cls, m.name, ow[m.name])
+
+    properties: Dict[str, str] = ow.get("[properties]", {})
+    for prop in cls.properties:
+        if prop.name in properties:
+            prop.type = Type(properties[prop.name])
+
+    signals: List[str] = ow.get("[signals]", [])
+    for signal in signals:
+        name = signal.split("[")[0]
+        cls.constants.append(Constant(name, Type("pyqtSignal"), None, comment=signal))

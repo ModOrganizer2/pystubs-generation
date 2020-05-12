@@ -288,7 +288,7 @@ class IOrganizer:
     def createNexusBridge(self) -> "IModRepositoryBridge": pass
     def downloadManager(self) -> "IDownloadManager": pass
     def downloadsPath(self) -> str: pass
-    def findFileInfos(self, arg1: str, arg2: Callable[["FileInfo"], bool]) -> List["FileInfo"]: pass
+    def findFileInfos(self, arg1: str, arg2: Callable[[FileInfo], bool]) -> List[FileInfo]: pass
     def findFiles(self, arg1: str, arg2: Callable[[str], bool]) -> List[str]: pass
     def getFileOrigins(self, arg1: str) -> List[str]: pass
     def getGame(self, arg1: str) -> "IPluginGame": pass
@@ -327,7 +327,7 @@ class IPlugin:
     def init(self, arg1: "IOrganizer") -> bool: pass
     def isActive(self) -> bool: pass
     def name(self) -> str: pass
-    def settings(self) -> List["PluginSetting"]: pass
+    def settings(self) -> List[PluginSetting]: pass
     def version(self) -> VersionInfo: pass
 
 
@@ -343,7 +343,7 @@ class IPluginDiagnose(IPlugin):
 
 class IPluginFileMapper(IPlugin):
     def __init__(self): pass
-    def mappings(self) -> List["Mapping"]: pass
+    def mappings(self) -> List[Mapping]: pass
 
 
 class IPluginGame(IPlugin):
@@ -353,7 +353,7 @@ class IPluginGame(IPlugin):
     def binaryName(self) -> str: pass
     def dataDirectory(self) -> PyQt5.QtCore.QDir: pass
     def documentsDirectory(self) -> PyQt5.QtCore.QDir: pass
-    def executables(self) -> List["ExecutableInfo"]: pass
+    def executables(self) -> List[ExecutableInfo]: pass
     def featureList(self) -> dict: pass
     def gameDirectory(self) -> PyQt5.QtCore.QDir: pass
     def gameIcon(self) -> PyQt5.QtGui.QIcon: pass
@@ -474,7 +474,7 @@ class ISaveGameInfoWidget(PyQt5.QtWidgets.QWidget):
 
 class LocalSavegames:
     def __init__(self): pass
-    def mappings(self, arg1: PyQt5.QtCore.QDir) -> List["Mapping"]: pass
+    def mappings(self, arg1: PyQt5.QtCore.QDir) -> List[Mapping]: pass
     def prepareProfile(self, arg1: "IProfile") -> bool: pass
 
 

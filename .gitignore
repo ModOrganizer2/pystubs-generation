@@ -1,5 +1,7 @@
-# Mypy generated files:
+# Generated files:
 .mypy_cache
+__pycache__
+.vscode
 
 # The 'bin/' directory:
 bin
