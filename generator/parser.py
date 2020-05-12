@@ -178,7 +178,8 @@ def parse_psig(s: str, name: str) -> Tuple[Type, List[Arg]]:
     # retrieve from the C++ signature, here we are mainly interested in extracting
     # the python type if possible:
     m: re.Match[str] = re.search(
-        r"{}\((.*)\)\s*->\s*([^\s]+)\s*:".format(name), s)  # type: ignore
+        r"{}\((.*)\)\s*->\s*([^\s]+)\s*:".format(name), s
+    )  # type: ignore
     pargs = []
     args = list(filter(bool, m.group(1).strip().split(",")))
     for i, pa in enumerate(args):
@@ -271,8 +272,9 @@ def make_enum(name: str, e: type) -> Enum:
     Returns: An Enum object representing the given enumeration.
     """
     # All boost enums have a .values attributes:
-    return Enum(e.__name__, OrderedDict(
-        (e.values[k].name, k) for k in sorted(e.values.keys())))  # type: ignore
+    return Enum(
+        e.__name__, OrderedDict((e.values[k].name, k) for k in sorted(e.values.keys()))
+    )  # type: ignore
 
 
 class Overload:
