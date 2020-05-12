@@ -18,6 +18,16 @@ Some words of warning:
     expected with these class (e.g., `isintance(myObject, QObject)` will return `False`), which is why a
     `_object()` and `_widget()` method is also provided.
 
+### Visual Studio Code
+
+The `mobase` stubs can be used with [Visual Studio Code](https://code.visualstudio.com/) to enable auto-completion and eventually linting using `mypy`:
+- To use the stubs for auto-completion, you can use the
+[`python.autoComplete.extraPaths`](https://code.visualstudio.com/docs/python/editing#_enable-intellisense-for-custom-package-locations)
+setting.
+- If you want them to work with `mypy`, the easiest way is to create a `setup.cfg` file at the root of your
+project (or any file that `mypy` recognize) and set the `mypy_path` property, see
+[`mypy` documentation](https://mypy.readthedocs.io/en/stable/config_file.html#import-discovery).
+
 ## Generating the stubs
 
 The stubs are generated using python by parsing the `mobase` module.
