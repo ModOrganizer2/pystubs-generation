@@ -8,6 +8,7 @@
     },
 
     "overwrites": {
+
         "IFileTree": {
             "__iter__": {
                 "rtype": "Iterator[FileTreeEntry]",
@@ -16,6 +17,32 @@
                 "overloads": false
             }
         },
+
+        "IDownloadManager": {
+            "[bases]": ["PyQt5.QtCore.QObject"],
+            "[signals]": [
+                "downloadComplete[int]",
+                "downloadPaused[int]",
+                "downloadFailed[int]",
+                "downloadRemoved[int]"
+            ]
+        },
+
+        "IModRepositoryBridge": {
+            "[bases]": ["PyQt5.QtCore.QObject"],
+            "[signals]": [
+                "descriptionAvailable[str, int, Any, Any]",
+                "filesAvailable[str, int, Any, List[ModRepositoryFileInfo]]",
+                "fileInfoAvailable[str, int, int, Any, Any]",
+                "downloadURLsAvailable[str, int, int Any, Any]",
+                "endorsementsAvailable[Any, Any]",
+                "endorsementToggled[str, int, Any, Any]",
+                "trackedModsAvailable[Any, Any]",
+                "trackingToggled[str, int, Any, bool]",
+                "requestFailed[str, int, int, Any, NetworkError, str]"
+            ]
+        },
+
         "FileInfo": {
             "[properties]": {
                 "filePath": "str",
@@ -23,6 +50,7 @@
                 "origins": "List[str]"
             }
         },
+
         "Mapping": {
             "[properties]": {
                 "source": "str",
@@ -31,6 +59,7 @@
                 "createTarget": "bool"
             }
         },
+
         "ModRepositoryFileInfo": {
             "[properties]": {
                 "name": "str",

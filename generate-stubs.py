@@ -274,6 +274,7 @@ class CType(Type):
         "QString": "str",
         "QStringList": "List[str]",
         "QWidget *": "PyQt5.QtWidgets.QWidget",
+        "QObject *": "PyQt5.QtCore.QObject",
         "void *": "object",
 
         "api::object": "object"
@@ -538,10 +539,13 @@ class Method(Function):
 class Constant:
     """ Class representing a constant. """
 
-    def __init__(self, name: str, type: Type, value: Any):
+    def __init__(self, name: str, type: Type, value: Any, comment: Optional[str] = None):
         self.name = name
         self.type = type
+
+        # Note: The value is not used actually since we can hide it using `...`.
         self.value = value
+        self.comment = comment
 
 
 class Property:
@@ -1053,6 +1057,9 @@ def patch_class(cls: Class, ow: Dict[str, Any]):
 
     logger.info("Patching class {}.".format(cls.name))
 
+    if "[bases]" in ow:
+        cls.bases = ow["[bases]"]
+
     for i, m in enumerate(cls.methods):
         if m.name in ow:
             cls.methods[i] = Settings.parse_method(cls, m.name, ow[m.name])
@@ -1061,6 +1068,11 @@ def patch_class(cls: Class, ow: Dict[str, Any]):
     for prop in cls.properties:
         if prop.name in properties:
             prop.type = Type(properties[prop.name])
+
+    signals: List[str] = ow.get("[signals]", [])
+    for signal in signals:
+        name = signal.split("[")[0]
+        cls.constants.append(Constant(name, Type("pyqtSignal"), None, comment=signal))
 
 
 def print_function(fn: Function, indent: str = ""):
@@ -1118,10 +1130,13 @@ def print_class(cls: Class, indent: str = ""):
 
     # Constants:
     for constant in cls.constants:
-        value = constant.value
-        if isinstance(value, int):
-            value = int(value)
-        Settings.print("{}{} = {}".format(indent + "    ", constant.name, value))
+        comment = ""
+        if constant.comment:
+            comment = "  # {}".format(constant.comment)
+
+        # Note: We do not print the value, we use ...
+        Settings.print("{}{}: {} = {}{}".format(
+            indent + "    ", constant.name, constant.type.typing(), "...", comment))
 
     if cls.constants and (cls.properties or cls.methods):
         Settings.print()

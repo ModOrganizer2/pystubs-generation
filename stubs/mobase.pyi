@@ -7,72 +7,72 @@ import PyQt5.QtWidgets
 class InterfaceNotImplemented: pass
 
 class GuessQuality(Enum):
-    INVALID = 0
-    FALLBACK = 1
-    GOOD = 2
-    META = 3
-    PRESET = 4
-    USER = 5
+    INVALID: "GuessQuality" = ...
+    FALLBACK: "GuessQuality" = ...
+    GOOD: "GuessQuality" = ...
+    META: "GuessQuality" = ...
+    PRESET: "GuessQuality" = ...
+    USER: "GuessQuality" = ...
 
 
 class InstallResult(Enum):
-    SUCCESS = 0
-    FAILED = 1
-    CANCELED = 2
-    MANUAL_REQUESTED = 3
-    NOT_ATTEMPTED = 4
+    SUCCESS: "InstallResult" = ...
+    FAILED: "InstallResult" = ...
+    CANCELED: "InstallResult" = ...
+    MANUAL_REQUESTED: "InstallResult" = ...
+    NOT_ATTEMPTED: "InstallResult" = ...
 
 
 class LoadOrderMechanism(Enum):
-    FileTime = 0
-    PluginsTxt = 1
+    FileTime: "LoadOrderMechanism" = ...
+    PluginsTxt: "LoadOrderMechanism" = ...
 
 
 class ModState(Enum):
-    exists = 1
-    active = 2
-    essential = 4
-    empty = 8
-    endorsed = 16
-    valid = 32
-    alternate = 64
+    exists: "ModState" = ...
+    active: "ModState" = ...
+    essential: "ModState" = ...
+    empty: "ModState" = ...
+    endorsed: "ModState" = ...
+    valid: "ModState" = ...
+    alternate: "ModState" = ...
 
 
 class PluginState(Enum):
-    missing = 0
-    inactive = 1
-    active = 2
+    missing: "PluginState" = ...
+    inactive: "PluginState" = ...
+    active: "PluginState" = ...
 
 
 class ProfileSetting(Enum):
-    mods = 1
-    configuration = 2
-    savegames = 4
-    preferDefaults = 8
+    mods: "ProfileSetting" = ...
+    configuration: "ProfileSetting" = ...
+    savegames: "ProfileSetting" = ...
+    preferDefaults: "ProfileSetting" = ...
 
 
 class ReleaseType(Enum):
-    prealpha = 0
-    alpha = 1
-    beta = 2
-    candidate = 3
-    final = 4
+    prealpha: "ReleaseType" = ...
+    alpha: "ReleaseType" = ...
+    beta: "ReleaseType" = ...
+    candidate: "ReleaseType" = ...
+    final: "ReleaseType" = ...
 
 
 class SortMechanism(Enum):
-    NONE = 0
-    MLOX = 1
-    BOSS = 2
-    LOOT = 3
+    NONE: "SortMechanism" = ...
+    MLOX: "SortMechanism" = ...
+    BOSS: "SortMechanism" = ...
+    LOOT: "SortMechanism" = ...
 
 
 class VersionScheme(Enum):
-    discover = 0
-    regular = 1
-    decimalmark = 2
-    numbersandletters = 3
-    date = 4
-    literal = 5
+    discover: "VersionScheme" = ...
+    regular: "VersionScheme" = ...
+    decimalmark: "VersionScheme" = ...
+    numbersandletters: "VersionScheme" = ...
+    date: "VersionScheme" = ...
+    literal: "VersionScheme" = ...
 
 
 class BSAInvalidation:
@@ -126,13 +126,13 @@ class FileInfo:
 
 class FileTreeEntry:
     class FileTypes(Enum):
-        DIRECTORY = 1
-        FILE = 2
-        FILE_OR_DIRECTORY = 3
+        DIRECTORY: FileTreeEntry.FileTypes = ...
+        FILE: FileTreeEntry.FileTypes = ...
+        FILE_OR_DIRECTORY: FileTreeEntry.FileTypes = ...
 
-    DIRECTORY = 1
-    FILE = 2
-    FILE_OR_DIRECTORY = 3
+    DIRECTORY: FileTreeEntry.FileTypes = ...
+    FILE: FileTreeEntry.FileTypes = ...
+    FILE_OR_DIRECTORY: FileTreeEntry.FileTypes = ...
 
     @overload
     def __eq__(self, arg1: str) -> bool: pass
@@ -183,8 +183,13 @@ class GuessedString:
     def variants(self) -> List[str]: pass
 
 
-class IDownloadManager:
-    def __init__(self): pass
+class IDownloadManager(PyQt5.QtCore.QObject):
+    downloadComplete: PyQt5.QtCore.pyqtSignal = ...  # downloadComplete[int]
+    downloadPaused: PyQt5.QtCore.pyqtSignal = ...  # downloadPaused[int]
+    downloadFailed: PyQt5.QtCore.pyqtSignal = ...  # downloadFailed[int]
+    downloadRemoved: PyQt5.QtCore.pyqtSignal = ...  # downloadRemoved[int]
+
+    def _object(self) -> PyQt5.QtCore.QObject: pass
     def downloadPath(self, arg1: int) -> str: pass
     def startDownloadNexusFile(self, arg1: int, arg2: int) -> int: pass
     def startDownloadURLs(self, arg1: List[str]) -> int: pass
@@ -192,13 +197,13 @@ class IDownloadManager:
 
 class IFileTree(FileTreeEntry):
     class InsertPolicy(Enum):
-        FAIL_IF_EXISTS = 0
-        REPLACE = 1
-        MERGE = 2
+        FAIL_IF_EXISTS: IFileTree.InsertPolicy = ...
+        REPLACE: IFileTree.InsertPolicy = ...
+        MERGE: IFileTree.InsertPolicy = ...
 
-    FAIL_IF_EXISTS = 0
-    MERGE = 2
-    REPLACE = 1
+    FAIL_IF_EXISTS: IFileTree.InsertPolicy = ...
+    MERGE: IFileTree.InsertPolicy = ...
+    REPLACE: IFileTree.InsertPolicy = ...
 
     def __bool__(self) -> bool: pass
     def __getitem__(self, arg1: int) -> "FileTreeEntry": pass
@@ -231,7 +236,6 @@ class IInstallationManager:
 
 
 class IModInterface:
-    def __init__(self): pass
     def absolutePath(self) -> str: pass
     def addCategory(self, arg1: str): pass
     def addNexusCategory(self, arg1: int): pass
@@ -248,7 +252,6 @@ class IModInterface:
 
 
 class IModList:
-    def __init__(self): pass
     def allMods(self) -> List[str]: pass
     def displayName(self, arg1: str) -> str: pass
     def onModMoved(self, arg1: Callable[[str, int, int], None]) -> bool: pass
@@ -259,8 +262,18 @@ class IModList:
     def state(self, arg1: str) -> int: pass
 
 
-class IModRepositoryBridge:
-    def __init__(self): pass
+class IModRepositoryBridge(PyQt5.QtCore.QObject):
+    descriptionAvailable: PyQt5.QtCore.pyqtSignal = ...  # descriptionAvailable[str, int, Any, Any]
+    filesAvailable: PyQt5.QtCore.pyqtSignal = ...  # filesAvailable[str, int, Any, List[ModRepositoryFileInfo]]
+    fileInfoAvailable: PyQt5.QtCore.pyqtSignal = ...  # fileInfoAvailable[str, int, int, Any, Any]
+    downloadURLsAvailable: PyQt5.QtCore.pyqtSignal = ...  # downloadURLsAvailable[str, int, int Any, Any]
+    endorsementsAvailable: PyQt5.QtCore.pyqtSignal = ...  # endorsementsAvailable[Any, Any]
+    endorsementToggled: PyQt5.QtCore.pyqtSignal = ...  # endorsementToggled[str, int, Any, Any]
+    trackedModsAvailable: PyQt5.QtCore.pyqtSignal = ...  # trackedModsAvailable[Any, Any]
+    trackingToggled: PyQt5.QtCore.pyqtSignal = ...  # trackingToggled[str, int, Any, bool]
+    requestFailed: PyQt5.QtCore.pyqtSignal = ...  # requestFailed[str, int, int, Any, NetworkError, str]
+
+    def _object(self) -> PyQt5.QtCore.QObject: pass
     def requestDescription(self, arg1: str, arg2: int, arg3: PyQt5.QtCore.QVariant): pass
     def requestDownloadURL(self, arg1: str, arg2: int, arg3: int, arg4: PyQt5.QtCore.QVariant): pass
     def requestFileInfo(self, arg1: str, arg2: int, arg3: int, arg4: PyQt5.QtCore.QVariant): pass
@@ -397,7 +410,6 @@ class IPluginInstallerSimple(IPluginInstaller):
 
 
 class IPluginList:
-    def __init__(self): pass
     def isMaster(self, arg1: str) -> bool: pass
     def loadOrder(self, arg1: str) -> int: pass
     def masters(self, arg1: str) -> List[str]: pass
@@ -438,7 +450,6 @@ class IPluginTool(IPlugin):
 
 
 class IProfile:
-    def __init__(self): pass
     def absolutePath(self) -> str: pass
     def invalidationActive(self, arg1: InterfaceNotImplemented) -> bool: pass
     def localSavesEnabled(self) -> bool: pass
@@ -457,6 +468,7 @@ class ISaveGame:
 
 class ISaveGameInfoWidget(PyQt5.QtWidgets.QWidget):
     def __init__(self, arg1: PyQt5.QtWidgets.QWidget = None): pass
+    def _widget(self) -> PyQt5.QtWidgets.QWidget: pass
     def setSave(self, arg1: str): pass
 
 
@@ -488,22 +500,6 @@ class Mapping:
     def source(self, arg0: str): pass
 
     def __init__(self): pass
-
-
-class ModRepositoryBridge:
-    @overload
-    def __init__(self): pass
-    @overload
-    def __init__(self, arg1: "IModRepositoryBridge"): pass
-    def onDescriptionAvailable(self, arg1: object): pass
-    def onEndorsementToggled(self, arg1: object): pass
-    def onFileInfoAvailable(self, arg1: object): pass
-    def onFilesAvailable(self, arg1: object): pass
-    def onRequestFailed(self, arg1: object): pass
-    def requestDescription(self, arg1: str, arg2: int, arg3: PyQt5.QtCore.QVariant): pass
-    def requestFileInfo(self, arg1: str, arg2: int, arg3: int, arg4: PyQt5.QtCore.QVariant): pass
-    def requestFiles(self, arg1: str, arg2: int, arg3: PyQt5.QtCore.QVariant): pass
-    def requestToggleEndorsement(self, arg1: str, arg2: int, arg3: str, arg4: bool, arg5: PyQt5.QtCore.QVariant): pass
 
 
 class ModRepositoryFileInfo:
@@ -587,8 +583,6 @@ class ModRepositoryFileInfo:
     @version.setter
     def version(self, arg0: VersionInfo): pass
 
-    @overload
-    def __init__(self): pass
     @overload
     def __init__(self, arg1: "ModRepositoryFileInfo"): pass
     @overload
