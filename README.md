@@ -5,7 +5,8 @@ interface `mobase`.
 
 ## Using the stubs
 
-If you do not want to generate them, the latest stubs are available under [`stubs/mobase.pyi`](stubs/mobase.pyi).
+If you do not want to generate them, the generated stubs are available under [`stubs/`](stubs/) for latest
+versions of MO2.
 
 Some words of warning:
 - The stubs are as correct as possible, but some errors are expected.
