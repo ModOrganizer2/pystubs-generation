@@ -229,8 +229,12 @@ class Type:
         return self.name.lower() == "none"
 
     def is_object(self) -> bool:
-        """ Check if this type represent the generic "object" type """
+        """ Check if this type represent the generic "object" type. """
         return self.name.lower() == "object"
+
+    def is_any(self) -> bool:
+        """ Check if this type repesent the typing "Any". """
+        return self.name == "Any"
 
     def __str__(self):
         return "Type({})".format(self.name)
@@ -1102,8 +1106,11 @@ def print_function(fn: Function, indent: str = ""):
     Settings.print("{}def {}({}){}: pass".format(indent, fn.name, sargs, srtype))
 
 
-def print_property(prop: Property, indent: str):
+def print_property(cls: Class, prop: Property, indent: str):
     """ Print the given Property object at the given indentation level. """
+
+    if prop.type.is_object() or prop.type.is_any():
+        logger.warning("Property {}.{} does not have a specified type.".format(cls.name, prop.name))
 
     Settings.print("{}@property".format(indent))
     Settings.print("{}def {}(self) -> {}: pass".format(indent, prop.name, prop.type.typing()))
@@ -1143,7 +1150,7 @@ def print_class(cls: Class, indent: str = ""):
 
     # Properties:
     for prop in cls.properties:
-        print_property(prop, indent=indent + "    ")
+        print_property(cls, prop, indent=indent + "    ")
 
     # Methods:
     # Put __init__ first, then special, then by name:
