@@ -10,7 +10,7 @@ from generator import logger
 from generator.loader import load_mobase
 from generator.register import MOBASE_REGISTER
 from generator.parser import is_enum
-from generator.types import Class, Enum
+from generator.types import Type, Class, Enum
 from generator.utils import Settings, clean_class, patch_class
 from generator.writer import Writer
 
@@ -75,6 +75,10 @@ writer.print_imports(
         "PyQt5.QtWidgets",
     ]
 )
+
+# Needs to define the MVariant type:
+writer._print("MoVariant = {}".format(Type.MO_VARIANT))
+writer._print()
 
 # This is a class to represent interface not implemented:
 writer.print_class(Class("InterfaceNotImplemented", [], []))

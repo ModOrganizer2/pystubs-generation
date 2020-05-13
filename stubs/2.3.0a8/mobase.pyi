@@ -4,6 +4,8 @@ import PyQt5.QtCore
 import PyQt5.QtGui
 import PyQt5.QtWidgets
 
+MoVariant = Union[bool, int, str, List["MoVariant"], Dict[str, "MoVariant"]]
+
 class InterfaceNotImplemented: pass
 
 class GuessQuality(Enum):
@@ -274,11 +276,11 @@ class IModRepositoryBridge(PyQt5.QtCore.QObject):
     requestFailed: PyQt5.QtCore.pyqtSignal = ...  # requestFailed[str, int, int, QVariant, NetworkError, str]
 
     def _object(self) -> PyQt5.QtCore.QObject: pass
-    def requestDescription(self, arg1: str, arg2: int, arg3: Union[int, bool, str]): pass
-    def requestDownloadURL(self, arg1: str, arg2: int, arg3: int, arg4: Union[int, bool, str]): pass
-    def requestFileInfo(self, arg1: str, arg2: int, arg3: int, arg4: Union[int, bool, str]): pass
-    def requestFiles(self, arg1: str, arg2: int, arg3: Union[int, bool, str]): pass
-    def requestToggleEndorsement(self, arg1: str, arg2: int, arg3: str, arg4: bool, arg5: Union[int, bool, str]): pass
+    def requestDescription(self, arg1: str, arg2: int, arg3: MoVariant): pass
+    def requestDownloadURL(self, arg1: str, arg2: int, arg3: int, arg4: MoVariant): pass
+    def requestFileInfo(self, arg1: str, arg2: int, arg3: int, arg4: MoVariant): pass
+    def requestFiles(self, arg1: str, arg2: int, arg3: MoVariant): pass
+    def requestToggleEndorsement(self, arg1: str, arg2: int, arg3: str, arg4: bool, arg5: MoVariant): pass
 
 
 class IOrganizer:
@@ -304,18 +306,18 @@ class IOrganizer:
     def onFinishedRun(self, arg1: Callable[[str, int], None]) -> bool: pass
     def onModInstalled(self, arg1: Callable[[str], None]) -> bool: pass
     def overwritePath(self) -> str: pass
-    def persistent(self, arg1: str, arg2: str, arg3: Union[int, bool, str] = None) -> Union[int, bool, str]: pass
+    def persistent(self, arg1: str, arg2: str, arg3: MoVariant = None) -> MoVariant: pass
     def pluginDataPath(self) -> str: pass
     def pluginList(self) -> "IPluginList": pass
-    def pluginSetting(self, arg1: str, arg2: str) -> Union[int, bool, str]: pass
+    def pluginSetting(self, arg1: str, arg2: str) -> MoVariant: pass
     def profile(self) -> "IProfile": pass
     def profileName(self) -> str: pass
     def profilePath(self) -> str: pass
     def refreshModList(self, arg1: bool = True): pass
     def removeMod(self, arg1: "IModInterface") -> bool: pass
     def resolvePath(self, arg1: str) -> str: pass
-    def setPersistent(self, arg1: str, arg2: str, arg3: Union[int, bool, str], arg4: bool = True): pass
-    def setPluginSetting(self, arg1: str, arg2: str, arg3: Union[int, bool, str]): pass
+    def setPersistent(self, arg1: str, arg2: str, arg3: MoVariant, arg4: bool = True): pass
+    def setPluginSetting(self, arg1: str, arg2: str, arg3: MoVariant): pass
     def startApplication(self, arg1: str, arg2: List[str] = [], arg3: str = '', arg4: str = '', arg5: str = '', arg6: bool = False) -> int: pass
     def waitForApplication(self, arg1: int) -> Tuple[bool, int]: pass
 
@@ -574,9 +576,9 @@ class ModRepositoryFileInfo:
     def uri(self, arg0: str): pass
 
     @property
-    def userData(self) -> Union[int, bool, str]: pass
+    def userData(self) -> MoVariant: pass
     @userData.setter
-    def userData(self, arg0: Union[int, bool, str]): pass
+    def userData(self, arg0: MoVariant): pass
 
     @property
     def version(self) -> VersionInfo: pass
@@ -593,7 +595,7 @@ class ModRepositoryFileInfo:
 
 
 class PluginSetting:
-    def __init__(self, arg1: str, arg2: str, arg3: Union[int, bool, str]): pass
+    def __init__(self, arg1: str, arg2: str, arg3: MoVariant): pass
 
 
 class SaveGameInfo:
