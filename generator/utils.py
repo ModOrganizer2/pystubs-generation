@@ -6,7 +6,7 @@ from collections import OrderedDict, defaultdict
 from typing import List, Dict, Any, Tuple
 
 from . import logger
-from .types import Class, Arg, Type, Method, Constant
+from .types import Class, Enum, Arg, Type, Method, Constant
 
 
 # This is a 100% static class:
@@ -58,9 +58,7 @@ def clean_class(cls: Class):
     """
     from .register import MOBASE_REGISTER
 
-    # Note: This currently only remove duplicates that are added by wrapping
-    # C++ classes with boost::python::wrapper.
-
+    # Remove duplicate methods (based on name and argument types):
     methods: Dict[Tuple[str, Tuple[Arg, ...]], List[Method]] = OrderedDict()
     methods_by_name = defaultdict(list)
     for m in cls.methods:
@@ -90,7 +88,6 @@ def clean_class(cls: Class):
                 method.overloads = False
 
         # Filter methods from parent class:
-
         if method.is_static():
             clean_methods.append(method)
         else:
@@ -117,6 +114,13 @@ def clean_class(cls: Class):
             clean_methods.remove(fns[0])
 
     cls.methods = clean_methods
+
+    # Remove all non-uppercases enum names - This is a temporary fix to avoid breaking
+    # old plugins that uses old enum values:
+    if isinstance(cls, Enum):
+        newc = [c for c in cls.constants if c.name.isupper()]
+        if newc:
+            cls.constants = newc
 
 
 def patch_class(cls: Class, ow: Dict[str, Any]):

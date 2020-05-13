@@ -11,6 +11,8 @@ class Type:
     # The `MoVariant` actual type:
     MO_VARIANT = """Union[bool, int, str, List["MoVariant"], Dict[str, "MoVariant"]]"""
 
+    name: str
+
     def __init__(self, name: str):
         # Import only here since we change the path to find them:
         from PyQt5 import QtCore, QtGui, QtWidgets
@@ -95,6 +97,8 @@ class CType(Type):
         "void *": "object",
         "api::object": "object",
     }
+
+    _optional: bool
 
     def __init__(self, name: str, optional: bool = False):
         super().__init__(name)
@@ -303,6 +307,9 @@ class Arg:
     # Constant representing None since None indicates no default value:
     DEFAULT_NONE = "None"
 
+    type: Type
+    _value: Optional[str]
+
     def __init__(self, type: Type, value: Optional[str] = None):
         self.type = type
         self._value = value
@@ -353,6 +360,11 @@ class Arg:
 class Function:
     """ Class representing a function. """
 
+    name: str
+    rtype: Type
+    args: List[Arg]
+    overloads: bool
+
     def __init__(
         self, name: str, rtype: Type, args: List[Arg], has_overloads: bool = False
     ):
@@ -367,6 +379,9 @@ class Function:
 
 class Method(Function):
     """ Class representing a method. """
+
+    class_name: str
+    static: bool
 
     def __init__(
         self,
@@ -394,6 +409,11 @@ class Method(Function):
 class Constant:
     """ Class representing a constant. """
 
+    name: str
+    type: Type
+    value: Any
+    comment: Optional[str]
+
     def __init__(
         self, name: str, type: Type, value: Any, comment: Optional[str] = None
     ):
@@ -408,6 +428,10 @@ class Constant:
 class Property:
     """ Class representing a property. """
 
+    name: str
+    type: Type
+    read_only: bool
+
     def __init__(self, name: str, type: Type, read_only: bool):
         self.name = name
         self.type = type
@@ -419,6 +443,13 @@ class Property:
 
 class Class:
     """ Class representing a class. """
+
+    name: str
+    bases: List[str]
+    methods: List[Method]
+    constants: List[Constant]
+    properties: List[Property]
+    inner_classes: List["Class"]
 
     def __init__(
         self,
@@ -449,5 +480,5 @@ class Enum(Class):
             ["Enum"],
             [],
             inner_classes=[],
-            constants=[Constant(k, Type(name), v) for k, v in values.items()],
+            constants=[Constant(k, None, v) for k, v in values.items()],
         )

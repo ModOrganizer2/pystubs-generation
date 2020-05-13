@@ -101,14 +101,14 @@ class Writer:
             if constant.comment:
                 comment = "  # {}".format(constant.comment)
 
+            typing = ""
+            if constant.type is not None:
+                typing = ": {}".format(constant.type.typing())
+
             # Note: We do not print the value, we use ...
             self._print(
-                "{}{}: {} = {}{}".format(
-                    indent + "    ",
-                    constant.name,
-                    constant.type.typing(),
-                    "...",
-                    comment,
+                "{}{}{} = {}{}".format(
+                    indent + "    ", constant.name, typing, "...", comment,
                 )
             )
 
