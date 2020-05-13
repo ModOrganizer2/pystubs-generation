@@ -15,7 +15,7 @@ import PyQt5.QtCore
 import PyQt5.QtGui
 import PyQt5.QtWidgets
 
-MoVariant = Union[bool, int, str, List["MoVariant"], Dict[str, "MoVariant"]]
+MoVariant = Union[bool, int, str, List[Any], Dict[str, Any]]
 
 class InterfaceNotImplemented:
     pass

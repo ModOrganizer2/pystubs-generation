@@ -8,8 +8,10 @@ from . import logger
 class Type:
     """ Class representing a python type. """
 
-    # The `MoVariant` actual type:
-    MO_VARIANT = """Union[bool, int, str, List["MoVariant"], Dict[str, "MoVariant"]]"""
+    # The `MoVariant` actual type - This should be List["MoVariant"] and
+    # Dict[str, "MoVariant"], but mypy (and other type checkers) do not
+    # handle recursive definition yet:
+    MO_VARIANT = """Union[bool, int, str, List[Any], Dict[str, Any]]"""
 
     name: str
 
