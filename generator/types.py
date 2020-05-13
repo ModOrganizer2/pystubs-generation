@@ -40,7 +40,7 @@ class Type:
         # issue with conflicts, but those should not be present:
         for k in MOBASE_REGISTER.objects:
             if k.split(".")[-1] == self.name:
-                return k
+                return '"{}"'.format(k)
 
         return self.name
 
@@ -172,6 +172,8 @@ class CType(Type):
 
             if newname is not None:
                 if self.is_optional():
+                    if newname in MOBASE_REGISTER.py2cpp:
+                        newname = '"{}"'.format(newname)
                     return "Optional[{}]".format(newname)
                 else:
                     return newname
