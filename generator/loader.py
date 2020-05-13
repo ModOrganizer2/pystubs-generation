@@ -26,28 +26,16 @@ def load_mobase(path: Path):
     # We need absolute path for loading DLL and modules:
     path = path.resolve()
 
-    os.environ["PATH"] = os.pathsep.join(
-        [str(path), str(path.joinpath("dlls")), os.environ.get("PATH", "")]
-    )
-
-    # We need to load the dependencies manually for whatever reason... Adding them to
-    # the PATH environment variable is not enough.
-
-    # 1. The Qt DLLs (this is quite fast so I am not filtering the ones we do not
-    # need):
-    for dll in path.joinpath("dlls").iterdir():
-        if dll.name.startswith("Qt5") and dll.name.endswith(".dll"):
-            load_dll(dll)
-
-    # 2. Python and boost python (needs to find the one matching):
-    for dll in path.iterdir():
-        if dll.name.endswith(".dll") and (
-            dll.name.startswith("python") or dll.name.startswith("boost_python")
-        ):
-            load_dll(dll)
-
-    # 3. uibase.dll
-    load_dll(path.joinpath("uibase.dll"))
+    # Adding to PATH environment variable for python < 3.8 and
+    # via os.add_dll_directory (python >= 3.8).
+    # See: https://stackoverflow.com/a/58632354/2666289
+    if sys.version_info < (3, 8):
+        os.environ["PATH"] = os.pathsep.join(
+            [str(path), str(path.joinpath("dlls")), os.environ.get("PATH", "")]
+        )
+    else:
+        os.add_dll_directory(str(path))
+        os.add_dll_directory(str(path.joinpath("dlls")))
 
     # We need to add plugins/data to sys.path, mainly for PyQt5
     sys.path.insert(1, path.joinpath("plugins", "data").as_posix())
