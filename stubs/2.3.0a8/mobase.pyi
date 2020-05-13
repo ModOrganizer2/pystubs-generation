@@ -263,22 +263,22 @@ class IModList:
 
 
 class IModRepositoryBridge(PyQt5.QtCore.QObject):
-    descriptionAvailable: PyQt5.QtCore.pyqtSignal = ...  # descriptionAvailable[str, int, Any, Any]
-    filesAvailable: PyQt5.QtCore.pyqtSignal = ...  # filesAvailable[str, int, Any, List[ModRepositoryFileInfo]]
-    fileInfoAvailable: PyQt5.QtCore.pyqtSignal = ...  # fileInfoAvailable[str, int, int, Any, Any]
-    downloadURLsAvailable: PyQt5.QtCore.pyqtSignal = ...  # downloadURLsAvailable[str, int, int Any, Any]
-    endorsementsAvailable: PyQt5.QtCore.pyqtSignal = ...  # endorsementsAvailable[Any, Any]
-    endorsementToggled: PyQt5.QtCore.pyqtSignal = ...  # endorsementToggled[str, int, Any, Any]
-    trackedModsAvailable: PyQt5.QtCore.pyqtSignal = ...  # trackedModsAvailable[Any, Any]
-    trackingToggled: PyQt5.QtCore.pyqtSignal = ...  # trackingToggled[str, int, Any, bool]
-    requestFailed: PyQt5.QtCore.pyqtSignal = ...  # requestFailed[str, int, int, Any, NetworkError, str]
+    descriptionAvailable: PyQt5.QtCore.pyqtSignal = ...  # descriptionAvailable[str, int, QVariant, QVariant]
+    filesAvailable: PyQt5.QtCore.pyqtSignal = ...  # filesAvailable[str, int, QVariant, List[ModRepositoryFileInfo]]
+    fileInfoAvailable: PyQt5.QtCore.pyqtSignal = ...  # fileInfoAvailable[str, int, int, QVariant, QVariant]
+    downloadURLsAvailable: PyQt5.QtCore.pyqtSignal = ...  # downloadURLsAvailable[str, int, int QVariant, QVariant]
+    endorsementsAvailable: PyQt5.QtCore.pyqtSignal = ...  # endorsementsAvailable[QVariant, QVariant]
+    endorsementToggled: PyQt5.QtCore.pyqtSignal = ...  # endorsementToggled[str, int, QVariant, QVariant]
+    trackedModsAvailable: PyQt5.QtCore.pyqtSignal = ...  # trackedModsAvailable[QVariant, QVariant]
+    trackingToggled: PyQt5.QtCore.pyqtSignal = ...  # trackingToggled[str, int, QVariant, bool]
+    requestFailed: PyQt5.QtCore.pyqtSignal = ...  # requestFailed[str, int, int, QVariant, NetworkError, str]
 
     def _object(self) -> PyQt5.QtCore.QObject: pass
-    def requestDescription(self, arg1: str, arg2: int, arg3: PyQt5.QtCore.QVariant): pass
-    def requestDownloadURL(self, arg1: str, arg2: int, arg3: int, arg4: PyQt5.QtCore.QVariant): pass
-    def requestFileInfo(self, arg1: str, arg2: int, arg3: int, arg4: PyQt5.QtCore.QVariant): pass
-    def requestFiles(self, arg1: str, arg2: int, arg3: PyQt5.QtCore.QVariant): pass
-    def requestToggleEndorsement(self, arg1: str, arg2: int, arg3: str, arg4: bool, arg5: PyQt5.QtCore.QVariant): pass
+    def requestDescription(self, arg1: str, arg2: int, arg3: Union[int, bool, str]): pass
+    def requestDownloadURL(self, arg1: str, arg2: int, arg3: int, arg4: Union[int, bool, str]): pass
+    def requestFileInfo(self, arg1: str, arg2: int, arg3: int, arg4: Union[int, bool, str]): pass
+    def requestFiles(self, arg1: str, arg2: int, arg3: Union[int, bool, str]): pass
+    def requestToggleEndorsement(self, arg1: str, arg2: int, arg3: str, arg4: bool, arg5: Union[int, bool, str]): pass
 
 
 class IOrganizer:
@@ -304,18 +304,18 @@ class IOrganizer:
     def onFinishedRun(self, arg1: Callable[[str, int], None]) -> bool: pass
     def onModInstalled(self, arg1: Callable[[str], None]) -> bool: pass
     def overwritePath(self) -> str: pass
-    def persistent(self, arg1: str, arg2: str, arg3: PyQt5.QtCore.QVariant = None) -> PyQt5.QtCore.QVariant: pass
+    def persistent(self, arg1: str, arg2: str, arg3: Union[int, bool, str] = None) -> Union[int, bool, str]: pass
     def pluginDataPath(self) -> str: pass
     def pluginList(self) -> "IPluginList": pass
-    def pluginSetting(self, arg1: str, arg2: str) -> PyQt5.QtCore.QVariant: pass
+    def pluginSetting(self, arg1: str, arg2: str) -> Union[int, bool, str]: pass
     def profile(self) -> "IProfile": pass
     def profileName(self) -> str: pass
     def profilePath(self) -> str: pass
     def refreshModList(self, arg1: bool = True): pass
     def removeMod(self, arg1: "IModInterface") -> bool: pass
     def resolvePath(self, arg1: str) -> str: pass
-    def setPersistent(self, arg1: str, arg2: str, arg3: PyQt5.QtCore.QVariant, arg4: bool = True): pass
-    def setPluginSetting(self, arg1: str, arg2: str, arg3: PyQt5.QtCore.QVariant): pass
+    def setPersistent(self, arg1: str, arg2: str, arg3: Union[int, bool, str], arg4: bool = True): pass
+    def setPluginSetting(self, arg1: str, arg2: str, arg3: Union[int, bool, str]): pass
     def startApplication(self, arg1: str, arg2: List[str] = [], arg3: str = '', arg4: str = '', arg5: str = '', arg6: bool = False) -> int: pass
     def waitForApplication(self, arg1: int) -> Tuple[bool, int]: pass
 
@@ -574,9 +574,9 @@ class ModRepositoryFileInfo:
     def uri(self, arg0: str): pass
 
     @property
-    def userData(self) -> PyQt5.QtCore.QVariant: pass
+    def userData(self) -> Union[int, bool, str]: pass
     @userData.setter
-    def userData(self, arg0: PyQt5.QtCore.QVariant): pass
+    def userData(self, arg0: Union[int, bool, str]): pass
 
     @property
     def version(self) -> VersionInfo: pass
@@ -593,7 +593,7 @@ class ModRepositoryFileInfo:
 
 
 class PluginSetting:
-    def __init__(self, arg1: str, arg2: str, arg3: PyQt5.QtCore.QVariant): pass
+    def __init__(self, arg1: str, arg2: str, arg3: Union[int, bool, str]): pass
 
 
 class SaveGameInfo:

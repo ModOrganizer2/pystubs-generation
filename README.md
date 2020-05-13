@@ -37,7 +37,8 @@ your MO2 installation path, then you need **python 3.8**.
 To generate the stubs, you can run:
 
 ```
-python main.py -o stubs\mobase.pyi ${MO2_INSTALL_PATH}
+# Change the output folder to whatever you want:
+python main.py -o stubs\2.3.0a8\mobase.pyi ${MO2_INSTALL_PATH}
 ```
 
 Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one containing `ModOrganizer.exe`).

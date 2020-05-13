@@ -1,14 +1,13 @@
 {
-    "ignores": ["toPyQt"],
-
+    "ignores": [
+        "toPyQt"
+    ],
     "replacements": {
         "Organizer::FileInfo": "FileInfo",
         "IOrganizer::FileInfo": "FileInfo",
         "IPluginInstaller::EInstallResult": "InstallResult"
     },
-
     "overwrites": {
-
         "IFileTree": {
             "__iter__": {
                 "rtype": "Iterator[FileTreeEntry]",
@@ -17,9 +16,10 @@
                 "overloads": false
             }
         },
-
         "IDownloadManager": {
-            "[bases]": ["PyQt5.QtCore.QObject"],
+            "[bases]": [
+                "PyQt5.QtCore.QObject"
+            ],
             "[signals]": [
                 "downloadComplete[int]",
                 "downloadPaused[int]",
@@ -27,22 +27,22 @@
                 "downloadRemoved[int]"
             ]
         },
-
         "IModRepositoryBridge": {
-            "[bases]": ["PyQt5.QtCore.QObject"],
+            "[bases]": [
+                "PyQt5.QtCore.QObject"
+            ],
             "[signals]": [
-                "descriptionAvailable[str, int, Any, Any]",
-                "filesAvailable[str, int, Any, List[ModRepositoryFileInfo]]",
-                "fileInfoAvailable[str, int, int, Any, Any]",
-                "downloadURLsAvailable[str, int, int Any, Any]",
-                "endorsementsAvailable[Any, Any]",
-                "endorsementToggled[str, int, Any, Any]",
-                "trackedModsAvailable[Any, Any]",
-                "trackingToggled[str, int, Any, bool]",
-                "requestFailed[str, int, int, Any, NetworkError, str]"
+                "descriptionAvailable[str, int, QVariant, QVariant]",
+                "filesAvailable[str, int, QVariant, List[ModRepositoryFileInfo]]",
+                "fileInfoAvailable[str, int, int, QVariant, QVariant]",
+                "downloadURLsAvailable[str, int, int QVariant, QVariant]",
+                "endorsementsAvailable[QVariant, QVariant]",
+                "endorsementToggled[str, int, QVariant, QVariant]",
+                "trackedModsAvailable[QVariant, QVariant]",
+                "trackingToggled[str, int, QVariant, bool]",
+                "requestFailed[str, int, int, QVariant, NetworkError, str]"
             ]
         },
-
         "FileInfo": {
             "[properties]": {
                 "filePath": "str",
@@ -50,7 +50,6 @@
                 "origins": "List[str]"
             }
         },
-
         "Mapping": {
             "[properties]": {
                 "source": "str",
@@ -59,7 +58,6 @@
                 "createTarget": "bool"
             }
         },
-
         "ModRepositoryFileInfo": {
             "[properties]": {
                 "name": "str",
@@ -77,7 +75,7 @@
                 "fileCategory": "int",
                 "fileTime": "PyQt5.QtCore.QDateTime",
                 "repository": "str",
-                "userData": "PyQt5.QtCore.QVariant"
+                "userData": "QVariant"
             }
         }
     }

@@ -8,11 +8,22 @@ from . import logger
 class Type:
     """ Class representing a python type. """
 
+    # QVariant are never passed to Python but converted to the underlying
+    # type by a custom converter:
+    # Note: In theory, the QVariant converter can convert to QVariantList
+    # and QVariantMap, but there are no converters registered as of now,
+    # so not adding them here. Also, this would creates a recursive Union,
+    # I'd have to check how this work with python typing.
+    _QVARIANT_UNION = "Union[int, bool, str]"
+
     def __init__(self, name: str):
         # Import only here since we change the path to find them:
         from PyQt5 import QtCore, QtGui, QtWidgets
 
         self.name = name.strip()
+
+        if self.name == "QVariant":
+            self.name = self._QVARIANT_UNION
 
         # Find PyQt types:
         for m in (QtCore, QtGui, QtWidgets):
