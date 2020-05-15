@@ -94,6 +94,16 @@ complex to deduce). In particular:
 An example of configuration file is [`config.json`](config.json), and an empty configuration is provided ([`empty.json`](empty.json))
 to show what happens with an empty configuration.
 
+## Extras &mdash; Starts a python interpreter with `mobase`
+
+It is possible to start a (i)python interpret with `mobase` imported by running:
+
+```
+python -im generator.loader ${MO2_INSTALL_PATH}
+```
+
+This has no real usage except for MO2 developers since most classes from the `mobase` module cannot be instantiated.
+
 # License
 
 The MIT License (MIT)
