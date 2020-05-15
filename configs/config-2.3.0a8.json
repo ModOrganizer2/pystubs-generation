@@ -14,7 +14,8 @@
                 "args": [],
                 "static": false,
                 "overloads": false
-            }
+            },
+            "_makeTree": false
         },
         "IDownloadManager": {
             "[bases]": [

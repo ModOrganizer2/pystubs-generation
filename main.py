@@ -37,7 +37,7 @@ parser.add_argument(
     "-c",
     "--config",
     type=argparse.FileType("r"),
-    default="config.json",
+    default=None,
     help="configuration file",
 )
 
@@ -46,12 +46,15 @@ args = parser.parse_args()
 if args.verbose:
     logger.setLevel(logging.INFO)
 
-Settings.load_from_file(args.config)
+# Load settings from the configuration:
+if args.config is not None:
+    Settings.load_from_file(args.config)
 
+# Load mobase (cannot simply do "import mobase"):
 mobase = load_mobase(Path(args.install_dir))
 
+# Create the writer:
 writer = Writer(args.output)
-
 writer.print_imports(
     [
         ("enum", ["Enum"]),

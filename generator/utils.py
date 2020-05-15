@@ -138,9 +138,14 @@ def patch_class(cls: Class, ow: Dict[str, Any]):
     if "[bases]" in ow:
         cls.bases = ow["[bases]"]
 
-    for i, m in enumerate(cls.methods):
+    methods = []
+    for m in cls.methods:
         if m.name in ow:
-            cls.methods[i] = Settings.parse_method(cls, m.name, ow[m.name])
+            if not ow[m.name]:
+                continue
+            m = Settings.parse_method(cls, m.name, ow[m.name])
+        methods.append(m)
+    cls.methods = methods
 
     properties: Dict[str, str] = ow.get("[properties]", {})
     for prop in cls.properties:

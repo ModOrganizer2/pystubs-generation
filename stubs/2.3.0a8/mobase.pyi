@@ -267,11 +267,11 @@ class IFileTree(FileTreeEntry):
         pass
     def __repr__(self) -> str:
         pass
-    def addDirectory(self, arg1: str) -> Optional["IFileTree"]:
+    def addDirectory(self, arg1: str) -> "IFileTree":
         pass
     def addFile(
         self, arg1: str, arg2: PyQt5.QtCore.QDateTime = PyQt5.QtCore.QDateTime()
-    ) -> Optional["FileTreeEntry"]:
+    ) -> "FileTreeEntry":
         pass
     def clear(self) -> bool:
         pass
@@ -297,7 +297,7 @@ class IFileTree(FileTreeEntry):
         pass
     def merge(
         self, arg1: "IFileTree", arg2: bool = False
-    ) -> Union[Dict["FileTreeEntry", "FileTreeEntry"], int, bool]:
+    ) -> Union[Dict["FileTreeEntry", "FileTreeEntry"], int]:
         pass
     def move(
         self,
@@ -317,6 +317,8 @@ class IFileTree(FileTreeEntry):
     def removeAll(self, arg1: List[str]) -> int:
         pass
     def removeIf(self, arg1: Callable[["FileTreeEntry"], bool]) -> int:
+        pass
+    def walk(self, arg1: Callable[[str, "FileTreeEntry"], bool], arg2: str = "\\"):
         pass
 
 class IInstallationManager:
