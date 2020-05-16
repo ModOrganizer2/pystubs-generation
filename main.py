@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser("Stubs generator for the MO2 python interface")
 parser.add_argument(
     "install_dir",
     metavar="INSTALL_DIR",
-    type=str,
+    type=Path,
     default=None,
     help="installation directory of Mod Organizer 2",
 )
