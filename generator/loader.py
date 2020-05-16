@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-import ctypes
 import importlib.machinery
 import os
 import sys
@@ -8,18 +7,14 @@ import sys
 from pathlib import Path
 
 
-def load_dll(path: Path):
-    """ Convenient wrapper for ctypes.cdll.LoadLibrary that can take a path
-    object. """
-    ctypes.cdll.LoadLibrary(str(path))
-
-
-def load_mobase(path: Path):
+def load_mobase(path: Path, moprivate: bool = False):
     """ Load the mobase from the given MO2 installation path and
     returns it.
 
     Args:
         path: Path to the MO2 installation (folder containg the ModOrganizer.exe).
+        moprivate: If True, the moprivate module will also be loaded and returned
+            alongisde mobase.
 
     Returns: The mobase module. """
 
@@ -40,11 +35,41 @@ def load_mobase(path: Path):
     # We need to add plugins/data to sys.path, mainly for PyQt5
     sys.path.insert(1, path.joinpath("plugins", "data").as_posix())
 
-    return importlib.machinery.ExtensionFileLoader(
+    mobase = importlib.machinery.ExtensionFileLoader(
         "mobase", path.joinpath("plugins", "data", "pythonrunner.dll").as_posix()
-    ).load_module()  # type: ignore
+    ).load_module()
+
+    if not moprivate:
+        return mobase
+
+    moprivate = importlib.machinery.ExtensionFileLoader(
+        "moprivate", path.joinpath("plugins", "data", "pythonrunner.dll").as_posix()
+    ).load_module()
+
+    return mobase, moprivate
 
 
 if __name__ == "__main__":
 
-    mobase = load_mobase(Path(sys.argv[1]))
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        "Load mobase python module from MO2 installation directory"
+    )
+    parser.add_argument(
+        "install_dir",
+        metavar="INSTALL_DIR",
+        type=Path,
+        default=None,
+        help="installation directory of Mod Organizer 2",
+    )
+    parser.add_argument(
+        "-p", "--private", action="store_true", help="also load the moprivate module"
+    )
+
+    args = parser.parse_args()
+
+    if args.private:
+        mobase, moprivate = load_mobase(args.install_dir, moprivate=True)
+    else:
+        mobase = load_mobase(args.install_dir)
