@@ -222,6 +222,21 @@ class CType(Type):
                 ", ".join(a.type.typing() for a in args), rtype.typing()
             )
 
+        if name.find("::") != -1:
+            parts = name.split("::")
+
+            # We are going to check if there is an exact python match for
+            # this class (replacing :: by .):
+            if parts[0] in MOBASE_REGISTER.py2cpp:
+                c = [MOBASE_REGISTER.objects[parts[0]]]
+                for p in parts[1:]:
+                    for ic in c[-1].inner_classes:
+                        if ic.name == p:
+                            c.append(ic)
+                            break
+                if len(c) == len(parts):
+                    name = '"' + ".".join(parts) + '"'
+
         if pname != name:
             logger.info("Fixed {} to {}. ".format(pname, name))
         else:

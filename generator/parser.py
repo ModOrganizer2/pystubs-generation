@@ -274,7 +274,7 @@ def make_enum(name: str, e: type) -> Enum:
     # All boost enums have a .values attributes:
     return Enum(
         e.__name__, OrderedDict((e.values[k].name, k) for k in sorted(e.values.keys()))
-    )  # type: ignore
+    )
 
 
 class Overload:
@@ -332,7 +332,7 @@ def parse_bpy_function_docstring(e) -> List[Overload]:
             args.append(
                 Arg(
                     find_best_type(parg.type, carg.type),  # type: ignore
-                    find_best_value(parg.value, carg.value),
+                    find_best_value(parg.value, carg.value),  # type: ignore
                 )
             )  # type: ignore
 
