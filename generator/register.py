@@ -4,7 +4,7 @@ from collections import OrderedDict
 from typing import Optional, Dict, Union
 
 from . import logger
-from .types import Class, Type, CType
+from .mtypes import Class, Type, CType
 
 
 class MobaseRegister:

@@ -8,7 +8,7 @@ from collections import defaultdict, OrderedDict
 from typing import List, Tuple, Optional, Dict, Union
 
 from .register import MobaseRegister
-from .types import Type, CType, Class, Enum, Arg, Method, Constant, Property
+from .mtypes import Type, CType, Class, Enum, Arg, Method, Constant, Property
 
 from . import logger
 

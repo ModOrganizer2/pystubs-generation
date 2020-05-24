@@ -3,7 +3,7 @@
 from typing import TextIO, List, Union, Tuple
 
 from . import logger
-from .types import Function, Class, Method, Property
+from .mtypes import Function, Class, Method, Property
 
 
 class Writer:

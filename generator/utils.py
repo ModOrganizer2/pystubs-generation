@@ -6,7 +6,7 @@ from collections import OrderedDict, defaultdict
 from typing import List, Dict, Any, Tuple
 
 from . import logger
-from .types import Class, Enum, Arg, Type, Method, Constant
+from .mtypes import Class, Enum, Arg, Type, Method, Constant
 
 
 # This is a 100% static class:

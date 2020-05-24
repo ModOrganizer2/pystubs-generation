@@ -10,7 +10,7 @@ from generator import logger
 from generator.loader import load_mobase
 from generator.register import MOBASE_REGISTER
 from generator.parser import is_enum
-from generator.types import Type, Class, Enum
+from generator.mtypes import Type, Class, Enum
 from generator.utils import Settings, clean_class, patch_class
 from generator.writer import Writer
 
