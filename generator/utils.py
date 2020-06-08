@@ -76,7 +76,11 @@ def clean_class(cls: Class):
 
             # If we have more than two methods, there is a problem...
             assert len(methods[name, args]) == 2
-            assert ms[0].rtype.is_none() or ms[1].rtype.is_none()
+            assert (
+                ms[0].rtype.is_none()
+                or ms[1].rtype.is_none()
+                or ms[0].rtype.name == ms[1].rtype.name
+            )
 
             if ms[0].rtype.is_none():
                 method = ms[1]
@@ -122,37 +126,51 @@ def clean_class(cls: Class):
         if newc:
             cls.constants = newc
 
+    # Clean inner classes:
+    for ic in cls.inner_classes:
+        clean_class(ic)
 
-def patch_class(cls: Class, ow: Dict[str, Any]):
+
+def patch_class(cls: Class, overwrites: Dict[str, Dict[str, Any]]):
     """ Patch the given class using the given overwrites.
 
     See config.json for some examples of valid overwrites.
 
     Args:
         cls: The class to patch.
-        ow: The overwrite dictionary.
+        overwrites: The overwrite dictionary.
     """
 
     logger.info("Patching class {}.".format(cls.name))
 
-    if "[bases]" in ow:
-        cls.bases = ow["[bases]"]
+    if cls.canonical_name in overwrites:
 
-    methods = []
-    for m in cls.methods:
-        if m.name in ow:
-            if not ow[m.name]:
-                continue
-            m = Settings.parse_method(cls, m.name, ow[m.name])
-        methods.append(m)
-    cls.methods = methods
+        ow = overwrites[cls.canonical_name]
 
-    properties: Dict[str, str] = ow.get("[properties]", {})
-    for prop in cls.properties:
-        if prop.name in properties:
-            prop.type = Type(properties[prop.name])
+        if "[bases]" in ow:
+            cls.bases = ow["[bases]"]
 
-    signals: List[str] = ow.get("[signals]", [])
-    for signal in signals:
-        name = signal.split("[")[0]
-        cls.constants.append(Constant(name, Type("pyqtSignal"), None, comment=signal))
+        methods = []
+        for m in cls.methods:
+            if m.name in ow:
+                if not ow[m.name]:
+                    continue
+                m = Settings.parse_method(cls, m.name, ow[m.name])
+            methods.append(m)
+        cls.methods = methods
+
+        properties: Dict[str, str] = ow.get("[properties]", {})
+        for prop in cls.properties:
+            if prop.name in properties:
+                prop.type = Type(properties[prop.name])
+
+        signals: List[str] = ow.get("[signals]", [])
+        for signal in signals:
+            name = signal.split("[")[0]
+            cls.constants.append(
+                Constant(name, Type("pyqtSignal"), None, comment=signal)
+            )
+
+    # Patch inner classes:
+    for ic in cls.inner_classes:
+        patch_class(ic, overwrites)

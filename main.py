@@ -127,9 +127,7 @@ for n, o in objects:
     clean_class(c)
 
     # Fix the class if required:
-    if c.name in Settings.OVERWRITES:
-        ow = Settings.OVERWRITES[c.name]
-        patch_class(c, ow)
+    patch_class(c, Settings.OVERWRITES)
 
     # Print the class:
     writer.print_class(c)

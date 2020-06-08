@@ -429,12 +429,12 @@ class Constant:
     """ Class representing a constant. """
 
     name: str
-    type: Type
+    type: Optional[Type]
     value: Any
     comment: Optional[str]
 
     def __init__(
-        self, name: str, type: Type, value: Any, comment: Optional[str] = None
+        self, name: str, type: Optional[Type], value: Any, comment: Optional[str] = None
     ):
         self.name = name
         self.type = type
@@ -478,6 +478,7 @@ class Class:
         constants: List[Constant] = [],
         properties: List[Property] = [],
         inner_classes: List["Class"] = [],
+        outer_class: Optional[str] = None,
     ):
 
         self.name = name
@@ -486,6 +487,21 @@ class Class:
         self.properties = properties
         self.constants = constants
         self.inner_classes = inner_classes
+        self.outer_class = outer_class
+
+    @property
+    def canonical_name(self):
+        """ Return the canonical name of this class. """
+        from .register import MOBASE_REGISTER
+
+        name = self.name
+        oc = self.outer_class
+        while oc is not None:
+            c = MOBASE_REGISTER.objects[oc]
+            name = "{}.{}".format(c.name, name)
+            oc = c.outer_class
+
+        return name
 
 
 class Enum(Class):

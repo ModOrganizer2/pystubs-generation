@@ -272,8 +272,9 @@ def make_enum(name: str, e: type) -> Enum:
     Returns: An Enum object representing the given enumeration.
     """
     # All boost enums have a .values attributes:
+    values = e.values  # type: ignore
     return Enum(
-        e.__name__, OrderedDict((e.values[k].name, k) for k in sorted(e.values.keys()))
+        e.__name__, OrderedDict((values[k].name, k) for k in sorted(values.keys()))
     )
 
 
@@ -341,11 +342,12 @@ def parse_bpy_function_docstring(e) -> List[Overload]:
     return overloads
 
 
-def make_class(name: str, e: type, register: MobaseRegister) -> Class:
+def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
     """ Constructs a Class objecgt from the given python class.
 
     Args:
-        name: Name of the class (might be different from __name__ for inner classes).
+        fullname: Name of the class (might be different from __name__ for inner
+            classes).
         e: The python class (created from boost) to construct an object for.
         class_register:
 
@@ -485,7 +487,7 @@ def make_class(name: str, e: type, register: MobaseRegister) -> Class:
         and ic[0] not in base_attrs
     ]
     pinner_classes = [
-        register.make_object("{}.{}".format(name, ic.__name__), ic)
+        register.make_object("{}.{}".format(fullname, ic.__name__), ic)
         for ic in inner_classes
     ]
 
@@ -520,11 +522,18 @@ def make_class(name: str, e: type, register: MobaseRegister) -> Class:
         )
         direct_bases_s.append("PyQt5.QtWidgets.QWidget")
 
+    # Check if this is an inner class:
+    parts = fullname.split(".")
+    outer_class: Optional[str] = None
+    if len(parts) > 1:
+        outer_class = parts[-2]
+
     return Class(
         e.__name__,
         direct_bases_s,
         pmethods,
         inner_classes=pinner_classes,
+        outer_class=outer_class,
         properties=properties,
         constants=constants,
     )
