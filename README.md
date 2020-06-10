@@ -38,10 +38,10 @@ To generate the stubs, you can run:
 
 ```
 # Change the output folder to whatever you want:
-python main.py -c configs\config-2.3.0a8.json -o stubs\2.3.0a8\mobase.pyi ${MO2_INSTALL_PATH}
+python main.py -c configs\config-2.3.0a10.json -o stubs\2.3.0a10\mobase.pyi ${MO2_INSTALL_PATH}
 
 # [Optional] Run black on the file to get it clean:
-black stubs\2.3.0a8\mobase.pyi
+black stubs\2.3.0a10\mobase.pyi
 ```
 
 Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one containing `ModOrganizer.exe`).
