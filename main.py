@@ -10,7 +10,7 @@ from generator import logger
 from generator.loader import load_mobase
 from generator.register import MOBASE_REGISTER
 from generator.parser import is_enum
-from generator.mtypes import Type, Class, Enum
+from generator.mtypes import Type, Class, Enum, Function
 from generator.utils import Settings, clean_class, patch_class
 from generator.writer import Writer
 
@@ -106,31 +106,38 @@ for name in dir(mobase):
 # maybe create a kind of dependency...
 # For argument or return types, this should not be an issue since we quote
 # everything from mobase.
-objects = sorted(objects, key=lambda e: (not is_enum(e[1]), e[0]))
+objects = sorted(
+    objects, key=lambda e: (isinstance(e[1], type), not is_enum(e[1]), e[0])
+)
 
 for n, o in objects:
     MOBASE_REGISTER.add_object(n, o)
 
 for n, o in objects:
 
-    # Only supports generation for class currently:
-    if not isinstance(o, type):
-        logger.critical(
-            "Cannot generated stubs for {}, unsupported object type.".format(n)
-        )
-        continue
-
     # Create the corresponding object:
     c = MOBASE_REGISTER.make_object(n, o)
 
-    # Clean the class (e.g., remove duplicates methods due to wrappers):
-    clean_class(c)
+    if isinstance(c, Class):
 
-    # Fix the class if required:
-    patch_class(c, Settings.OVERWRITES)
+        # Clean the class (e.g., remove duplicates methods due to wrappers):
+        clean_class(c)
 
-    # Print the class:
-    writer.print_class(c)
-    if isinstance(c, Enum):
+        # Fix the class if required:
+        patch_class(c, Settings.OVERWRITES)
+
+        # Print the class:
+        writer.print_class(c)
+        if isinstance(c, Enum):
+            writer._print()
         writer._print()
-    writer._print()
+
+    elif isinstance(c, list) and isinstance(c[0], Function):
+        for fn in c:
+            writer.print_function(fn)
+            writer._print()
+
+    else:
+        logger.critical(
+            "Cannot generated stubs for {}, unsupported object type.".format(n)
+        )

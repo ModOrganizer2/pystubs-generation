@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 
 from collections import OrderedDict
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, List
 
 from . import logger
-from .mtypes import Class, Type, CType
+from .mtypes import Class, Type, CType, Function
 
 
 class MobaseRegister:
@@ -21,16 +21,18 @@ class MobaseRegister:
     def add_object(self, name, object):
         self.raw_objects[name] = object
 
-    def make_object(self, name: str, e: Optional[type] = None) -> "Class":
-        """ Construct a Class (or Enum) for the given object.
+    def make_object(
+        self, name: str, e: Optional[type] = None
+    ) -> Union["Class", List["Function"]]:
+        """ Construct a Function, Class or Enum for the given object.
 
         Args:
             name: The name of the object to inspect.
             e: The object to inspect, or None to fetch it from the underlying list.
 
-        Returns: A Class object for the given type.
+        Returns: A Class object for the given type, or a list of function overloads.
         """
-        from .parser import make_enum, make_class, is_enum
+        from .parser import make_enum, make_class, is_enum, make_functions
 
         if e is None:
             e = self.raw_objects[name]
@@ -43,6 +45,8 @@ class MobaseRegister:
                 self.objects[name] = make_enum(name, e)
             elif isinstance(e, type):
                 self.objects[name] = make_class(name, e, self)
+            elif callable(e):
+                self.objects[name] = make_functions(name, e)
 
         return self.objects[name]
 

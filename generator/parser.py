@@ -8,8 +8,7 @@ from collections import defaultdict, OrderedDict
 from typing import List, Tuple, Optional, Dict, Union
 
 from .register import MobaseRegister
-from .mtypes import Type, CType, Class, Enum, Arg, Method, Constant, Property
-
+from .mtypes import Type, CType, Class, Enum, Arg, Method, Constant, Property, Function
 from . import logger
 
 
@@ -340,6 +339,15 @@ def parse_bpy_function_docstring(e) -> List[Overload]:
         overloads.append(Overload(rtype=rtype, args=args))
 
     return overloads
+
+
+def make_functions(name: str, e) -> List[Function]:
+    overloads = parse_bpy_function_docstring(e)
+
+    return [
+        Function(e.__name__, ovld.rtype, ovld.args, has_overloads=len(overloads) > 1,)
+        for ovld in overloads
+    ]
 
 
 def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
