@@ -36,6 +36,15 @@ class GuessQuality(Enum):
     META = ...
     PRESET = ...
     USER = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class InstallResult(Enum):
     SUCCESS = ...
@@ -43,10 +52,28 @@ class InstallResult(Enum):
     CANCELED = ...
     MANUAL_REQUESTED = ...
     NOT_ATTEMPTED = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class LoadOrderMechanism(Enum):
     FILE_TIME = ...
     PLUGINS_TXT = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class ModState(Enum):
     EXISTS = ...
@@ -56,17 +83,44 @@ class ModState(Enum):
     ENDORSED = ...
     VALID = ...
     ALTERNATE = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class PluginState(Enum):
     MISSING = ...
     INACTIVE = ...
     ACTIVE = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class ProfileSetting(Enum):
     MODS = ...
     CONFIGURATION = ...
     SAVEGAMES = ...
     PREFER_DEFAULTS = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class ReleaseType(Enum):
     PRE_ALPHA = ...
@@ -74,12 +128,30 @@ class ReleaseType(Enum):
     BETA = ...
     CANDIDATE = ...
     FINAL = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class SortMechanism(Enum):
     NONE = ...
     MLOX = ...
     BOSS = ...
     LOOT = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class VersionScheme(Enum):
     DISCOVER = ...
@@ -88,6 +160,15 @@ class VersionScheme(Enum):
     NUMBERS_AND_LETTERS = ...
     DATE = ...
     LITERAL = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
+
 
 class BSAInvalidation:
     def __init__(self):
@@ -164,6 +245,15 @@ class FileTreeEntry:
         DIRECTORY = ...
         FILE = ...
         FILE_OR_DIRECTORY = ...
+        def __and__(self, arg1: int) -> bool:
+            pass
+        def __or__(self, arg1: int) -> bool:
+            pass
+        def __rand__(self, arg1: int) -> bool:
+            pass
+        def __ro__(self, arg1: int) -> bool:
+            pass
+
     DIRECTORY: "FileTreeEntry.FileTypes" = ...
     FILE: "FileTreeEntry.FileTypes" = ...
     FILE_OR_DIRECTORY: "FileTreeEntry.FileTypes" = ...
@@ -259,10 +349,28 @@ class IFileTree(FileTreeEntry):
         FAIL_IF_EXISTS = ...
         REPLACE = ...
         MERGE = ...
+        def __and__(self, arg1: int) -> bool:
+            pass
+        def __or__(self, arg1: int) -> bool:
+            pass
+        def __rand__(self, arg1: int) -> bool:
+            pass
+        def __ro__(self, arg1: int) -> bool:
+            pass
+
     class WalkReturn(Enum):
         CONTINUE = ...
         STOP = ...
         SKIP = ...
+        def __and__(self, arg1: int) -> bool:
+            pass
+        def __or__(self, arg1: int) -> bool:
+            pass
+        def __rand__(self, arg1: int) -> bool:
+            pass
+        def __ro__(self, arg1: int) -> bool:
+            pass
+
     CONTINUE: "IFileTree.WalkReturn" = ...
     FAIL_IF_EXISTS: "IFileTree.InsertPolicy" = ...
     MERGE: "IFileTree.InsertPolicy" = ...
@@ -284,6 +392,13 @@ class IFileTree(FileTreeEntry):
     def addFile(self, arg1: str, arg2: bool = False) -> "FileTreeEntry":
         pass
     def clear(self) -> bool:
+        pass
+    def copy(
+        self,
+        arg1: "FileTreeEntry",
+        arg2: str = "",
+        arg3: "IFileTree.InsertPolicy" = IFileTree.InsertPolicy.FAIL_IF_EXISTS,
+    ) -> "FileTreeEntry":
         pass
     def createOrphanTree(self, arg1: str = "") -> "IFileTree":
         pass
@@ -1056,3 +1171,4 @@ class VersionInfo:
         pass
     def scheme(self) -> "VersionScheme":
         pass
+

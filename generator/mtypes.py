@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from typing import Optional, List, Any, Dict
+from typing import Optional, List, Any, Dict, Union
 
 from . import logger
 
@@ -15,9 +15,12 @@ class Type:
 
     name: str
 
-    def __init__(self, name: str):
+    def __init__(self, name: Union[str, type]):
         # Import only here since we change the path to find them:
         from PyQt5 import QtCore, QtGui, QtWidgets
+
+        if isinstance(name, type):
+            name = name.__name__
 
         self.name = name.strip()
 
@@ -513,7 +516,16 @@ class Enum(Class):
         super().__init__(
             name,
             ["Enum"],
-            [],
+            [
+                Method(
+                    name,
+                    "__{}__".format(mname),
+                    Type(bool),
+                    [Arg(Type(name)), Arg(Type(int))],
+                    static=False,
+                )
+                for mname in ["and", "or", "rand", "ro"]
+            ],
             inner_classes=[],
             constants=[Constant(k, None, v) for k, v in values.items()],
         )
