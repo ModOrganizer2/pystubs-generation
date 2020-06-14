@@ -1,0 +1,111 @@
+{
+    "replacements": {
+        "Organizer::FileInfo": "FileInfo",
+        "IOrganizer::FileInfo": "FileInfo",
+        "IPluginInstaller::EInstallResult": "InstallResult"
+    },
+    "overwrites": {
+        "IOrganizer": {
+            "[bases]": [
+                "PyQt5.QtCore.QObject"
+            ],
+            "[signals]": [
+                "pluginSettingChanged[str, str, QVariant, QVariant]"
+            ]
+        },
+        "IFileTree": {
+            "__iter__": {
+                "rtype": "Iterator[FileTreeEntry]",
+                "args": [],
+                "static": false,
+                "overloads": false
+            },
+            "_makeTree": false
+        },
+        "IDownloadManager": {
+            "[bases]": [
+                "PyQt5.QtCore.QObject"
+            ],
+            "[signals]": [
+                "downloadComplete[int]",
+                "downloadPaused[int]",
+                "downloadFailed[int]",
+                "downloadRemoved[int]"
+            ]
+        },
+        "IModRepositoryBridge": {
+            "[bases]": [
+                "PyQt5.QtCore.QObject"
+            ],
+            "[signals]": [
+                "descriptionAvailable[str, int, QVariant, QVariant]",
+                "filesAvailable[str, int, QVariant, List[ModRepositoryFileInfo]]",
+                "fileInfoAvailable[str, int, int, QVariant, QVariant]",
+                "downloadURLsAvailable[str, int, int QVariant, QVariant]",
+                "endorsementsAvailable[QVariant, QVariant]",
+                "endorsementToggled[str, int, QVariant, QVariant]",
+                "trackedModsAvailable[QVariant, QVariant]",
+                "trackingToggled[str, int, QVariant, bool]",
+                "requestFailed[str, int, int, QVariant, NetworkError, str]"
+            ]
+        },
+        "IPluginGame": {
+            "feature": {
+                "rtype": "GameFeatureType",
+                "args": [
+                    "Type[GameFeatureType]"
+                ],
+                "static": false,
+                "overloads": false
+            },
+            "featureList": {
+                "rtype": "Dict[Type[GameFeatureType], GameFeatureType]",
+                "args": [],
+                "static": false,
+                "overloads": false
+            }
+        },
+        "FileInfo": {
+            "[properties]": {
+                "filePath": "str",
+                "archive": "str",
+                "origins": "List[str]"
+            }
+        },
+        "Mapping": {
+            "[properties]": {
+                "source": "str",
+                "destination": "str",
+                "isDirectory": "bool",
+                "createTarget": "bool"
+            }
+        },
+        "ModDataContent.Content": {
+            "[properties]": {
+                "id": "int",
+                "name": "str",
+                "icon": "str"
+            }
+        },
+        "ModRepositoryFileInfo": {
+            "[properties]": {
+                "name": "str",
+                "uri": "str",
+                "description": "str",
+                "version": "VersionInfo",
+                "newestVersion": "VersionInfo",
+                "categoryID": "int",
+                "modName": "str",
+                "gameName": "str",
+                "modID": "int",
+                "fileID": "int",
+                "fileSize": "int",
+                "fileName": "str",
+                "fileCategory": "int",
+                "fileTime": "PyQt5.QtCore.QDateTime",
+                "repository": "str",
+                "userData": "QVariant"
+            }
+        }
+    }
+}
