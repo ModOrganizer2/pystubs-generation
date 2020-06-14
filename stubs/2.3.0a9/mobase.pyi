@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import (
     Dict,
-    Iterable,
     Iterator,
     List,
     Tuple,
@@ -10,12 +9,15 @@ from typing import (
     Optional,
     Callable,
     overload,
+    TypeVar,
+    Type,
 )
 import PyQt5.QtCore
 import PyQt5.QtGui
 import PyQt5.QtWidgets
 
 MoVariant = Union[bool, int, str, List[Any], Dict[str, Any]]
+GameFeatureType = TypeVar("GameFeatureType")
 
 class InterfaceNotImplemented:
     pass
@@ -27,6 +29,14 @@ class GuessQuality(Enum):
     META = ...
     PRESET = ...
     USER = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class InstallResult(Enum):
     SUCCESS = ...
@@ -34,10 +44,26 @@ class InstallResult(Enum):
     CANCELED = ...
     MANUAL_REQUESTED = ...
     NOT_ATTEMPTED = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class LoadOrderMechanism(Enum):
     FILE_TIME = ...
     PLUGINS_TXT = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class ModState(Enum):
     EXISTS = ...
@@ -47,17 +73,41 @@ class ModState(Enum):
     ENDORSED = ...
     VALID = ...
     ALTERNATE = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class PluginState(Enum):
     MISSING = ...
     INACTIVE = ...
     ACTIVE = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class ProfileSetting(Enum):
     MODS = ...
     CONFIGURATION = ...
     SAVEGAMES = ...
     PREFER_DEFAULTS = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class ReleaseType(Enum):
     PRE_ALPHA = ...
@@ -65,12 +115,28 @@ class ReleaseType(Enum):
     BETA = ...
     CANDIDATE = ...
     FINAL = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class SortMechanism(Enum):
     NONE = ...
     MLOX = ...
     BOSS = ...
     LOOT = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class VersionScheme(Enum):
     DISCOVER = ...
@@ -79,6 +145,14 @@ class VersionScheme(Enum):
     NUMBERS_AND_LETTERS = ...
     DATE = ...
     LITERAL = ...
+    def __and__(self, arg1: int) -> bool:
+        pass
+    def __or__(self, arg1: int) -> bool:
+        pass
+    def __rand__(self, arg1: int) -> bool:
+        pass
+    def __ro__(self, arg1: int) -> bool:
+        pass
 
 class BSAInvalidation:
     def __init__(self):
@@ -155,6 +229,14 @@ class FileTreeEntry:
         DIRECTORY = ...
         FILE = ...
         FILE_OR_DIRECTORY = ...
+        def __and__(self, arg1: int) -> bool:
+            pass
+        def __or__(self, arg1: int) -> bool:
+            pass
+        def __rand__(self, arg1: int) -> bool:
+            pass
+        def __ro__(self, arg1: int) -> bool:
+            pass
     DIRECTORY: "FileTreeEntry.FileTypes" = ...
     FILE: "FileTreeEntry.FileTypes" = ...
     FILE_OR_DIRECTORY: "FileTreeEntry.FileTypes" = ...
@@ -250,10 +332,26 @@ class IFileTree(FileTreeEntry):
         FAIL_IF_EXISTS = ...
         REPLACE = ...
         MERGE = ...
+        def __and__(self, arg1: int) -> bool:
+            pass
+        def __or__(self, arg1: int) -> bool:
+            pass
+        def __rand__(self, arg1: int) -> bool:
+            pass
+        def __ro__(self, arg1: int) -> bool:
+            pass
     class WalkReturn(Enum):
         CONTINUE = ...
         STOP = ...
         SKIP = ...
+        def __and__(self, arg1: int) -> bool:
+            pass
+        def __or__(self, arg1: int) -> bool:
+            pass
+        def __rand__(self, arg1: int) -> bool:
+            pass
+        def __ro__(self, arg1: int) -> bool:
+            pass
     CONTINUE: "IFileTree.WalkReturn" = ...
     FAIL_IF_EXISTS: "IFileTree.InsertPolicy" = ...
     MERGE: "IFileTree.InsertPolicy" = ...

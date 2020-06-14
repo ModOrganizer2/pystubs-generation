@@ -383,6 +383,13 @@ class IFileTree(FileTreeEntry):
         pass
     def clear(self) -> bool:
         pass
+    def copy(
+        self,
+        arg1: "FileTreeEntry",
+        arg2: str = "",
+        arg3: "IFileTree.InsertPolicy" = IFileTree.InsertPolicy.FAIL_IF_EXISTS,
+    ) -> "FileTreeEntry":
+        pass
     def createOrphanTree(self, arg1: str = "") -> "IFileTree":
         pass
     def exists(
