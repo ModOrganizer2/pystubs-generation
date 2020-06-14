@@ -1,7 +1,4 @@
 {
-    "ignores": [
-        "toPyQt"
-    ],
     "replacements": {
         "Organizer::FileInfo": "FileInfo",
         "IOrganizer::FileInfo": "FileInfo",
@@ -51,6 +48,22 @@
                 "trackingToggled[str, int, QVariant, bool]",
                 "requestFailed[str, int, int, QVariant, NetworkError, str]"
             ]
+        },
+        "IPluginGame": {
+            "feature": {
+                "rtype": "GameFeatureType",
+                "args": [
+                    "Type[GameFeatureType]"
+                ],
+                "static": false,
+                "overloads": false
+            },
+            "featureList": {
+                "rtype": "Dict[Type[GameFeatureType], GameFeatureType]",
+                "args": [],
+                "static": false,
+                "overloads": false
+            }
         },
         "FileInfo": {
             "[properties]": {

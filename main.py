@@ -62,7 +62,6 @@ writer.print_imports(
             "typing",
             [
                 "Dict",
-                "Iterable",
                 "Iterator",
                 "List",
                 "Tuple",
@@ -71,6 +70,8 @@ writer.print_imports(
                 "Optional",
                 "Callable",
                 "overload",
+                "TypeVar",
+                "Type",
             ],
         ),
         "PyQt5.QtCore",
@@ -79,8 +80,9 @@ writer.print_imports(
     ]
 )
 
-# Needs to define the MVariant type:
+# Needs to define the MVariant and GameFeatureType type:
 writer._print("MoVariant = {}".format(Type.MO_VARIANT))
+writer._print('GameFeatureType = TypeVar("GameFeatureType")')
 writer._print()
 
 # This is a class to represent interface not implemented:

@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import (
     Dict,
-    Iterable,
     Iterator,
     List,
     Tuple,
@@ -10,12 +9,15 @@ from typing import (
     Optional,
     Callable,
     overload,
+    TypeVar,
+    Type,
 )
 import PyQt5.QtCore
 import PyQt5.QtGui
 import PyQt5.QtWidgets
 
 MoVariant = Union[bool, int, str, List[Any], Dict[str, Any]]
+GameFeatureType = TypeVar("GameFeatureType")
 
 class InterfaceNotImplemented:
     pass
@@ -45,7 +47,6 @@ class GuessQuality(Enum):
     def __ro__(self, arg1: int) -> bool:
         pass
 
-
 class InstallResult(Enum):
     SUCCESS = ...
     FAILED = ...
@@ -61,7 +62,6 @@ class InstallResult(Enum):
     def __ro__(self, arg1: int) -> bool:
         pass
 
-
 class LoadOrderMechanism(Enum):
     FILE_TIME = ...
     PLUGINS_TXT = ...
@@ -73,7 +73,6 @@ class LoadOrderMechanism(Enum):
         pass
     def __ro__(self, arg1: int) -> bool:
         pass
-
 
 class ModState(Enum):
     EXISTS = ...
@@ -92,7 +91,6 @@ class ModState(Enum):
     def __ro__(self, arg1: int) -> bool:
         pass
 
-
 class PluginState(Enum):
     MISSING = ...
     INACTIVE = ...
@@ -105,7 +103,6 @@ class PluginState(Enum):
         pass
     def __ro__(self, arg1: int) -> bool:
         pass
-
 
 class ProfileSetting(Enum):
     MODS = ...
@@ -120,7 +117,6 @@ class ProfileSetting(Enum):
         pass
     def __ro__(self, arg1: int) -> bool:
         pass
-
 
 class ReleaseType(Enum):
     PRE_ALPHA = ...
@@ -137,7 +133,6 @@ class ReleaseType(Enum):
     def __ro__(self, arg1: int) -> bool:
         pass
 
-
 class SortMechanism(Enum):
     NONE = ...
     MLOX = ...
@@ -151,7 +146,6 @@ class SortMechanism(Enum):
         pass
     def __ro__(self, arg1: int) -> bool:
         pass
-
 
 class VersionScheme(Enum):
     DISCOVER = ...
@@ -168,7 +162,6 @@ class VersionScheme(Enum):
         pass
     def __ro__(self, arg1: int) -> bool:
         pass
-
 
 class BSAInvalidation:
     def __init__(self):
@@ -190,6 +183,22 @@ class DataArchives:
     def removeArchive(self, arg1: "IProfile", arg2: str):
         pass
     def vanillaArchives(self) -> List[str]:
+        pass
+
+class ExecutableForcedLoadSetting:
+    def __init__(self, arg1: str, arg2: str):
+        pass
+    def enabled(self) -> bool:
+        pass
+    def forced(self) -> bool:
+        pass
+    def library(self) -> str:
+        pass
+    def process(self) -> str:
+        pass
+    def withEnabled(self, arg1: bool) -> "ExecutableForcedLoadSetting":
+        pass
+    def withForced(self, arg1: bool) -> "ExecutableForcedLoadSetting":
         pass
 
 class ExecutableInfo:
@@ -253,7 +262,6 @@ class FileTreeEntry:
             pass
         def __ro__(self, arg1: int) -> bool:
             pass
-
     DIRECTORY: "FileTreeEntry.FileTypes" = ...
     FILE: "FileTreeEntry.FileTypes" = ...
     FILE_OR_DIRECTORY: "FileTreeEntry.FileTypes" = ...
@@ -357,7 +365,6 @@ class IFileTree(FileTreeEntry):
             pass
         def __ro__(self, arg1: int) -> bool:
             pass
-
     class WalkReturn(Enum):
         CONTINUE = ...
         STOP = ...
@@ -370,7 +377,6 @@ class IFileTree(FileTreeEntry):
             pass
         def __ro__(self, arg1: int) -> bool:
             pass
-
     CONTINUE: "IFileTree.WalkReturn" = ...
     FAIL_IF_EXISTS: "IFileTree.InsertPolicy" = ...
     MERGE: "IFileTree.InsertPolicy" = ...
@@ -682,11 +688,13 @@ class IPluginGame(IPlugin):
         pass
     def documentsDirectory(self) -> PyQt5.QtCore.QDir:
         pass
+    def executableForcedLoads(self) -> List[ExecutableForcedLoadSetting]:
+        pass
     def executables(self) -> List[ExecutableInfo]:
         pass
-    def feature(self, arg1: "object") -> "object":
+    def feature(self, arg1: Type[GameFeatureType]) -> GameFeatureType:
         pass
-    def featureList(self) -> dict:
+    def featureList(self) -> Dict[Type[GameFeatureType], GameFeatureType]:
         pass
     def gameDirectory(self) -> PyQt5.QtCore.QDir:
         pass
@@ -929,9 +937,26 @@ class Mapping:
         pass
 
 class ModDataChecker:
+    class CheckReturn(Enum):
+        INVALID = ...
+        FIXABLE = ...
+        VALID = ...
+        def __and__(self, arg1: int) -> bool:
+            pass
+        def __or__(self, arg1: int) -> bool:
+            pass
+        def __rand__(self, arg1: int) -> bool:
+            pass
+        def __ro__(self, arg1: int) -> bool:
+            pass
+    FIXABLE: "ModDataChecker.CheckReturn" = ...
+    INVALID: "ModDataChecker.CheckReturn" = ...
+    VALID: "ModDataChecker.CheckReturn" = ...
     def __init__(self):
         pass
-    def dataLooksValid(self, arg1: "IFileTree") -> bool:
+    def dataLooksValid(self, arg1: "IFileTree") -> "ModDataChecker.CheckReturn":
+        pass
+    def fix(self, arg1: "IFileTree") -> "IFileTree":
         pass
 
 class ModDataContent:
@@ -1171,4 +1196,3 @@ class VersionInfo:
         pass
     def scheme(self) -> "VersionScheme":
         pass
-
