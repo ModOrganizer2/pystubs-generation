@@ -99,8 +99,9 @@ for name in dir(mobase):
     if name in Settings.IGNORE_NAMES:
         continue
 
-    # if name not in ["GuessedString"]:
-    #     continue
+    # We do not want the real MoVariant.
+    if name == "MoVariant":
+        continue
 
     objects.append((name, getattr(mobase, name)))
 

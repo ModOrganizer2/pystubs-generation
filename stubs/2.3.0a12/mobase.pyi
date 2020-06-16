@@ -16,7 +16,7 @@ import PyQt5.QtCore
 import PyQt5.QtGui
 import PyQt5.QtWidgets
 
-MoVariant = Union[bool, int, str, List[Any], Dict[str, Any]]
+MoVariant = Union[None, bool, int, str, List[Any], Dict[str, Any]]
 GameFeatureType = TypeVar("GameFeatureType")
 
 class InterfaceNotImplemented:
@@ -541,10 +541,7 @@ class IModRepositoryBridge(PyQt5.QtCore.QObject):
     ):
         pass
 
-class IOrganizer(PyQt5.QtCore.QObject):
-    pluginSettingChanged: PyQt5.QtCore.pyqtSignal = ...  # pluginSettingChanged[str, str, QVariant, QVariant]
-    def _object(self) -> PyQt5.QtCore.QObject:
-        pass
+class IOrganizer:
     def appVersion(self) -> VersionInfo:
         pass
     def basePath(self) -> str:
@@ -595,6 +592,14 @@ class IOrganizer(PyQt5.QtCore.QObject):
     def onFinishedRun(self, arg1: Callable[[str, int], None]) -> bool:
         pass
     def onModInstalled(self, arg1: Callable[[str], None]) -> bool:
+        pass
+    def onPluginSettingChanged(
+        self, arg1: Callable[[str, str, MoVariant, MoVariant], None]
+    ) -> bool:
+        pass
+    def onProfileChanged(self, arg1: Callable[["IProfile", "IProfile"], None]) -> bool:
+        pass
+    def onUserInterfaceInitialized(self, arg1: Callable[[QMainWindow], None]) -> bool:
         pass
     def overwritePath(self) -> str:
         pass
