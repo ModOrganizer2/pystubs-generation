@@ -10,10 +10,12 @@ from .mtypes import Class, Type, CType, Function
 class MobaseRegister:
     """ Class that register class. """
 
+    objects: Dict[str, Union[Class, List[Function]]]
+
     def __init__(self):
         """ Create a new register with the list of objects. """
         self.raw_objects: Dict[str, Union[type]] = OrderedDict()
-        self.objects: Dict[str, "Class"] = {}
+        self.objects = {}
 
         self._cpptypes = {}
         self.cpp2py = {}

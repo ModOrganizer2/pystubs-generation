@@ -113,7 +113,7 @@ def parse_carg(s: str, has_default: bool) -> Arg:
     if d is None and has_default:
         d = Arg.DEFAULT_NONE
 
-    return Arg(parse_ctype(v), d)
+    return Arg("", parse_ctype(v), d)
 
 
 def parse_csig(s, name) -> Tuple[CType, List[Arg]]:
@@ -183,14 +183,41 @@ def parse_psig(s: str, name: str) -> Tuple[Type, List[Arg]]:
     args = list(filter(bool, m.group(1).strip().split(",")))
     for i, pa in enumerate(args):
         pa = pa.strip()
-        t = pa[1 : pa.find(")")]
+
+        # Index of the right bracket:
+        irbrack = pa.find(")")
+
+        # The type is within the brackets:
+        t = pa[1:irbrack]
+
+        pa = pa[irbrack + 1 :]
+        n: str = pa.strip()
         d: Optional[str] = None
         if pa.find("=") != -1:
-            d = pa.split("=")[-1].strip()
+            n, d = pa.split("=")
+            n = n.strip()
+            d = d.strip()
         elif i > len(args) - c - 1:
             d = Arg.DEFAULT_NONE
-        pargs.append(Arg(Type(t), d))
+        pargs.append(Arg(n, Type(t), d))
     return Type(m.group(2)), pargs
+
+
+def find_best_argname(iarg: int, pname: str, cname: str):
+    """ Find the best name for the ith argument of a function.
+
+    Args:
+        iarg: Index of the argument, use for default.
+        pname: Name of the argument in the python signature.
+        cname: Name of the argument in the C++ signature.
+
+    Returns:
+        The best name for the corresponding argument.
+    """
+    if not cname and not pname:
+        return "arg{}".format(iarg + 1)
+
+    return pname
 
 
 def find_best_type(ptype: Type, ctype: CType) -> Type:
@@ -328,9 +355,10 @@ def parse_bpy_function_docstring(e) -> List[Overload]:
         # Now we need to find the "best" type from both signatures:
         rtype = find_best_type(prtype, crtype)
         args = []
-        for parg, carg in zip(pargs, cargs):
+        for iarg, (parg, carg) in enumerate(zip(pargs, cargs)):
             args.append(
                 Arg(
+                    find_best_argname(iarg, parg.name, carg.name),
                     find_best_type(parg.type, carg.type),  # type: ignore
                     find_best_value(parg.value, carg.value),  # type: ignore
                 )
@@ -439,7 +467,7 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
             overloads.append(
                 Overload(
                     rtype=Type("bool"),
-                    args=[Arg(Type(e.__name__)), Arg(Type("object"))],
+                    args=[Arg("", Type(e.__name__)), Arg("other", Type("object"))],
                 )
             )
 

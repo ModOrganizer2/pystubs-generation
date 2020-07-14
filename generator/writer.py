@@ -3,7 +3,7 @@
 from typing import TextIO, List, Union, Tuple
 
 from . import logger
-from .mtypes import Function, Class, Method, Property
+from .mtypes import Function, Class, Method, Property, Enum
 
 
 class Writer:
@@ -38,7 +38,7 @@ class Writer:
 
         largs = []
         for i, arg in enumerate(fn.args):
-            tmp = "arg{}: {}".format(i, arg.type.typing())
+            tmp = "{}: {}".format(arg.name, arg.type.typing())
             if arg.has_default_value():
                 tmp += " = {}".format(arg.value)
             largs.append(tmp)
@@ -51,6 +51,9 @@ class Writer:
         sargs = ", ".join(largs)
 
         self._print("{}def {}({}){}: pass".format(indent, fn.name, sargs, srtype))
+
+        if not isinstance(fn, Method):
+            self._print()
 
     def print_property(self, cls: Class, prop: Property, indent: str):
         """ Print the given Property object at the given indentation level. """
@@ -129,4 +132,9 @@ class Writer:
             self.print_function(method, indent=indent + "    ")
 
         if cls.methods:
+            self._print()
+
+        if not cls.outer_class:
+            if isinstance(cls, Enum):
+                self._print()
             self._print()

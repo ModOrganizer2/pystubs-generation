@@ -32,14 +32,14 @@ class Settings:
     def parse_method(cls: "Class", name: str, config: Dict[str, Any]):
         args = []
         if not config["static"]:
-            args.append(Arg(Type(cls.name)))
+            args.append(Arg("", Type(cls.name)))
         for arg in config["args"]:
             if isinstance(arg, str):
-                args.append(Arg(Type(arg)))
+                args.append(Arg("", Type(arg)))
             elif isinstance(arg, dict):
-                args.append(Arg(Type(arg["type"]), arg["default"]))
+                args.append(Arg("", Type(arg["type"]), arg["default"]))
             else:
-                args.append(Arg(Type(arg[0]), arg[1]))
+                args.append(Arg("", Type(arg[0]), arg[1]))
         return Method(
             cls.name,
             name,
@@ -83,7 +83,12 @@ def clean_class(cls: Class):
             )
 
             if ms[0].rtype.is_none():
-                method = ms[1]
+                # If both are None, we need to take the first one because the second
+                # one does not contains the name of the arguments, for whatever reason.
+                if ms[1].rtype.is_none():
+                    method = ms[0]
+                else:
+                    method = ms[1]
             else:
                 method = ms[0]
 

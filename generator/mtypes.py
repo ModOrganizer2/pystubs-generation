@@ -329,10 +329,12 @@ class Arg:
     # Constant representing None since None indicates no default value:
     DEFAULT_NONE = "None"
 
+    name: str
     type: Type
     _value: Optional[str]
 
-    def __init__(self, type: Type, value: Optional[str] = None):
+    def __init__(self, name: str, type: Type, value: Optional[str] = None):
+        self.name = name
         self.type = type
         self._value = value
 
@@ -521,7 +523,7 @@ class Enum(Class):
                     name,
                     "__{}__".format(mname),
                     Type(bool),
-                    [Arg(Type(name)), Arg(Type(int))],
+                    [Arg("", Type(name)), Arg("other", Type(int))],
                     static=False,
                 )
                 for mname in ["and", "or", "rand", "ro"]

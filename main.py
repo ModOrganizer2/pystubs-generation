@@ -131,14 +131,10 @@ for n, o in objects:
 
         # Print the class:
         writer.print_class(c)
-        if isinstance(c, Enum):
-            writer._print()
-        writer._print()
 
     elif isinstance(c, list) and isinstance(c[0], Function):
         for fn in c:
             writer.print_function(fn)
-            writer._print()
 
     else:
         logger.critical(
