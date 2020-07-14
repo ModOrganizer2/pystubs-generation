@@ -10,7 +10,7 @@ from generator import logger
 from generator.loader import load_mobase
 from generator.register import MOBASE_REGISTER
 from generator.parser import is_enum
-from generator.mtypes import Type, Class, Enum, Function
+from generator.mtypes import Type, Class, Function
 from generator.utils import Settings, clean_class, patch_class
 from generator.writer import Writer
 
@@ -47,14 +47,15 @@ if args.verbose:
     logger.setLevel(logging.INFO)
 
 # Load settings from the configuration:
+settings: Settings = Settings()
 if args.config is not None:
-    Settings.load_from_file(args.config)
+    settings = Settings(args.config)
 
 # Load mobase (cannot simply do "import mobase"):
 mobase = load_mobase(Path(args.install_dir))
 
 # Create the writer:
-writer = Writer(args.output)
+writer = Writer(args.output, settings)
 writer.print_imports(
     [
         ("enum", ["Enum"]),
@@ -96,7 +97,7 @@ for name in dir(mobase):
     if name.startswith("__"):
         continue
 
-    if name in Settings.IGNORE_NAMES:
+    if name in settings.ignore_names:
         continue
 
     # We do not want the real MoVariant.
@@ -124,10 +125,10 @@ for n, o in objects:
     if isinstance(c, Class):
 
         # Clean the class (e.g., remove duplicates methods due to wrappers):
-        clean_class(c)
+        clean_class(c, settings)
 
         # Fix the class if required:
-        patch_class(c, Settings.OVERWRITES)
+        patch_class(c, settings)
 
         # Print the class:
         writer.print_class(c)

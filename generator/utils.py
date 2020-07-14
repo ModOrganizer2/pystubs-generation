@@ -3,63 +3,80 @@
 import json
 
 from collections import OrderedDict, defaultdict
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, TextIO, Optional
 
 from . import logger
-from .mtypes import Class, Enum, Arg, Type, Method, Constant
+from . import mtypes
 
 
-# This is a 100% static class:
 class Settings:
 
     # Name to ignore:
-    IGNORE_NAMES: List[str] = []
+    _ignore_names: List[str]
 
     # Extra replacements (with warnings):
-    REPLACEMENTS: Dict[str, str] = {}
+    _replacements: Dict[str, str]
 
     # Overwrites:
-    OVERWRITES: Dict[str, Dict[str, Any]] = {}
+    _overwrites: Dict[str, Dict[str, Any]]
 
-    @staticmethod
-    def load_from_file(fp):
-        data = json.load(fp)
-        Settings.IGNORE_NAMES.extend(data.get("ignores", []))
-        Settings.REPLACEMENTS.update(data.get("replacements", {}))
-        Settings.OVERWRITES.update(data.get("overwrites", {}))
+    def __init__(self, fp: Optional[TextIO] = None):
+        if fp is None:
+            self._ignore_names = []
+            self._replacements = {}
+            self._overwrites = {}
+        else:
+            data = json.load(fp)
+            self._ignore_names = data.get("ignores", [])
+            self._replacements = data.get("replacements", {})
+            self._overwrites = data.get("overwrites", {})
 
-    @staticmethod
-    def parse_method(cls: "Class", name: str, config: Dict[str, Any]):
+    @property
+    def ignore_names(self) -> List[str]:
+        return self._ignore_names
+
+    @property
+    def replacements(self) -> Dict[str, str]:
+        return self._replacements
+
+    @property
+    def overwrites(self) -> Dict[str, Dict[str, Any]]:
+        return self._overwrites
+
+    def parse_method(self, cls: "mtypes.Class", name: str, config: Dict[str, Any]):
         args = []
         if not config["static"]:
-            args.append(Arg("", Type(cls.name)))
+            args.append(mtypes.Arg("", mtypes.Type(cls.name)))
         for arg in config["args"]:
             if isinstance(arg, str):
-                args.append(Arg("", Type(arg)))
+                args.append(mtypes.Arg("", mtypes.Type(arg)))
             elif isinstance(arg, dict):
-                args.append(Arg("", Type(arg["type"]), arg["default"]))
+                args.append(mtypes.Arg("", mtypes.Type(arg["type"]), arg["default"]))
             else:
-                args.append(Arg("", Type(arg[0]), arg[1]))
-        return Method(
+                args.append(mtypes.Arg("", mtypes.Type(arg[0]), arg[1]))
+        return mtypes.Method(
             cls.name,
             name,
-            Type(config["rtype"]),
+            mtypes.Type(config["rtype"]),
             args,
             config["static"],
             config["overloads"],
         )  # type: ignore
 
 
-def clean_class(cls: Class):
+def clean_class(cls: "mtypes.Class", settings: Settings):
     """ Clean the given class object.
 
     Args:
         cls: The class object to clean.
+        settings: The settings.
     """
     from .register import MOBASE_REGISTER
 
     # Remove duplicate methods (based on name and argument types):
-    methods: Dict[Tuple[str, Tuple[Arg, ...]], List[Method]] = OrderedDict()
+    methods: Dict[
+        Tuple[str, Tuple[mtypes.Arg, ...]], List[mtypes.Method]
+    ] = OrderedDict()
     methods_by_name = defaultdict(list)
     for m in cls.methods:
         k = (m.name, tuple(m.args[1:]))
@@ -68,10 +85,10 @@ def clean_class(cls: Class):
         methods[k].append(m)
         methods_by_name[m.name].append(m)
 
-    clean_methods: List[Method] = []
+    clean_methods: List[mtypes.Method] = []
     for name, args in methods:
         ms = methods[name, args]
-        method: Method = ms[0]
+        method: mtypes.Method = ms[0]
         if len(ms) > 1:
 
             # If we have more than two methods, there is a problem...
@@ -109,9 +126,9 @@ def clean_class(cls: Class):
                 logger.info(
                     "Removing {}({}) from {} (already in base {}).".format(
                         name,
-                        ", ".join(a.type.typing() for a in args),
+                        ", ".join(a.type.typing(settings) for a in args),
                         cls.name,
-                        method.args[0].type.typing(),
+                        method.args[0].type.typing(settings),
                     )
                 )
 
@@ -126,31 +143,31 @@ def clean_class(cls: Class):
 
     # Remove all non-uppercases enum names - This is a temporary fix to avoid breaking
     # old plugins that uses old enum values:
-    if isinstance(cls, Enum):
+    if isinstance(cls, mtypes.Enum):
         newc = [c for c in cls.constants if c.name.isupper()]
         if newc:
             cls.constants = newc
 
     # Clean inner classes:
     for ic in cls.inner_classes:
-        clean_class(ic)
+        clean_class(ic, settings)
 
 
-def patch_class(cls: Class, overwrites: Dict[str, Dict[str, Any]]):
+def patch_class(cls: "mtypes.Class", settings: Settings):
     """ Patch the given class using the given overwrites.
 
     See config.json for some examples of valid overwrites.
 
     Args:
         cls: The class to patch.
-        overwrites: The overwrite dictionary.
+        settings: The settings.
     """
 
     logger.info("Patching class {}.".format(cls.name))
 
-    if cls.canonical_name in overwrites:
+    if cls.canonical_name in settings.overwrites:
 
-        ow = overwrites[cls.canonical_name]
+        ow = settings.overwrites[cls.canonical_name]
 
         if "[bases]" in ow:
             cls.bases = ow["[bases]"]
@@ -160,22 +177,22 @@ def patch_class(cls: Class, overwrites: Dict[str, Dict[str, Any]]):
             if m.name in ow:
                 if not ow[m.name]:
                     continue
-                m = Settings.parse_method(cls, m.name, ow[m.name])
+                m = settings.parse_method(cls, m.name, ow[m.name])
             methods.append(m)
         cls.methods = methods
 
         properties: Dict[str, str] = ow.get("[properties]", {})
         for prop in cls.properties:
             if prop.name in properties:
-                prop.type = Type(properties[prop.name])
+                prop.type = mtypes.Type(properties[prop.name])
 
         signals: List[str] = ow.get("[signals]", [])
         for signal in signals:
             name = signal.split("[")[0]
             cls.constants.append(
-                Constant(name, Type("pyqtSignal"), None, comment=signal)
+                mtypes.Constant(name, mtypes.Type("pyqtSignal"), None, comment=signal)
             )
 
     # Patch inner classes:
     for ic in cls.inner_classes:
-        patch_class(ic, overwrites)
+        patch_class(ic, settings)

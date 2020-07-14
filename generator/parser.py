@@ -406,7 +406,9 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
     #     base_classes_s.append("IPlugin")
 
     # This contains ALL the parent classes, not the direct ones:
-    base_classes = [register.make_object(name) for name in base_classes_s]
+    base_classes: List[Class] = [
+        register.make_object(name) for name in base_classes_s  # type: ignore
+    ]
 
     # Retrieve all the attributes... The hasattr is required but I don't know why:
     all_attrs = [(n, getattr(e, n)) for n in dir(e) if hasattr(e, n)]
@@ -522,8 +524,9 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
         and ic[1].__name__ != "class"
         and ic[0] not in base_attrs
     ]
-    pinner_classes = [
-        register.make_object("{}.{}".format(fullname, ic.__name__), ic)
+
+    pinner_classes: List[Class] = [
+        register.make_object("{}.{}".format(fullname, ic.__name__), ic)  # type: ignore
         for ic in inner_classes
     ]
 

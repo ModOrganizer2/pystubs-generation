@@ -4,14 +4,17 @@ from typing import TextIO, List, Union, Tuple
 
 from . import logger
 from .mtypes import Function, Class, Method, Property, Enum
+from .utils import Settings
 
 
 class Writer:
 
     _output: TextIO
+    _settings: Settings
 
-    def __init__(self, output: TextIO):
+    def __init__(self, output: TextIO, settings: Settings):
         self._output = output
+        self._settings = settings
 
     def _print(self, *args, **kwargs):
         kwargs["file"] = self._output
@@ -34,11 +37,11 @@ class Writer:
 
         srtype = ""
         if not fn.rtype.is_none():
-            srtype = " -> " + fn.rtype.typing()
+            srtype = " -> " + fn.rtype.typing(self._settings)
 
         largs = []
         for i, arg in enumerate(fn.args):
-            tmp = "{}: {}".format(arg.name, arg.type.typing())
+            tmp = "{}: {}".format(arg.name, arg.type.typing(self._settings))
             if arg.has_default_value():
                 tmp += " = {}".format(arg.value)
             largs.append(tmp)
@@ -67,13 +70,15 @@ class Writer:
 
         self._print("{}@property".format(indent))
         self._print(
-            "{}def {}(self) -> {}: pass".format(indent, prop.name, prop.type.typing())
+            "{}def {}(self) -> {}: pass".format(
+                indent, prop.name, prop.type.typing(self._settings)
+            )
         )
         if not prop.is_read_only():
             self._print("{}@{}.setter".format(indent, prop.name))
             self._print(
                 "{}def {}(self, arg0: {}): pass".format(
-                    indent, prop.name, prop.type.typing()
+                    indent, prop.name, prop.type.typing(self._settings)
                 )
             )
         self._print()
@@ -106,7 +111,7 @@ class Writer:
 
             typing = ""
             if constant.type is not None:
-                typing = ": {}".format(constant.type.typing())
+                typing = ": {}".format(constant.type.typing(self._settings))
 
             # Note: We do not print the value, we use ...
             self._print(

@@ -3,6 +3,7 @@
 from typing import Optional, List, Any, Dict, Union
 
 from . import logger
+from . import utils
 
 
 class Type:
@@ -33,7 +34,7 @@ class Type:
             if self.name in dir(m):
                 self.name = "{}.{}".format(m.__name__, self.name)
 
-    def typing(self) -> str:
+    def typing(self, settings: utils.Settings) -> str:
         """ Returns a valid typing representation for this type. """
         from .register import MOBASE_REGISTER
 
@@ -115,7 +116,7 @@ class CType(Type):
                 return True
         return False
 
-    def _try_fix(self, name):
+    def _try_fix(self, name, settings: utils.Settings):
 
         from .parser import parse_ctype, magic_split, parse_csig
         from .register import MOBASE_REGISTER
@@ -187,7 +188,7 @@ class CType(Type):
         for c in ("boost::variant", "std::variant"):
             if name.startswith(c):
                 name = name[len(c) :].strip()[1:-1].strip()
-                args = [parse_ctype(c).typing() for c in magic_split(name)]
+                args = [parse_ctype(c).typing(settings) for c in magic_split(name)]
                 name = "Union[{}]".format(", ".join(args))
 
         for c in (
@@ -201,28 +202,31 @@ class CType(Type):
         ):
             if name.startswith(c):
                 name = name[len(c) :].strip()[1:-1].strip()
-                arg = parse_ctype(magic_split(name)[0]).typing()
+                arg = parse_ctype(magic_split(name)[0]).typing(settings)
                 name = "List[{}]".format(arg)
 
         for c in ("std::map", "std::unordered_map", "QMap"):
             if name.startswith(c):
                 name = name[len(c) :].strip()[1:-1].strip()
-                a1, a2 = [parse_ctype(x).typing() for x in magic_split(name)[:2]]
+                a1, a2 = [
+                    parse_ctype(x).typing(settings) for x in magic_split(name)[:2]
+                ]
                 name = "Dict[{}, {}]".format(a1, a2)
 
         for c in ("boost::tuples::tuple", "std::tuple"):
             if name.startswith(c):
                 name = name[len(c) :].strip()[1:-1].strip()
-                args = [parse_ctype(c).typing() for c in magic_split(name)]
+                args = [parse_ctype(c).typing(settings) for c in magic_split(name)]
                 args = [a for a in args if a != "boost::tuples::null_type"]
                 name = "Tuple[{}]".format(", ".join(args))
 
         # Fix for function...
         if name.startswith("std::function"):
             name = name[13:].strip()[1:-1].strip()
-            rtype, args = parse_csig(name, "")
+            rtype, vargs = parse_csig(name, "")
             name = "Callable[[{}], {}]".format(
-                ", ".join(a.type.typing() for a in args), rtype.typing()
+                ", ".join(a.type.typing(settings) for a in vargs),
+                rtype.typing(settings),
             )
 
         if name.find("::") != -1:
@@ -231,13 +235,13 @@ class CType(Type):
             # We are going to check if there is an exact python match for
             # this class (replacing :: by .):
             if parts[0] in MOBASE_REGISTER.py2cpp:
-                c = [MOBASE_REGISTER.objects[parts[0]]]
+                cp: List[Class] = [MOBASE_REGISTER.objects[parts[0]]]  # type: ignore
                 for p in parts[1:]:
-                    for ic in c[-1].inner_classes:
+                    for ic in cp[-1].inner_classes:
                         if ic.name == p:
-                            c.append(ic)
+                            cp.append(ic)
                             break
-                if len(c) == len(parts):
+                if len(cp) == len(parts):
                     name = '"' + ".".join(parts) + '"'
 
         if pname != name:
@@ -255,10 +259,9 @@ class CType(Type):
         type are present in the interface. """
         return t.name in ["bool", "int", "float", "str", "list", "std", "dict", "bytes"]
 
-    def typing(self) -> str:
+    def typing(self, settings: utils.Settings) -> str:
         """ Returns a valid typing representation for this type. """
         from .register import MOBASE_REGISTER
-        from .utils import Settings
 
         name = self.name
 
@@ -271,16 +274,16 @@ class CType(Type):
         if name in CType.REPLACEMENTS:
             name = CType.REPLACEMENTS[name]
 
-        if name in Settings.REPLACEMENTS:
+        if name in settings.replacements:
             logger.warning(
-                "Replacing {} with {}.".format(name, Settings.REPLACEMENTS[name])
+                "Replacing {} with {}.".format(name, settings.replacements[name])
             )
-            name = Settings.REPLACEMENTS[name]
+            name = settings.replacements[name]
 
         # If the name contains stuff that should not be there, try some
         # "magic" conversion:
         if self._is_not_valid(name):
-            name = self._try_fix(name)
+            name = self._try_fix(name, settings)
 
         if name in MOBASE_REGISTER.py2cpp:
             name = '"{}"'.format(name)
