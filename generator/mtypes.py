@@ -52,7 +52,7 @@ class Type:
 
     def is_none(self) -> bool:
         """ Check if this type represent None. """
-        return self.name.lower() == "none"
+        return self.name.lower() in ("none", "nonetype")
 
     def is_object(self) -> bool:
         """ Check if this type represent the generic "object" type. """
@@ -99,6 +99,7 @@ class CType(Type):
         "QString": "str",
         "QStringList": "List[str]",
         "QWidget *": "PyQt5.QtWidgets.QWidget",
+        "QMainWindow *": "PyQt5.QtWidgets.QMainWindow",
         "QObject *": "PyQt5.QtCore.QObject",
         "void *": "object",
         "api::object": "object",
@@ -254,9 +255,9 @@ class CType(Type):
         return name
 
     def _is_builtin_python_type(self, t: Type):
-        """ Check if the given type is a 'raw' python type, i.e., a type that cannot
+        """Check if the given type is a 'raw' python type, i.e., a type that cannot
         be a C++ reference. This is mainly used to report errors when pointers to such
-        type are present in the interface. """
+        type are present in the interface."""
         return t.name in ["bool", "int", "float", "str", "list", "std", "dict", "bytes"]
 
     def typing(self, settings: utils.Settings) -> str:
@@ -285,7 +286,7 @@ class CType(Type):
         if self._is_not_valid(name):
             name = self._try_fix(name, settings)
 
-        if name in MOBASE_REGISTER.py2cpp:
+        if name in MOBASE_REGISTER.objects:
             name = '"{}"'.format(name)
 
         return name
@@ -326,6 +327,17 @@ class CType(Type):
         return str(self)
 
 
+class Ret:
+    """ Class representing the return value of a function (type and documentation). """
+
+    type: Type
+    doc: str
+
+    def __init__(self, type: Type, doc: str = ""):
+        self.type = type
+        self.doc = doc
+
+
 class Arg:
     """ Class representing a function argument (type and eventual default value). """
 
@@ -335,15 +347,18 @@ class Arg:
     name: str
     type: Type
     _value: Optional[str]
+    doc: str
 
-    def __init__(self, name: str, type: Type, value: Optional[str] = None):
+    def __init__(
+        self, name: str, type: Type, value: Optional[str] = None, doc: str = ""
+    ):
         self.name = name
         self.type = type
         self._value = value
+        self.doc = doc
 
     @property
     def value(self) -> Optional[str]:
-        from .register import MOBASE_REGISTER
 
         value = self._value
 
@@ -355,12 +370,15 @@ class Arg:
             value = value[7:]
 
         # I have issues with inner classes, so we need to prepend manually...
-        if value.find(".") != -1:
-            parts = value.split(".")
-            tvalue = ".".join(parts[:-1])
-            for k in MOBASE_REGISTER.objects:
-                if k != tvalue and k.endswith(tvalue) and k[-len(tvalue) - 1] == ".":
-                    value = "{}.{}".format(k, parts[-1])
+        # if value.find(".") != -1:
+        #     print(value)
+        #     parts = value.split(".")
+        #     tvalue = ".".join(parts[:-1])
+        #     print("  " + tvalue)
+        #     for k in MOBASE_REGISTER.objects:
+        #         if k != tvalue and k.endswith(tvalue) and k[-len(tvalue) - 1] == ".":
+        #             value = "{}.{}".format(k, parts[-1])
+        #     print("  " + value)
 
         return value
 
@@ -384,21 +402,42 @@ class Arg:
         return self.type == other.type
 
 
+class Exc:
+
+    """ Small class representing exception that can be raised from functions. """
+
+    type: Type
+    doc: str
+
+    def __init__(self, type: Type, doc: str = ""):
+        self.type = type
+        self.doc = doc
+
+
 class Function:
     """ Class representing a function. """
 
     name: str
-    rtype: Type
+    ret: Ret
     args: List[Arg]
     overloads: bool
+    raises: List[Exc]
+    doc: str
 
     def __init__(
-        self, name: str, rtype: Type, args: List[Arg], has_overloads: bool = False
+        self,
+        name: str,
+        ret: Ret,
+        args: List[Arg],
+        has_overloads: bool = False,
+        doc: str = "",
     ):
         self.name = name
-        self.rtype = rtype
+        self.ret = ret
         self.args = args
         self.overloads = has_overloads
+        self.raises = []
+        self.doc = ""
 
     def has_overloads(self):
         return self.overloads
@@ -407,21 +446,29 @@ class Function:
 class Method(Function):
     """ Class representing a method. """
 
-    class_name: str
+    cls: "Class"
+    abstract: Union[str, bool]
     static: bool
 
     def __init__(
         self,
-        cls: str,
         name: str,
-        rtype: Type,
+        ret: Ret,
         args: List[Arg],
         static: bool,
         has_overloads: bool = False,
+        doc: str = "",
     ):
-        super().__init__(name, rtype, args, has_overloads)
-        self.class_name = cls
+        super().__init__(name, ret, args, has_overloads, doc)
         self.static = static
+        self.abstract = "auto"
+
+    def is_abstract(self):
+        if self.name.startswith("__"):
+            return False
+        if self.abstract == "auto":
+            return self.cls.is_abstract()
+        return self.abstract
 
     def is_static(self):
         return self.static
@@ -439,17 +486,17 @@ class Constant:
     name: str
     type: Optional[Type]
     value: Any
-    comment: Optional[str]
+    doc: Optional[str]
 
     def __init__(
-        self, name: str, type: Optional[Type], value: Any, comment: Optional[str] = None
+        self, name: str, type: Optional[Type], value: Any, doc: Optional[str] = None
     ):
         self.name = name
         self.type = type
 
         # Note: The value is not used actually since we can hide it using `...`.
         self.value = value
-        self.comment = comment
+        self.doc = doc
 
 
 class Property:
@@ -457,12 +504,14 @@ class Property:
 
     name: str
     type: Type
+    doc: str
     read_only: bool
 
-    def __init__(self, name: str, type: Type, read_only: bool):
+    def __init__(self, name: str, type: Type, read_only: bool, doc: str = ""):
         self.name = name
         self.type = type
         self.read_only = read_only
+        self.doc = doc
 
     def is_read_only(self):
         return self.read_only
@@ -472,21 +521,24 @@ class Class:
     """ Class representing a class. """
 
     name: str
-    bases: List[str]
+    bases: List["Class"]
     methods: List[Method]
     constants: List[Constant]
     properties: List[Property]
     inner_classes: List["Class"]
+    outer_class: Optional["Class"]
+    doc: str
+    abstract: bool
 
     def __init__(
         self,
         name: str,
-        bases: List[str],
+        bases: List["Class"],
         methods: List[Method],
         constants: List[Constant] = [],
         properties: List[Property] = [],
         inner_classes: List["Class"] = [],
-        outer_class: Optional[str] = None,
+        doc: str = "",
     ):
 
         self.name = name
@@ -495,21 +547,48 @@ class Class:
         self.properties = properties
         self.constants = constants
         self.inner_classes = inner_classes
-        self.outer_class = outer_class
+        self.doc = ""
+        self.abstract = False
+        self.outer_class = None
+
+        # Update class in method:
+        for m in self.methods:
+            m.cls = self
+        for ic in self.inner_classes:
+            ic.outer_class = self
+
+    def is_abstract(self):
+        """
+        Returns:
+            True if this class is abstract, False otherwise.
+        """
+        return self.abstract or any(bc.is_abstract() for bc in self.bases)
 
     @property
     def canonical_name(self):
         """ Return the canonical name of this class. """
-        from .register import MOBASE_REGISTER
-
         name = self.name
         oc = self.outer_class
         while oc is not None:
-            c = MOBASE_REGISTER.objects[oc]
-            name = "{}.{}".format(c.name, name)
-            oc = c.outer_class
+            name = "{}.{}".format(oc.name, name)
+            oc = oc.outer_class
 
         return name
+
+    def __str__(self):
+        return self.canonical_name
+
+
+class PyClass(Class):
+
+    """Class use to wrap Python class to be used as parent class for some classes
+    in mobase."""
+
+    def __init__(
+        self, name: str,
+    ):
+        super().__init__(name, [], [])
+        self.abstract = False
 
 
 class Enum(Class):
@@ -520,12 +599,11 @@ class Enum(Class):
         # of stubs, I think making them inherit enum.Enum is more appropriate:
         super().__init__(
             name,
-            ["Enum"],
+            [PyClass("Enum")],
             [
                 Method(
-                    name,
                     "__{}__".format(mname),
-                    Type(bool),
+                    Ret(Type(bool)),
                     [Arg("", Type(name)), Arg("other", Type(int))],
                     static=False,
                 )
@@ -534,3 +612,6 @@ class Enum(Class):
             inner_classes=[],
             constants=[Constant(k, None, v) for k, v in values.items()],
         )
+
+    def is_abstract(self):
+        return False

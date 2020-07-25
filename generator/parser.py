@@ -8,12 +8,24 @@ from collections import defaultdict, OrderedDict
 from typing import List, Tuple, Optional, Dict, Union
 
 from .register import MobaseRegister
-from .mtypes import Type, CType, Class, Enum, Arg, Method, Constant, Property, Function
+from .mtypes import (
+    Type,
+    CType,
+    Class,
+    PyClass,
+    Enum,
+    Arg,
+    Ret,
+    Method,
+    Constant,
+    Property,
+    Function,
+)
 from . import logger
 
 
 def magic_split(value: str, sep=",", open="(<", close=")>"):
-    """ Split the value according to the given separator, but keeps together elements
+    """Split the value according to the given separator, but keeps together elements
     within the given separator. Useful to split C++ signature function since type names
     can contain special characters...
 
@@ -64,7 +76,7 @@ def magic_split(value: str, sep=",", open="(<", close=")>"):
 
 
 def parse_ctype(s: str) -> CType:
-    """ Parse a C++ type from the given string.
+    """Parse a C++ type from the given string.
 
     Args:
         s: String to parse.
@@ -98,7 +110,7 @@ def parse_ctype(s: str) -> CType:
 
 
 def parse_carg(s: str, has_default: bool) -> Arg:
-    """ Parse the given C++ argument.
+    """Parse the given C++ argument.
 
     Args:
         s: The string to parse.
@@ -117,7 +129,7 @@ def parse_carg(s: str, has_default: bool) -> Arg:
 
 
 def parse_csig(s, name) -> Tuple[CType, List[Arg]]:
-    """ Parse a boost::python C++ signature.
+    """Parse a boost::python C++ signature.
 
     Args:
         s: The signature to parse.
@@ -159,7 +171,7 @@ def parse_csig(s, name) -> Tuple[CType, List[Arg]]:
 
 
 def parse_psig(s: str, name: str) -> Tuple[Type, List[Arg]]:
-    """ Parse a boost::python python signature.
+    """Parse a boost::python python signature.
 
     Args:
         s: The signature to parse.
@@ -204,7 +216,7 @@ def parse_psig(s: str, name: str) -> Tuple[Type, List[Arg]]:
 
 
 def find_best_argname(iarg: int, pname: str, cname: str):
-    """ Find the best name for the ith argument of a function.
+    """Find the best name for the ith argument of a function.
 
     Args:
         iarg: Index of the argument, use for default.
@@ -221,7 +233,7 @@ def find_best_argname(iarg: int, pname: str, cname: str):
 
 
 def find_best_type(ptype: Type, ctype: CType) -> Type:
-    """ Find the best type from the given python and C++ type.
+    """Find the best type from the given python and C++ type.
 
 
     Args:
@@ -254,7 +266,7 @@ def find_best_type(ptype: Type, ctype: CType) -> Type:
 
 
 def find_best_value(pvalue: str, cvalue: str) -> str:
-    """ Find the best value (default value) from the given python and C++ one.
+    """Find the best value (default value) from the given python and C++ one.
 
     WARNING: This currently always return pvalue and only warns the user if
     the two values are not identical.
@@ -271,7 +283,7 @@ def find_best_value(pvalue: str, cvalue: str) -> str:
 
 
 def is_enum(e: type) -> bool:
-    """ Check if the given class is an enumeration.
+    """Check if the given class is an enumeration.
 
     Args:
         e: The class object to check.
@@ -288,19 +300,20 @@ def is_enum(e: type) -> bool:
     )
 
 
-def make_enum(name: str, e: type) -> Enum:
-    """ Construct a Enum object from the given class.
+def make_enum(fullname: str, e: type) -> Enum:
+    """Construct a Enum object from the given class.
 
     Args:
-        name: Fully qualified name of the enumeration.
+        fullname: Fully qualified name of the enumeration.
         e: The class representing a boost::python enumeration.
 
     Returns: An Enum object representing the given enumeration.
     """
     # All boost enums have a .values attributes:
     values = e.values  # type: ignore
+
     return Enum(
-        e.__name__, OrderedDict((values[k].name, k) for k in sorted(values.keys()))
+        e.__name__, OrderedDict((values[k].name, k) for k in sorted(values.keys())),
     )
 
 
@@ -317,7 +330,7 @@ class Overload:
 
 
 def parse_bpy_function_docstring(e) -> List[Overload]:
-    """ Parse the docstring of the given element.
+    """Parse the docstring of the given element.
 
     Args:
         e: The function to "parse".
@@ -373,13 +386,15 @@ def make_functions(name: str, e) -> List[Function]:
     overloads = parse_bpy_function_docstring(e)
 
     return [
-        Function(e.__name__, ovld.rtype, ovld.args, has_overloads=len(overloads) > 1,)
+        Function(
+            e.__name__, Ret(ovld.rtype), ovld.args, has_overloads=len(overloads) > 1,
+        )
         for ovld in overloads
     ]
 
 
 def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
-    """ Constructs a Class objecgt from the given python class.
+    """Constructs a Class objecgt from the given python class.
 
     Args:
         fullname: Name of the class (might be different from __name__ for inner
@@ -444,6 +459,20 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
         for a4 in bc.inner_classes:
             base_attrs[a4.name].append(a4)
 
+    # Retrieve the enumerations and classes:
+    inner_classes = [
+        ic[1]
+        for ic in all_attrs
+        if isinstance(ic[1], type)
+        and ic[1].__name__ != "class"
+        and ic[0] not in base_attrs
+    ]
+
+    pinner_classes: List[Class] = [
+        register.make_object("{}.{}".format(fullname, ic.__name__), ic)  # type: ignore
+        for ic in inner_classes
+    ]
+
     # Find the methods:
     methods = [m[1] for m in all_attrs if callable(m[1])]
     methods = sorted(methods, key=lambda m: m.__name__)
@@ -500,35 +529,31 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
                     not in [e.__name__, e.__name__ + "Wrapper"] + base_classes_s
                 )
 
+            # We need to fix some default values (basically default values that
+            # comes from inner enum):
+            for arg in ovld.args:
+                if arg.has_default_value():
+                    value: str = arg.value  # type: ignore
+                    bname = value.split(".")[0]
+                    for bclass in base_classes:
+                        for biclass in bclass.inner_classes:
+                            if isinstance(biclass, Enum) and biclass.name == bname:
+                                arg._value = bclass.name + "." + value
+
             pmethod = Method(
-                e.__name__,
                 method.__name__,
-                ovld.rtype,
+                Ret(ovld.rtype),
                 ovld.args,
                 static=static,
                 has_overloads=len(overloads) > 1,
             )
 
             if method.__name__ in BOOL_METHODS:
-                pmethod.rtype = Type("bool")
+                pmethod.ret = Ret(Type("bool"))
 
             cmethods.append(pmethod)
 
         pmethods.extend(cmethods)
-
-    # Retrieve the enumerations and classes:
-    inner_classes = [
-        ic[1]
-        for ic in all_attrs
-        if isinstance(ic[1], type)
-        and ic[1].__name__ != "class"
-        and ic[0] not in base_attrs
-    ]
-
-    pinner_classes: List[Class] = [
-        register.make_object("{}.{}".format(fullname, ic.__name__), ic)  # type: ignore
-        for ic in inner_classes
-    ]
 
     # Retrieve the attributes:
     constants = []
@@ -546,10 +571,10 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
         elif not hasattr(attr, "__name__"):
             constants.append(Constant(name, Type(type(attr).__name__), attr))
 
-    direct_bases_s = []
+    direct_bases: List[Class] = []
     for c in e.__bases__:
         if c.__module__ != "Boost.Python":
-            direct_bases_s.append(c.__name__)
+            direct_bases.append(register.get_object(c.__name__))
 
     # Forcing QWidget base for XWidget classes since these do not show up
     # and we use a trick:
@@ -559,20 +584,13 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
                 "PyQt5.QtWidgets.QWidget", e.__name__
             )
         )
-        direct_bases_s.append("PyQt5.QtWidgets.QWidget")
-
-    # Check if this is an inner class:
-    parts = fullname.split(".")
-    outer_class: Optional[str] = None
-    if len(parts) > 1:
-        outer_class = parts[-2]
+        direct_bases.append(PyClass("PyQt5.QtWidgets.QWidget"))
 
     return Class(
         e.__name__,
-        direct_bases_s,
+        direct_bases,
         pmethods,
         inner_classes=pinner_classes,
-        outer_class=outer_class,
         properties=properties,
         constants=constants,
     )

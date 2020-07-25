@@ -20,6 +20,17 @@ class Writer:
         kwargs["file"] = self._output
         print(*args, **kwargs)
 
+    def _print_doc(self, doc: str, indent: str):
+        """Print the given documentation at the given indentaiton level.
+
+        Args:
+            doc: Documentation to print.
+            indent: Indentation.
+        """
+        # Wrap in triple quotes:
+        doc = '"""\n' + doc.strip() + '\n"""'
+        self._print("\n".join((indent + line).rstrip() for line in doc.split("\n")))
+
     def print_imports(self, imports: List[Union[str, Tuple[str, List[str]]]]):
         """ Print the given imports. """
         for imp in imports:
@@ -36,24 +47,67 @@ class Writer:
             self._print("{}@overload".format(indent))
 
         srtype = ""
-        if not fn.rtype.is_none():
-            srtype = " -> " + fn.rtype.typing(self._settings)
+        if not fn.ret.type.is_none():
+            srtype = " -> " + fn.ret.type.typing(self._settings)
 
-        largs = []
-        for i, arg in enumerate(fn.args):
-            tmp = "{}: {}".format(arg.name, arg.type.typing(self._settings))
-            if arg.has_default_value():
-                tmp += " = {}".format(arg.value)
-            largs.append(tmp)
-
+        fargs = fn.args
+        largs: List[str] = []
         if isinstance(fn, Method):
             if fn.is_static():
                 self._print("{}@staticmethod".format(indent))
             else:
-                largs[0] = "self"
+                if fn.is_abstract():
+                    self._print("{}@abc.abstractmethod".format(indent))
+
+                largs.insert(0, "self")
+                fargs = fargs[1:]
+
+        for i, arg in enumerate(fargs):
+            tmp = "{}: {}".format(arg.name, arg.type.typing(self._settings))
+            if arg.has_default_value():
+                tmp += " = {}".format(arg.value)
+            largs.append(tmp)
         sargs = ", ".join(largs)
 
-        self._print("{}def {}({}){}: pass".format(indent, fn.name, sargs, srtype))
+        self._print("{}def {}({}){}:".format(indent, fn.name, sargs, srtype), end="")
+
+        # Add the documentation, if any:
+        doc = ""
+
+        if fn.doc:
+            doc = fn.doc.strip() + "\n"
+
+        args = fn.args
+        if isinstance(fn, Method) and not fn.is_static():
+            args = args[1:]
+
+        if any(arg.doc for arg in args):
+            doc += "\nArgs:\n"
+            for arg in args:
+                adocl = arg.doc.strip().split("\n")
+                adoc = adocl[0] + "\n".join("        " + ldoc for ldoc in adocl[1:])
+                doc += "    " + arg.name + ": " + adoc + "\n"
+
+        if not fn.ret.type.is_none() and fn.ret.doc:
+            doc += "\nReturns:\n    " + fn.ret.doc.strip() + "\n"
+
+        if fn.raises:
+            doc += "\nRaises:\n"
+            for rai in fn.raises:
+                doc += (
+                    "    "
+                    + rai.type.typing(self._settings)
+                    + ": "
+                    + rai.doc.strip()
+                    + "\n"
+                )
+
+        if doc:
+            self._print()
+            self._print_doc(doc, indent + "    ")
+            self._print("{}...".format(indent + "    "))
+        else:
+            self._print(" ...")
 
         if not isinstance(fn, Method):
             self._print()
@@ -70,14 +124,14 @@ class Writer:
 
         self._print("{}@property".format(indent))
         self._print(
-            "{}def {}(self) -> {}: pass".format(
+            "{}def {}(self) -> {}: ...".format(
                 indent, prop.name, prop.type.typing(self._settings)
             )
         )
         if not prop.is_read_only():
             self._print("{}@{}.setter".format(indent, prop.name))
             self._print(
-                "{}def {}(self, arg0: {}): pass".format(
+                "{}def {}(self, arg0: {}): ...".format(
                     indent, prop.name, prop.type.typing(self._settings)
                 )
             )
@@ -87,16 +141,29 @@ class Writer:
         """ Print the given Class object at the given indentation level. """
 
         bc = ""
-        if cls.bases:
-            bc = "(" + ", ".join(cls.bases) + ")"
+        if cls.bases or cls.is_abstract():
+            bases = [str(bc) for bc in cls.bases]
+            if cls.is_abstract() and not any(bc.is_abstract() for bc in cls.bases):
+                bases.insert(0, "abc.ABC")
+            bc = "(" + ", ".join(bases) + ")"
 
         # Class declaration:
         self._print("{}class {}{}:".format(indent, cls.name, bc), end="")
 
+        if cls.doc:
+            self._print()
+            self._print_doc(cls.doc, indent + "    ")
+            self._print()
+
         if not (cls.methods or cls.constants or cls.properties or cls.inner_classes):
-            self._print(" pass")
+            if cls.doc:
+                self._print("{}...".format(indent + "    "))
+            else:
+                self._print(" ...")
             return
-        self._print()
+
+        if not cls.doc:
+            self._print()
 
         # Inner classes:
         for iclass in cls.inner_classes:
@@ -106,8 +173,8 @@ class Writer:
         # Constants:
         for constant in cls.constants:
             comment = ""
-            if constant.comment:
-                comment = "  # {}".format(constant.comment)
+            if constant.doc:
+                comment = "  # {}".format(constant.doc)
 
             typing = ""
             if constant.type is not None:

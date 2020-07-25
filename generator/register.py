@@ -26,7 +26,7 @@ class MobaseRegister:
     def make_object(
         self, name: str, e: Optional[type] = None
     ) -> Union["Class", List["Function"]]:
-        """ Construct a Function, Class or Enum for the given object.
+        """Construct a Function, Class or Enum for the given object.
 
         Args:
             name: The name of the object to inspect.
@@ -52,8 +52,21 @@ class MobaseRegister:
 
         return self.objects[name]
 
+    def get_object(self, name: str):
+        """
+        Retrieve the object if the given name. Fails if no object with this
+        name exists (if `make_object(name, ...)` has never been called).
+
+        Args:
+            name: Name of the object to retrieve.
+
+        Returns:
+            The object with the given name.
+        """
+        return self.objects[name]
+
     def register_type(self, ptype: "Type", ctype: "CType"):
-        """ Register an equivalence between a python name and a C++ name.
+        """Register an equivalence between a python name and a C++ name.
 
         Args:
             python_name: Name of the Python class.
@@ -73,9 +86,8 @@ class MobaseRegister:
                     self._cpptypes[c2name] = ctype
                     self.cpp2py[c2name] = ptype
                     logger.warning(
-                        "Replace registration {} [c++] with {} [python] using {} information.".format(  # noqa: E501
-                            c2name, ptype.name, cname
-                        )
+                        "Replace registration {} [c++] with {} [python] using {}"
+                        " information.".format(c2name, ptype.name, cname)  # noqa: E501
                     )
 
         if cname not in MOBASE_REGISTER.cpp2py:

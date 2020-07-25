@@ -1,0 +1,2620 @@
+---
+version: 1
+
+# This is the list of type to replace:
+replacements:
+  Organizer::FileInfo: FileInfo
+  IOrganizer::FileInfo: FileInfo
+  IPluginInstaller::EInstallResult: InstallResult
+
+# List of names to ignores:
+ignores:
+  - toPyQt
+
+# This is the root of the mobase module and will contain everything
+# related to functions / classes, including their documentation.
+mobase:
+
+  getFileVersion:
+    __doc__: Retrieve the file version of the given executable.
+    args:
+      filepath: Absolute path to the executable.
+    returns: |
+      The file version, or an empty string if the file version could not be retrieved.
+
+  getIconForExecutable:
+    __doc__: Retrieve the icon of an executable. Currently this always extracts the biggest icon.
+    args:
+      executable: Absolute path to the executable.
+    returns: The icon for this executable, if any.
+
+  getProductVersion:
+    __doc__: Retrieve the product version of the given executable.
+    args:
+      executable: Absolute path to the executable.
+    returns: |
+      The product version, or an empty string if the product version could not be retrieved.
+
+  GuessQuality:
+    __doc__: |
+      Describes how good the code considers a guess (i.e. for a mod name) this is used to
+      determine if a name from another source should overwrite or not.
+
+    INVALID: No valid value has been set yet.
+    FALLBACK: The guess is very basic and should only be used if no other source is available.
+    GOOD: Considered a good guess.
+    META: The value comes from metadata and is usually what the author intended.
+    PRESET: |
+      The value comes from a previous installation of the same data/mod and usually represents
+      what the user chose before.
+    USER: The user selection, always overrules other sources.
+
+  InstallResult:
+    __doc__:
+    SUCCESS:
+    FAILED:
+    CANCELED:
+    MANUAL_REQUESTED:
+    NOT_ATTEMPTED:
+
+  LoadOrderMechanism:
+    __doc__:
+    FILE_TIME: Order of plugins is determined by the filetime of the plugins.
+    PLUGINS_TXT: Order of plugins is determined by the plugins.txt file.
+
+  ModState:
+    __doc__:
+    EXISTS:
+    ACTIVE:
+    ESSENTIAL:
+    EMPTY:
+    ENDORSED:
+    VALID:
+    ALTERNATE:
+
+  PluginState:
+    __doc__:
+    MISSING:
+    INACTIVE:
+    ACTIVE:
+
+  ProfileSetting:
+    __doc__:
+    MODS:
+    CONFIGURATION:
+    SAVEGAMES:
+    PREFER_DEFAULTS:
+
+  ReleaseType:
+    __doc__:
+    PRE_ALPHA:
+    ALPHA:
+    BETA:
+    CANDIDATE:
+    FINAL:
+
+  SortMechanism:
+    __doc__:
+    NONE:
+    MLOX:
+    BOSS:
+    LOOT:
+
+  VersionScheme:
+    __doc__:
+    DISCOVER:
+    REGULAR:
+    DECIMAL_MARK:
+    NUMBERS_AND_LETTERS:
+    DATE:
+    LITERAL:
+
+  # TODO:
+  BSAInvalidation:
+    __doc__:
+    __abstract__: true
+    __init__:
+      __doc__:
+    activate:
+      __doc__:
+      args:
+        profile:
+    deactivate:
+      __doc__:
+      args:
+        profile:
+    isInvalidationBSA:
+      __doc__:
+      args:
+        name:
+      returns:
+
+  DataArchives:
+    __abstract__: true
+
+    addArchive:
+      __doc__: Add an archive to the archive list.
+      args:
+        profile: Profile to add the archive to.
+        index: |
+          Index to insert before. Use 0 for the beginning of the list or INT_MAX for
+          the end of the list).
+        name: Name of the archive to add.
+
+    archives:
+      __doc__: Retrieve the list of archives in the given profile.
+      args:
+        profile: Profile to retrieve archives from.
+      returns: The list of archives in the given profile.
+
+    removeArchive:
+      __doc__: Remove the given archive from the given profile.
+      args:
+        profile: Profile to remove the archive from.
+        name: Name of the archive to remove.
+
+    vanillaArchives:
+      __doc__: |
+        Retrieve the list of vanilla archives.
+
+        Vanilla archives are archive files that are shipped with the original
+        game.
+      returns: The list of vanilla archives.
+
+  ExecutableForcedLoadSetting:
+    __doc__:
+    __init__:
+      __doc__:
+      args:
+        process:
+        library:
+    enabled:
+      __doc__:
+      returns:
+    forced:
+      __doc__:
+      returns:
+    library:
+      __doc__:
+      returns:
+    process:
+      __doc__:
+      returns:
+    withEnabled:
+      __doc__:
+      args:
+        enabled:
+      returns:
+    withForced:
+      __doc__:
+      args:
+        forced:
+      returns:
+
+  ExecutableInfo:
+    __doc__:
+    __init__:
+      __doc__:
+      args:
+        title:
+        binary:
+    arguments:
+      __doc__:
+      returns:
+    asCustom:
+      __doc__:
+      returns:
+    binary:
+      __doc__:
+      returns:
+    isCustom:
+      __doc__:
+      returns:
+    isValid:
+      __doc__:
+      returns:
+    steamAppID:
+      __doc__:
+      returns:
+    title:
+      __doc__:
+      returns:
+    withArgument:
+      __doc__:
+      args:
+        argument:
+      returns:
+    withSteamAppId:
+      __doc__:
+      args:
+        app_id:
+      returns:
+    withWorkingDirectory:
+      __doc__:
+      args:
+        directory:
+      returns:
+    workingDirectory:
+      __doc__:
+      returns:
+
+  FileInfo:
+    __doc__: Information about a virtualised file
+    properties[]:
+      archive:
+        type: str
+        desc: |
+          Name of the archive if this file is in an archive (e.g. BSA), otherwise an
+          empty string.
+      filePath:
+        type: str
+        desc: Full path to the file.
+      origins:
+        type: List[str]
+        desc: |
+          List of origins containing providing this file. The first origin in the list
+          is the highest priority one (actually providing the file).
+
+    __init__:
+      __doc__: Creates an uninitialized FileInfo.
+
+  FileTreeEntry:
+    __doc__: |
+      Represent an entry in a file tree, either a file or a directory. This class
+      inherited by IFileTree so that operations on entry are the same for a file or
+      a directory.
+
+      This class provides convenience methods to query information on the file, like its
+      name or the its last modification time. It also provides a convenience astree() method
+      that can be used to retrieve the tree corresponding to its entry in case the entry
+      represent a directory.
+
+    FileTypes:
+      __doc__: Enumeration of the different file type or combinations.
+      DIRECTORY:
+      FILE:
+      FILE_OR_DIRECTORY:
+
+    detach:
+      __doc__: Detach this entry from its parent tree.
+      returns: True if the entry was removed correctly, False otherwize.
+
+    fileType:
+      returns: The filetype of this entry.
+
+    hasSuffix.1:
+      __doc__: Check if this entry has one of the given suffixes.
+      args:
+        suffixes: Suffixes to check.
+      returns: True if this entry is a file and has one of the given suffix.
+
+    hasSuffix.2:
+      __doc__: Check if this entry has the given suffix.
+      args:
+        suffix:  Suffix to check.
+      returns: True if this entry is a file and has the given suffix.
+
+    isDir:
+      returns: True if this entry is a directory, False otherwise.
+
+    isFile:
+      returns: True if this entry is a file, False otherwise.
+
+    moveTo:
+      __doc__: Move this entry to the given tree.
+      args:
+        tree: The tree to move this entry to.
+      returns: True if the entry was moved correctly, False otherwize.
+
+    name:
+      returns: The name of this entry.
+
+    parent:
+      returns:
+        __doc__: |
+          The parent tree containing this entry, or a `None` if this entry is the root
+          or the parent tree is unreachable.
+        type: Optional["IFileTree"]
+
+    path:
+      __doc__: |
+        Retrieve the path from this entry up to the root of the tree.
+
+        This method propagate up the tree so is not constant complexity as
+        the full path is never stored.
+      args:
+        sep: The type of separator to use to create the path.
+      returns: The path from this entry to the root, including the name of this entry.
+
+    pathFrom:
+      __doc__: Retrieve the path from the given tree to this entry.
+      args:
+        tree: The tree to reach, must be a parent of this entry.
+        sep: The type of separator to use to create the path.
+      returns: |
+        The path from the given tree to this entry, including the name of this entry, or
+        an empty string if the given tree is not a parent of this entry.
+
+    suffix:
+      __doc__: |
+        Retrieve the "last" extension of this entry.
+
+        The "last" extension is everything after the last dot in the file name.
+      returns: |
+        The last extension of this entry, or an empty string if the file has no extension
+        or is directory.
+
+  GamePlugins:
+    __abstract__: true
+    getLoadOrder:
+      __doc__:
+      returns:
+    lightPluginsAreSupported:
+      returns: True if light plugins are supported, False otherwise.
+    readPluginLists:
+      __doc__:
+      args:
+        plugin_list:
+    writePluginLists:
+      __doc__:
+      args:
+        plugin_list:
+
+  GuessedString:
+    __doc__: |
+      Represents a string that may be set from different places. Each time the value is
+      changed a "quality" is specified to say how probable it is the value is the best choice.
+      Only the best choice should be used in the end but alternatives can be queried. This
+      class also allows a filter to be set. If a "guess" doesn't pass the filter, it is ignored.
+
+    __init__.1:
+      __doc__: Creates a GuessedString with no associated value.
+
+    __init__.2:
+      __doc__: Creates a GuessedString with the given value and quality.
+      args:
+        value: Initial value of the GuessedString.
+        quality: Quality of the initial value.
+
+    reset.1:
+      __doc__: Reset this GuessedString to an invalid state.
+      returns: This GuessedString object.
+
+    reset.2:
+      __doc__: |
+        Reset this GuessedString object with the given value and quality, only
+        if the given quality is better than the current one.
+      args:
+        value: New value for this GuessedString.
+        quality: Quality of the new value.
+      returns: This GuessedString object.
+
+    reset.3:
+      __doc__: |
+        Reset this GuessedString object by copying the given one, only
+        if the given one has better quality.
+      args:
+        other: The GuessedString to copy.
+      returns: This GuessedString object.
+
+    setFilter:
+      __doc__: |
+        Set the filter for this GuessedString.
+
+        The filter is applied on every `update()` and can reject the new value
+        altogether or modify it (by returning a new value).
+      args:
+        filter: The new filter.
+
+    update.1:
+      __doc__: |
+        Update this GuessedString by adding the given value to the list of variants
+        and setting the actual value without changing the current quality of this
+        GuessedString.
+
+        The GuessedString is only updated if the given value passes the filter.
+      args:
+        value: The new value for this string.
+      returns: This GuessedString object.
+
+    update.2:
+      __doc__: |
+        Update this GuessedString by adding a new variants with the given quality.
+
+        If the specified quality is better than the current one, the actual value of
+        the GuessedString is also updated.
+
+        The GuessedString is only updated if the given value passes the filter.
+      args:
+        value: The new variant to add.
+        quality: The quality of the variant.
+      returns: This GuessedString object.
+
+    variants:
+      returns: The list of variants for this GuessedString.
+
+  IDownloadManager:
+    __bases__:
+      - PyQt5.QtCore.QObject
+
+    signals[]:
+      downloadComplete:
+        __doc__: Emitted when a download finishes completely (including retrieval of meta information).
+        args:
+          id:
+            type: int
+            desc: ID of the download.
+      downloadPaused:
+        __doc__: Emitted when a download is paused by the user.
+        args:
+          id:
+            type: int
+            desc: ID of the download.
+      downloadFailed:
+        __doc__: Emitted when a download fails.
+        args:
+          id:
+            type: int
+            desc: ID of the download.
+      downloadRemoved:
+        __doc__: Emitted when a download is removed from the manager. The ID of the download is no longer valid.
+        args:
+          id:
+            type: int
+            desc: ID of the download.
+
+    _object:
+      returns: The underlying `QObject` for the manager.
+
+    downloadPath:
+      __doc__: Retrieve the (absolute) path of the specified download.
+      args:
+        id: ID of the download.
+      returns: |
+        The absolute path to the file corresponding to the given download. This file
+        may not exist yet if the download is incomplete.
+
+    startDownloadNexusFile:
+      __doc__: |
+        Download a file from www.nexusmods.com/<game>. <game> is always the game
+        currently being managed.
+      args:
+        mod_id: ID of the mod to download the file from.
+        file_id: ID of the file to download.
+      returns: An ID identifying the download.
+
+    startDownloadURLs:
+      __doc__: |
+        Download a file by url.
+
+        The list can contain alternative URLs to allow the download manager to switch
+        in case of download problems
+      args:
+        urls: List of urls to download from.
+      returns: An ID identifying the download.
+
+  IFileTree:
+    __doc__: |
+      Interface to classes that provides way to visualize and alter file trees. The tree
+      may not correspond to an actual file tree on the disk (e.g., inside an archive,
+      from a QTree Widget, ...).
+
+      Read-only operations on the tree are thread-safe, even when the tree has not been populated
+      yet.
+
+      In order to prevent wrong usage of the tree, implementing classes may throw
+      UnsupportedOperationException if an operation is not supported. By default, all operations
+      are supported, but some may not make sense in many situations.
+
+      The goal of this is not reflect the change made to a IFileTree to the disk, but child
+      classes may override relevant methods to do so.
+
+      The tree is built upon FileTreeEntry. A given tree holds shared pointers to its entries
+      while each entry holds a weak pointer to its parent, this means that the descending link
+      are strong (shared pointers) but the uplink are weaks.
+
+      Accessing the parent is always done by locking the weak pointer so that returned pointer
+      or either null or valid. This structure implies that as long as the initial root lives,
+      entry should not be destroyed, unless the entry are detached from the root and no shared
+      pointers are kept.
+
+      However, it is not guarantee that one can go up the tree from a single node entry. If the
+      root node is destroyed, it will not be possible to go up the tree, even if we still have
+      a valid shared pointer.
+
+    InsertPolicy:
+      __doc__:
+      FAIL_IF_EXISTS: Operation will fail if the destination already exists.
+      REPLACE: |
+        If the destination exists, it will be replaced (even if the source is a file and
+        the destination a directory).
+      MERGE: |
+        If the destination exists, and the source and destination are of the same type (e.g.
+        two files or two folders), a merge is performed: if both entries are files, the source
+        replaces the destination, otherwise the source is merged into the destination. If the
+        destination exists but the source and the destination are of different type, the
+        operation fails.
+
+    WalkReturn:
+      __doc__: |
+        Enumeration that can be returned by the callback for the `walk()` method to stop the
+        walking operation early.
+      CONTINUE: Continue walking normally.
+      STOP: Stop the walking operation.
+      SKIP: Skip this folder (no effect if the entry is a file).
+
+    __bool__:
+      returns: True if this tree is not empty, False otherwise.
+
+    __getitem__:
+      __doc__: Retrieve the entry at the given index in this tree.
+      args:
+        index: Index of the entry to retrieve, must be less than the size.
+      returns: The entry at the given index.
+      raises:
+        IndexError: If the given index is not in range for this tree.
+
+    __iter__:
+      __doc__: |
+        Retrieves an iterator for entries directly under this tree.
+
+        This method does not recurse into subtrees, see `walk()` for this.
+
+      # Force the list of arguments to be empty (this will still include self):
+      args:
+
+      # We are forcing the return type because parsing C++ iterators is a pain:
+      returns:
+        __doc__: An iterator object that can be used to iterate over entries in this tree.
+        type: "Iterator[FileTreeEntry]"
+
+    __len__:
+      returns: The number of entries directly under this tree.
+
+    addDirectory:
+      __doc__: |
+        Create a new directory tree under this tree.
+
+        This method will create missing folders in the given path and will
+        not fail if the directory already exists but will fail if the given
+        path contains "." or "..".
+        This method invalidates iterators to this tree and all the subtrees
+        present in the given path.
+      args:
+        path: Path to the directory to create.
+      returns: An IFileTree corresponding to the created directory.
+      raises:
+        RuntimeError: If the directory could not be created.
+
+    addFile:
+      __doc__: |
+        Create a new file directly under this tree.
+
+        This method will fail if the file already exists and `replace_if_exists` is `False`.
+        This method invalidates iterators to this tree and all the subtrees present in the
+        given path.
+      args:
+        path: Path to the file to create.
+        replace_if_exists:  |
+          If True and an entry already exists at the given location, it will be replaced by
+          a new entry. This will replace both files and directories.
+      returns: A FileTreeEntry corresponding to the created file.
+      raises:
+        RuntimeError: If the file could not be created.
+
+    clear:
+      __doc__: |
+        Delete (detach) all the entries from this tree.
+
+        This method will go through the entries in this tree and stop at the first
+        entry that cannot be deleted, this means that the tree can be partially cleared.
+      returns: True if all entries have been detached, False otherwise.
+
+    copy:
+      __doc__: |
+        Move the given entry to the given path under this tree.
+
+        The entry must not be a parent tree of this tree. This method can also be used
+        to rename entries.
+
+        If the insert policy if FAIL_IF_EXISTS, the call will fail if an entry
+        at the same location already exists. If the policy is REPLACE, an existing
+        entry will be replaced. If MERGE, the entry will be merged with the existing
+        one (if the entry is a file, and a file exists, the file will be replaced).
+
+        This method invalidates iterator to this tree, to the parent tree of the given
+        entry, and to subtrees of this tree if the insert policy is MERGE.
+      args:
+        entry: Entry to copy.
+        path: |
+          The path to copy the entry to. If the path ends with / or \\, the entry will
+          be copied in the corresponding directory instead of replacing it. If the
+          given path is empty (`""`), the entry is copied directly under this tree.
+        policy: Policy to use to resolve conflicts.
+      returns: The new entry (copy of the specified entry).
+      raises:
+        RuntimeError: If the entry could not be copied.
+
+    createOrphanTree:
+      __doc__: Create a new orphan empty tree.
+      args:
+        name: Name of the tree.
+      returns: A new tree without any parent.
+
+    exists:
+      __doc__: Check if the given entry exists.
+      args:
+        path: Path to the entry, separated by / or \\.
+        type: The type of the entry to check.
+      returns: True if the entry was found, False otherwise.
+
+    find:
+      __doc__: |
+        Retrieve the given entry.
+
+        If no entry exists at the given path, or if the entry is not of the right
+        type, `None` is returned.
+      args:
+        path: Path to the entry, separated by / or \\.
+        type: The type of the entry to check.
+      returns:
+        __doc__: |
+          The entry at the given location, or `None` if the entry was not found or
+          was not of the correct type.
+        type: Optional[Union["IFileTree", "FileTreeEntry"]]
+
+    insert:
+      __doc__: |
+        Insert the given entry in this tree, removing it from its
+        previouis parent.
+
+        The entry must not be this tree or a parent entry of this tree.
+
+          - If the insert policy if `FAIL_IF_EXISTS`, the call will fail if an entry
+            with the same name already exists.
+          - If the policy is `REPLACE`, an existing entry will be replaced by the given entry.
+          - If the policy is `MERGE`:
+
+            - If there is no entry with the same name, the new entry is inserted.
+            - If there is an entry with the same name:
+
+              - If both entries are files, the old file is replaced by the given entry.
+              - If both entries are directories, a merge is performed as if using merge().
+              - Otherwize the insertion fails (two entries with different types).
+
+        This method invalidates iterator to this tree, to the parent tree of the given
+        entry, and to subtrees of this tree if the insert policy is MERGE.
+      args:
+        entry: Entry to insert.
+        policy: Policy to use to resolve conflicts.
+      returns: True if the entry was insert, False otherwise.
+
+    merge:
+      __doc__: |
+        Merge the given tree with this tree, i.e., insert all entries
+        of the given tree into this tree.
+
+        The tree must not be this tree or a parent entry of this tree. Files present in both tree
+        will be replaced by files in the given tree. After a merge, the source tree will be
+        empty but still attached to its parent.
+
+        If `overwrites` is `True`, a map from overriden files to new files will be returned.
+
+        Note that the merge process makes no distinction between files and directories
+        when merging: if a directory is present in this tree and a file from source
+        is in conflict with it, the tree will be removed and the file inserted; if a file
+        is in this tree and a directory from source is in conflict with it, the file will
+        be replaced with the directory.
+
+        This method invalidates iterators to this tree, all the subtrees under this tree
+        present in the given path, and all the subtrees of the given source.
+      args:
+        other: Tree to merge.
+        overwrites: If True, a mapping from overriden files to new files will be returned.
+      returns: |
+        If `overwrites` is True, a mapping from overriden files to new files, otherwise
+        the number of overwritten entries.
+      raises:
+        RuntimeError: If the merge failed.
+
+    move:
+      __doc__: |
+        Move the given entry to the given path under this tree.
+
+        The entry must not be a parent tree of this tree. This method can also be used
+        to rename entries.
+
+        If the insert policy if FAIL_IF_EXISTS, the call will fail if an entry
+        at the same location already exists. If the policy is REPLACE, an existing
+        entry will be replaced. If MERGE, the entry will be merged with the existing
+        one (if the entry is a file, and a file exists, the file will be replaced).
+
+        This method invalidates iterator to this tree, to the parent tree of the given
+        entry, and to subtrees of this tree if the insert policy is MERGE.
+      args:
+        entry: Entry to move.
+        path: |
+          The path to move the entry to. If the path ends with / or \\, the entry will
+          be inserted in the corresponding directory instead of replacing it. If the
+          given path is empty (`""`), this is equivalent to `insert()`.
+        policy: Policy to use to resolve conflicts.
+      returns: True if the entry was moved correctly, False otherwise.
+
+    pathTo:
+      __doc__: Retrieve the path from this tree to the given entry.
+      args:
+        entry: The entry to reach, must be in this tree.
+        sep: The type of separator to use to create the path.
+      returns: |
+        The path from this tree to the given entry, including the name of the entry, or
+        an empty string if the given entry was not found under this tree.
+
+    remove.1:
+      __doc__: |
+        Delete the entry with the given name.
+
+        This method does not recurse into subtrees, so the entry should be
+        accessible directly from this tree.
+      args:
+        name: Name of the entry to delete.
+      returns: True if the entry was deleted, False otherwise.
+
+    remove.2:
+      __doc__: Delete the given entry.
+      args:
+        entry: Entry to delete. The entry must belongs to this tree (and not to a subtree).
+      returns: True if the entry was deleted, False otherwise.
+
+    removeAll:
+      __doc__: |
+        Delete the entries with the given names from the tree.
+
+        This method does not recurse into subtrees, so only entries accessible
+        directly from this tree will be removed. This method invalidates iterators.
+      args:
+        names: Names of the entries to delete.
+      returns: The number of deleted entry.
+
+    removeIf:
+      __doc__: |
+        Delete entries matching the given predicate from the tree.
+
+        This method does not recurse into subtrees, so only entries accessible
+        directly from this tree will be removed. This method invalidates iterators.
+      args:
+        filter: Predicate that should return true for entries to delete.
+      returns: The number of deleted entry.
+
+    walk:
+      __doc__: |
+        Walk this tree, calling the given function for each entry in it.
+
+        The given callback will be called with two parameters: the path from this tree to the given entry
+        (with a trailing separator, not including the entry name), and the actual entry. The method returns
+        a `WalkReturn` object to indicates what to do.
+      args:
+        callback: Method to call for each entry in the tree.
+        sep: Type of separator to use to construct the path.
+
+  IInstallationManager:
+    __doc__:
+
+    createFile:
+      __doc__: |
+        Create a new file on the disk corresponding to the given entry.
+
+        This method can be used by installer that needs to create files that are not in the original
+        archive. At the end of the installation, if there are entries in the final tree that were used
+        to create files, the corresponding files will be moved to the mod folder.
+
+        Temporary files corresponding to created files are automatically cleaned up at the end of
+        the installation.
+      args:
+        entry: The entry for which a temporary file should be created.
+      returns: The path to the created file, or an empty string if the file could not be created.
+
+    extractFile:
+      __doc__: |
+        Extract the specified file from the currently opened archive to a temporary
+        location.
+
+        This method cannot be used to extract directory.
+
+        The call will fail with an exception if no archive is open (plugins deriving from
+        IPluginInstallerSimple can rely on that, custom installers should not). The temporary
+        file is automatically cleaned up after the installation. This call can be very slow
+        if the archive is large and "solid".
+      args:
+        entry: Entry corresponding to the file to extract.
+        silent: If true, the dialog showing extraction progress will not be shown.
+      returns: |
+        The absolute path to the temporary file, or an empty string if the file was not extracted.
+
+    extractFiles:
+      __doc__: |
+        Extract the specified files from the currently opened archive to a temporary
+        location.
+
+        This method cannot be used to extract directories.
+
+        The call will fail with an exception if no archive is open (plugins deriving from
+        IPluginInstallerSimple can rely on that, custom installers should not). The temporary
+        files are automatically cleaned up after the installation. This call can be very slow
+        if the archive is large and "solid".
+      args:
+        entries: Entries corresponding to the files to extract.
+        silent: If true, the dialog showing extraction progress will not be shown.
+      returns: A list containing absolute paths to the temporary files.
+
+    getSupportedExtensions:
+      returns: The extensions of archives supported by this installation manager.
+
+    installArchive:
+      __doc__: Install the given archive.
+      args:
+        mod_name: Suggested name of the mod.
+        archive: Path to the archive to install.
+        mod_id: ID of the mod, if available.
+      returns: The result of the installation.
+
+    setURL:
+      __doc__: Set the url associated with the mod being installed.
+      args:
+        url: Url to set.
+
+  IModInterface:
+
+    absolutePath:
+      returns: Absolute path to the mod to be used in file system operations.
+
+    addCategory:
+      __doc__: Assign a category to the mod. If the named category does not exist it is created.
+      args:
+        name: Name of the new category to assign.
+
+    addNexusCategory:
+      __doc__: |
+        Set the category id from a nexus category id. Conversion to MO ID happens internally.
+
+        If a mapping is not possible, the category is set to the default value.
+      args:
+        category_id: The Nexus category ID.
+
+    categories:
+      returns: The list of categories assigned to this mod.
+
+    name:
+      returns: The name of this mod.
+
+    remove:
+      __doc__: |
+        Delete the mod from the disc.
+
+        This does not update the global ModInfo structure or indices.
+      returns: True if the mod was deleted, False otherwise.
+
+    removeCategory:
+      __doc__: Unassign a category from this mod.
+      args:
+        name: Name of the category to remove.
+      returns: |
+        True if the category was removed, False otherwise (e.g. if no such category
+        was assigned).
+
+    setGameName:
+      __doc__: Set the source game of this mod.
+      args:
+        name: The new source game short name of this mod.
+
+    setIsEndorsed:
+      __doc__: Set endorsement state of the mod.
+      args:
+        endorsed: New endorsement state of this mod.
+
+    setName:
+      __doc__: |
+        Set the name of this mod.
+
+        This will also update the name of the directory that contains this mod
+      args:
+        name: New name for this mod.
+      returns: |
+        True if the name was changed, False if an error occured (e.g. if the name is not a valid
+        directory name).
+
+    setNewestVersion:
+      __doc__: Set the latest known version of this mod.
+      args:
+        version: The latest known version of this mod.
+
+    setNexusID:
+      __doc__: Set the Nexus ID of this mod.
+      args:
+        nexus_id: Thew new Nexus ID of this mod.
+
+    setVersion:
+      __doc__: Set the version of this mod.
+      args:
+        version: The new version of this mod.
+
+  IModList:
+    __doc__: |
+      Interface to the mod-list.
+
+      All api functions in this interface work need the internal name of a mod to find a
+      mod. For regular mods (mods the user installed) the display name (as shown to the user)
+      and internal name are identical. For other mods (non-MO mods) there is currently no way
+      to translate from display name to internal name because the display name might not me un-ambiguous.
+
+    allMods:
+      returns: A list containing the internal names of all installed mods.
+
+    displayName:
+      __doc__: |
+        Retrieve the display name of a mod from its internal name.
+
+        If you received an internal name from the API (e.g. `IPluginList.origin`) then you should use
+        that name to identify the mod in all other api calls but use this function to retrieve the name
+        to show to the user.
+      args:
+        name: Internal name of the mod.
+      returns: The display name of the given mod.
+
+    onModMoved:
+      __doc__: Install a handler to be called when a mod is moved.
+      args:
+        callback: |
+          The function to call when a mod is moved. The first argument is the internal name of the
+          mod, the second argument the old priority and the third argument the new priority.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onModStateChanged:
+      __doc__: Install a handler to be called when a mod state changes (enabled/disabled, endorsed, ...).
+      args:
+        callback: |
+          The function to call when the state of a mod changes. The first argument is the internal
+          mod name, and the second one the new state of the mod.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    priority:
+      __doc__: Retrieve the priority of a mod.
+      args:
+        name: Internal name of the mod.
+      returns: The priority of the given mod.
+
+    setActive:
+      __doc__: |
+        Enable or disable a mod.
+
+        Calling this will cause MO to re-evaluate its virtual file system so this is
+        a fairly expensive call.
+      args:
+        name: Internal name of the mod to enable or disable.
+        active: True to enable the mod, False to disable it.
+      returns: True on success, False otherwise.
+
+    setPriority:
+      __doc__: |
+        Change the priority of a mod.
+
+        `priority` is the new priority after the move. Keep in mind that the mod disappears from its
+        old location and all mods with higher priority than the moved mod decrease in priority by one.
+      args:
+        name: Internal name of the mod.
+        priority: The new priority of the mod.
+      returns: |
+        True if the priority was changed, False otherwise (if the name or priority were invalid).
+
+    state:
+      __doc__: Retrieve the state of a mod.
+      args:
+        name: Internal name of the mod.
+      returns: The state of the given mod.
+
+  IModRepositoryBridge:
+
+    __bases__:
+      - PyQt5.QtCore.QObject
+
+    signals[]:
+      descriptionAvailable:
+        __doc__: |
+          Emitted when the description for a mod is reported by the repository.
+
+          Valid keys in `result_data` might change as the repository page is updated. For nexus, the following
+          keys are valid as of this writing:
+          'allow_view', 'ip', 'one_week_ratings', 'date', 'pm_notify', 'OLD_mid', 'OLD_u_downloads', 'game_id', 'OLD_perm_use', 'mod_page_uri',
+          'allow_topics', 'has_hot_image', 'id', 'two_weeks_ratings', 'description', 'lastupdate', 'perm_convert', 'author', 'OLD_image',
+          'translation_of', 'OLD_mname', 'version', 'allow_rating', 'perm_useinstructions', 'featured_count', 'donate', 'type', 'perm_credits',
+          'hidden_reason', 'OLD_views', 'perm_upload', 'has_back_image', 'adult', 'allow_images', 'OLD_endorsements', 'OLD_size', 'name',
+          'commenting', 'moderate', 'language', 'perm_others', 'lastcomment', 'OLD_readme', 'summary', 'perm_modify', 'OLD_downloads',
+          'lock_comments', 'suggested_category', 'allow_tagging', 'published', 'perm_notes', 'category_id', 'thread_id', 'perm_use', 'wizard_steps'
+
+          This interface is going to be changed at some point to replace resultData with a less "dynamic" data structure.
+        args:
+          game_name:
+            type: str
+            desc: Name of the game.
+          mod_id:
+            type: int
+            desc: ID of the mod for which the request was made.
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: Dict[str, MoVariant]
+            desc: The data included in the response.
+
+      filesAvailable:
+        __doc__: Emitted when the list of files for a mod is reported by the repository.
+        args:
+          game_name:
+            type: str
+            desc: Name of the game.
+          mod_id:
+            type: int
+            desc: ID of the mod for which the request was made.
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: List[ModRepositoryFileInfo]
+            desc: List of file information objects.
+
+      fileInfoAvailable:
+        __doc__: |
+          Emitted when information about a file is reported by the repository.
+
+          Valid keys in `result_data` might change as the repository page is updated. For nexus, the following
+          keys are valid as of this writing:
+          'count', 'requirements_alert', 'u_count', 'description', 'uri', 'size', 'owner_id', 'primary', 'manager',
+          'version', 'date', 'game_id', 'mod_id', 'category_id', 'id', 'name'
+
+          If you intend to download this file you do not have to request this information manually, you can call
+          IDownloadManager.startDownloadNexusFile() and let the download manager figure things out.
+
+          This interface is going to be changed at some point to replace resultData with a less "dynamic" data structure.
+        args:
+          game_name:
+            type: str
+            desc: Name of the game.
+          mod_id:
+            type: int
+            desc: ID of the mod for which the request was made.
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: Dict[str, MoVariant]
+            desc: The data included in the response.
+
+      downloadURLsAvailable:
+        __doc__: |
+          Emitted when the list of download urls for a file is returned by the repository.
+
+          This interface is going to be changed at some point to replace resultData with a less "dynamic" data structure.
+        args:
+          game_name:
+            type: str
+            desc: Name of the game.
+          mod_id:
+            type: int
+            desc: ID of the mod for which the request was made.
+          file_id:
+            type: int
+            desc: ID of the file for which the request was made.
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: Dict[str, MoVariant]
+            desc: The data included in the response.
+
+      endorsementsAvailable:
+        __doc__: Emitted when the endorsement data is returned from the API.
+        args:
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: bool
+            desc: The new endorsement state.
+
+      endorsementToggled:
+        __doc__: Emitted when the endorsement state of a mod was changed (only sent as a result of our request).
+        args:
+          game_name:
+            type: str
+            desc: Name of the game.
+          mod_id:
+            type: int
+            desc: ID of the mod for which the request was made.
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: bool
+            desc: The new endorsement state.
+
+      trackedModsAvailable:
+        __doc__: Emitted when the tracked mod data is returned from the API.
+        args:
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: bool
+            desc: The new tracking state as a list of maps with keys (domain_name, mod_id).
+
+      trackingToggled:
+        __doc__: Emitted when the tracking state of a mod was changed (only sent as a result of our request).
+        args:
+          game_name:
+            type: str
+            desc: Name of the game.
+          mod_id:
+            type: int
+            desc: ID of the mod for which the request was made.
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          result_data:
+            type: bool
+            desc: The new tracking state.
+
+      requestFailed:
+        __doc__: Emitted when a Nexus request failed.
+        args:
+          game_name:
+            type: str
+            desc: Name of the game.
+          mod_id:
+            type: int
+            desc: ID of the mod for which the request was made.
+          file_id:
+            type: int
+            desc: ID of the file for which the request was made (ignore if the request was for a mod in general).
+          user_data:
+            type: MoVariant
+            desc: The data that was included in the request.
+          error:
+            type: PyQt5.QtNetwork.QNetworkReply.NetworkError
+            desc: The actual error.
+          message:
+            type: str
+            desc: Textual description of the error.
+
+    _object:
+      returns: The underlying `QObject` for the bridge.
+
+    requestDescription:
+      __doc__: Request description of a mod.
+      args:
+        game_name: Name of the game containing the mod.
+        mod_id: Nexus ID of the mod.
+        user_data: User data to be returned with the result.
+
+    requestDownloadURL:
+      __doc__: Request download URL for mod file.0
+      args:
+        game_name: Name of the game containing the mod.
+        mod_id: Nexus ID of the mod.
+        file_id: ID of the file for which a URL should be returned.
+        user_data: User data to be returned with the result.
+
+    requestFileInfo:
+      __doc__:
+      args:
+        game_name: Name of the game containing the mod.
+        mod_id: Nexus ID of the mod.
+        file_id: ID of the file for which information is requested.
+        user_data: User data to be returned with the result.
+
+    requestFiles:
+      __doc__: Request the list of files belonging to a mod.
+      args:
+        game_name: Name of the game containing the mod.
+        mod_id: Nexus ID of the mod.
+        user_data: User data to be returned with the result.
+
+    requestToggleEndorsement:
+      __doc__:
+      args:
+        game_name: Name of the game containing the mod.
+        mod_id: Nexus ID of the mod.
+        mod_version: Version of the mod.
+        endorse:
+        user_data: User data to be returned with the result.
+
+  IOrganizer:
+    __doc__: |
+      Interface to class that provides information about the running session
+      of Mod Organizer to be used by plugins.
+
+    appVersion:
+      returns: The running version of Mod Organizer.
+
+    basePath:
+      returns: The absolute path to the base directory of Mod Organizer.
+
+    createMod:
+      __doc__: |
+        Create a new mod with the specified name.
+
+        If a mod with the same name already exists, the user will be queried. If the user chooses
+        to merge or replace, the call will succeed, otheriwse the call will fail.
+      args:
+        name: Name of the mod to create.
+      returns: |
+        An interface to the newly created mod that can be used to modify it, or `None` if the mod
+        could not be created.
+
+    createNexusBridge:
+      __doc__: Create a new Nexus interface.
+      returns: The newly created Nexus interface.
+
+    downloadManager:
+      returns: The interface to the download manager.
+
+    downloadsPath:
+      returns: The absolute path to the download directory.
+
+    findFileInfos:
+      __doc__: Find files in the virtual directory matching the specified filter.
+      args:
+        path: The path to search in (relative to the 'data' folder).
+        filter: The function to use to filter files. Should return True for the files to keep.
+      returns: The list of `QFileInfo` corresponding to the matching files.
+
+    findFiles.1:
+      __doc__: Find files in the given folder that matches the given filter.
+      args:
+        path: The path to search in (relative to the 'data' folder).
+        filter: The function to use to filter files. Should return True for the files to keep.
+      returns: The list of matching files.
+
+    findFiles.2:
+      __doc__: Find files in the given folder that matches one of the given glob patterns.
+      args:
+        path: The path to search in (relative to the 'data' folder).
+        patterns: List of glob patterns to match against.
+      returns: The list of matching files.
+
+    findFiles.3:
+      __doc__: Find files in the given folder that matches the given glob pattern.
+      args:
+        path: The path to search in (relative to the 'data' folder).
+        pattern: The glob pattern to use to filter files.
+      returns: The list of matching files.
+
+    getFileOrigins:
+      __doc__: |
+        Retrieve the file origins for the speicified file.
+
+        The origins are listed with their internal name. The internal name of a mod can differ
+        from the display name for disambiguation.
+      args:
+        filename: Path to the file to retrieve origins for (relative to the 'data' folder).
+      returns: The list of origins that contain the specified file, sorted by their priority.
+
+    getGame:
+      __doc__: Retrieve the game plugin matching the given name.
+      args:
+        name: Name of the game (short name).
+      returns: The plugin for the given game, or `None` if none was found.
+
+    getMod:
+      __doc__: Retrieve an interface to a mod using its name.
+      args:
+        name: Name of the mod to retrieve.
+      returns: An interface to the given mod, or `None` if there is no mod with this name
+
+    installMod:
+      __doc__: Install a mod archive at the specified location.
+      args:
+        filename: Absolute filepath to the archive to install.
+        name_suggestion: Suggested name for this mod. This can still be changed by the user.
+      returns: An interface to the new installed mod, or `None` if no installation took place (canceled or failure).
+
+    listDirectories:
+      __doc__: Retrieve the list of (virtual) subdirectories in the given path.
+      args:
+        directory: Path to the directory to list (relative to the 'data' folder).
+      returns: The list of directories in the given directory.
+
+    managedGame:
+      returns: The plugin corresponding to the current game.
+
+    modDataChanged:
+      __doc__: Notify the organizer that the given mod has changed.
+      args:
+        mod: The mod that has changed.
+
+    modList:
+      returns: The interface to the mod list.
+
+    modsPath:
+      returns: The (absolute) path to the mods directory.
+
+    modsSortedByProfilePriority:
+      returns: The list of mod (names), sorted according to the current profile priorities.
+
+    onAboutToRun:
+      __doc__: |
+        Install a new handler to be called when an application is about to run.
+
+        Multiple handlers can be installed. If any of the handler returns `False`, the application will
+        not run.
+      args:
+        callback: |
+          The function to call when an application is about to run. The parameter is the absolute path
+          to the application to run. The function can return False to prevent the application from running.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onFinishedRun:
+      __doc__: Install a new handler to be called when an application has finished running.
+      args:
+        callback: |
+          The function to call when an application has finished running. The first parameter is the absolute
+          path to the application, and the second parameter is the exit code of the application.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onModInstalled:
+      __doc__: Install a new handler to be called when a new mod is installed.
+      args:
+        callback: |
+          The function to call when a mod is installed. The parameter of the function is the name of the
+          installed mod.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onPluginSettingChanged:
+      __doc__: Install a new handler to be called when a plugin setting is changed.
+      args:
+        callback: |
+          The function to call when a plugin setting is changed. The parameters are: The name of the plugin, the
+          name of the setting, the old value (or `None` if the setting did not exist before) and the new value
+          of the setting (or `None` if the setting has been removed).
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onProfileChanged:
+      __doc__: |
+        Install a new handler to be called when the current profile is changed.
+
+        The function is called when the profile is changed but some operations related to
+        the profile might not be finished when this is called (e.g., the virtual file system
+        might not be up-to-date).
+      args:
+        callback: |
+          The function to call when the current profile is changed. The first parameter is the old profile (can
+          be `None`, e.g. at startup), and the second parameter is the new profile (cannot be `None`).
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onUserInterfaceInitialized:
+      __doc__: Install a new handler to be called when the UI has been fully initialized.
+      args:
+        callback: |
+          The function to call when the user-interface has been fully initialized. The parameter is the main
+          window of the application (`QMainWindow`).
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    overwritePath:
+      returns: The (absolute) path to the overwrite directory.
+
+    persistent:
+      __doc__: |
+        Retrieve the specified persistent value for a plugin.
+
+        A persistent is an arbitrary value that the plugin can set and retrieve that is persistently stored
+        by the main application. There is no UI for the user to change this value but they can directly access
+        the storage
+      args:
+        plugin_name: |
+          Name of the plugin for which to retrieve the value. This should always be IPlugin::name() unless you have a
+          really good reason to access data of another mod AND if you can verify that plugin is actually installed.
+        key: Identifier of the setting.
+        default: Default value to return if the key is not set (yet).
+      returns: The value corresponding to the given persistent setting, or `def` is the key is not found.
+
+    pluginDataPath:
+      __doc__: |
+        Retrieve the path to a directory where plugin data should be stored.
+
+        For python plugins, it is recommended to use a dedicated folder (per plugin) if you need to
+        store data (resources, or multiple python files).
+      returns: Path to a directory where plugin data should be stored.
+
+    pluginList:
+      returns: The plugin list interface.
+
+    pluginSetting:
+      __doc__: Retrieve settings of plugins.
+      args:
+        plugin_name: Name of the plugin to retrieve the setting for.
+        key: Name of the setting to retrieve the value for.
+      returns: The value of the setting.
+
+    profile:
+      returns: The interface to the current profile.
+
+    profileName:
+      returns: The name of the current profile, or an empty string if no profile has been loaded (yet).
+
+    profilePath:
+      returns: The absolute path to the active profile or an empty string if no profile has been loaded (yet).
+
+    refreshModList:
+      __doc__: Refresh the mod list.
+      args:
+        save_changes: If True, the relevant profile information is saved first (enabled mods and order of mods).
+
+    removeMod:
+      __doc__: Remove a mod (from disc and from the UI).
+      args:
+        mod: The mod to remove.
+      returns: True if the mod was removed, False otherwise.
+
+    resolvePath:
+      __doc__: Resolves a path relative to the virtual data directory to its absolute real path.
+      args:
+        filename: Path to resolve.
+      returns: The absolute real path, or an empty string if the path was not found.
+
+    setPersistent:
+      __doc__: |
+        Set the specified persistent value for a plugin.
+
+        This does not update the in-memory value for this setting, see `setPluginSetting()` for this.
+      args:
+        plugin_name: |
+          Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+          really good reason to access data of another mod AND if you can verify that plugin is actually installed.
+        key: Identifier of the setting.
+        value: New value for the setting.
+        sync: If True, the storage is immediately written to disc. This costs performance but is safer against data loss.
+
+    setPluginSetting:
+      __doc__: |
+        Set the specified setting for a plugin.
+
+        This automatically notify handlers register with `onPluginSettingChanged`, so you do not have to do it yourself.
+      args:
+        plugin_name: |
+          Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+          really good reason to access data of another mod AND if you can verify that plugin is actually installed.
+        key: Identifier of the setting.
+        value: New value for the setting.
+
+    startApplication:
+      __doc__: Starts an application with virtual filesystem active.
+      args:
+        executable: |
+          Name or path of the executable. If this is only a filename, it will only work if it has been configured
+          in MO as an executable. If it is a relative path it is expected to be relative to the game directory.
+        args: |
+          Arguments to pass to the executable. If the list is empty, and `executable` refers to a configured executable,
+          the configured arguments are used.
+        cwd: |
+          The working directory for the executable. If this is empty, the path to the executable is used unless `executable`
+          referred to a configured MO executable, in which case the configured cwd is used.
+        profile: Profile to use. If this is empty (the default) the current profile is used.
+        forcedCustomOverwrite: The mod to set as the custom overwrite, regardless of what the profile has configured.
+        ignoreCustomOverwrite: Set to true to ignore the profile's configured custom overwrite.
+      returns: The handle to the started application, or 0 if the application failed to start.
+
+    waitForApplication:
+      __doc__: |
+        Wait for the application corresponding to the given handle to finish.
+
+        This will always show the lock overlay, regardless of whether the
+        user has disabled locking in the setting, so use this with care.
+        Note that the lock overlay will always allow the user to unlock, in
+        which case this will return False.
+      args:
+        handle: Handle of the application to wait for (as returned by `startApplication()`).
+      returns: |
+        A tuple `(result, exitcode)`, where `result` is a boolean indicating if the application
+        completed successfully, and `exitcode` is the exit code of the application.
+
+  IPlugin:
+    __doc__: Base class for all plugins.
+
+    __abstract__: true
+
+    author:
+      returns: The name of the plugin author.
+
+    description:
+      returns: The description for this plugin.
+
+    init:
+      __doc__: Initialize this plugin.
+      args:
+        organizer: The main organizer interface.
+      returns: True if the plugin was initialized correctly, False otherwise.
+
+    isActive:
+      __doc__: |
+        Check if this plugin is active.
+
+        It is possible to use a plugin setting (specified in `settings()`) here to allow
+        users to manually enable/disable a plugin.
+      returns: True if this plugin is active, False otherwise.
+
+    name:
+      __doc__: |
+        Retrieve the name of the plugin.
+
+        The name of the plugin is used for internal storage purpose so it should not change,
+        and it should be static. In particular, you should not use a localized string (`tr()`)
+        for the plugin name.
+
+        In the future, we will provide a way to localized plugin names using a distinct method,
+        such as `localizedName()`.
+      returns: The name of the plugin.
+
+    settings:
+      returns: A list of settings for this plugin.
+
+    version:
+      returns: The version of this plugin.
+
+  IPluginDiagnose:
+    __doc__: |
+      Plugins that create problem reports to be displayed in the UI.
+
+      This can be used to report problems related to the same plugin (which implements further
+      interfaces) or as a stand-alone diagnosis tool.
+
+    _invalidate:
+      __doc__: Invalidate the problems corresponding to this plugin.
+      abstract: false
+
+    activeProblems:
+      __doc__: |
+        Retrieve the list of active problems found by this plugin.
+
+        This method returns a list of problem IDs, that are then used when calling other methods
+        such as `shortDescription()` or `hasGuidedFix()`.
+      returns: The list of active problems for this plugin.
+
+    fullDescription:
+      __doc__: Retrieve the full description of the problem corresponding to the given key.
+      args:
+        key: ID of the problem.
+      returns: The full description of the problem.
+      raises:
+        IndexError: If the key is not valid.
+
+    hasGuidedFix:
+      __doc__: Check if the problem corresponding to the given key has a guided fix.
+      args:
+        key: ID of the problem.
+      returns: True if there is a guided fix for the problem, False otherwise.
+      raises:
+        IndexError: If the key is not valid.
+
+    shortDescription:
+      __doc__: Retrieve the short description of the problem corresponding to the given key.
+      args:
+        key: ID of the problem.
+      returns: The short description of the problem.
+      raises:
+        IndexError: If the key is not valid.
+
+    startGuidedFix:
+      __doc__: |
+        Starts a guided fix for the problem corresponding to the given key.
+
+        This method should throw `ValueError` if there is no guided fix for the corresponding
+        problem.
+      args:
+        key: ID of the problem.
+      raises:
+        IndexError: If the key is not valid.
+        ValueError: If there is no guided fix for this problem.
+
+  IPluginFileMapper:
+    __doc__: Plugins that adds virtual file links.
+
+    mappings:
+      returns: Mapping for the virtual file system (VFS).
+
+  IPluginGame:
+    __doc__: |
+      Base classes for game plugins.
+
+      Each game requires a specific game plugin. These plugins were initially designed for
+      Bethesda games, so a lot of methods and attributes are irrelevant for other games. If
+      you wish to write a plugin for a much simpler game, please consider the `basic_games`
+      plugin: https://github.com/Holt59/modorganizer-basic_games
+
+    CCPlugins:
+      returns: The current list of active Creation Club plugins.
+
+    DLCPlugins:
+      returns: The list of esp/esm files that are part of known DLCs.
+
+    binaryName:
+      returns: The name of the default executable to run (relative to the game folder).
+
+    dataDirectory:
+      returns: The name of the directory containing data (relative to the game folder).
+
+    documentsDirectory:
+      returns: The directory of the documents folder where configuration files and such for this game reside.
+
+    executableForcedLoads:
+      returns: A list of automatically discovered libraries that can be force loaded with executables.
+
+    executables:
+      returns: A list of automatically discovered executables of the game itself and tools surrounding it.
+
+    feature:
+      __doc__: Retrieve a specified game feature from this plugin.
+      args:
+        feature_type:
+          __doc__: The class of feature to retrieve.
+          type: Type[GameFeatureType]
+      returns:
+        __doc__: |
+          The game feature corresponding to the given type, or `None` if the feature is
+          not implemented.
+        type: GameFeatureType
+
+    featureList:
+      __doc__: |
+        Retrieve the list of game features implemented for this plugin.
+
+        Python plugin should not implement this method but `_featureList()`.
+      returns:
+        __doc__: A mapping from feature type to actual game features.
+        type: Dict[Type[GameFeatureType], GameFeatureType]
+
+    gameDirectory:
+      returns: The directory containing the game installation.
+
+    gameIcon:
+      returns: The icon representing the game.
+
+    gameName:
+      returns: The name of the game (as displayed to the user).
+
+    gameNexusName:
+      returns: The name of the game identifier for Nexus.
+
+    gameShortName:
+      returns: The short name of the game.
+
+    gameVariants:
+      __doc__: |
+        Retrieve the list of variants for this game.
+
+        If there are multiple variants of a game (and the variants make a difference to the
+        plugin), like a regular one and a GOTY-edition, the plugin can return a list of them
+        and the user gets to chose which one he owns.
+      returns: The list of variants of the game.
+
+    gameVersion:
+      returns: The version of the game.
+
+    getLauncherName:
+      returns: |
+        The name of the launcher executable to run (relative to the game folder), or an
+        empty string if there is no launcher.
+
+    iniFiles:
+      returns: |
+        The list of INI files this game uses. The first file in the list should be the
+        'main' INI file.
+
+    initializeProfile:
+      __doc__: |
+        Initialize a profile for this game.
+
+        The MO app does not yet support virtualizing only specific aspects but plugins should be written
+        with this future functionality in mind.
+
+        This function will be used to initially create a profile, potentially to repair it or upgrade/downgrade
+        it so the implementations have to gracefully handle the case that the directory already contains files.
+      args:
+        directory: The directory where the profile is to be initialized.
+        settings: The parameters for how the profile should be initialized.
+
+    isInstalled:
+      returns: True if this game has been discovered as installed, False otherwise.
+
+    loadOrderMechanism:
+      returns: The load order mechanism used by this game.
+
+    looksValid:
+      __doc__: Check if the given directory looks like a valid game installation.
+      args:
+        directory: Directory to check.
+      returns: True if the directory looks like a valid installation of this game, False otherwise.
+
+    nexusGameID:
+      __doc__: |
+        Retrieve the Nexus game ID for this game.
+
+        Example: For Skyrim, the Nexus game ID is 110.
+      returns: The Nexus game ID for this game.
+
+    nexusModOrganizerID:
+      __doc__: |
+        Retrieve the Nexus mod ID of Mod Organizer for this game.
+
+        Example: For Skyrim SE, the mod ID of MO2 is 6194. You can find the mod ID in the URL:
+          https://www.nexusmods.com/skyrimspecialedition/mods/6194
+      returns: The Nexus mod ID of Mod Organizer for this game.
+
+    primaryPlugins:
+      returns: The list of plugins that are part of the game and not considered optional.
+
+    primarySources:
+      __doc__: |
+        Retrieve primary alternative 'short' names for this game.
+
+        This is used to determine if a Nexus (or other) download source should be considered
+        as a primary source for the game so that it is not flagged as an alternative one.
+      returns: The list of primary alternative 'short' names for this game, or an empty list.
+
+    savegameExtension:
+      __doc__:
+      returns: The file extension of save games for this game.
+
+    savegameSEExtension:
+      returns: The file extension of Script Extender saves for this game.
+
+    savesDirectory:
+      returns: The directory where save games are stored.
+
+    setGamePath:
+      __doc__: |
+        Set the path to the managed game.
+
+        This is called during instance creation if the game is not auto-detected and the user has
+        to specify the installation location. This is not called if the game has been auto-detected,
+        so `isInstalled()` should call this.
+      args:
+        path: Path to the game installation.
+
+    setGameVariant:
+      __doc__: |
+        Set the game variant.
+
+        If there are multiple variants of game (as returned by `gameVariants()`), this will be
+        called on start with the user-selected game variant.
+      args:
+        variant: The game variant selected by the user.
+
+    sortMechanism:
+      returns: The sort mechanism for this game.
+
+    steamAPPId:
+      __doc__: |
+        Retrieve the Steam app ID for this game.
+
+        If the game is not available on Steam, this should return an empty string.
+
+        If a game is available in multiple versions, those might have different app ids. The plugin
+        should try to return the right one
+      returns: The Steam app ID for this game. Should be empty for games not available on steam.
+
+    validShortNames:
+      __doc__: |
+        Retrieve the valid 'short' names for this game.
+
+        This is used to determine if a Nexus download is valid for the current game since not all
+        game variants have their own nexus pages and others can handle downloads from other nexus
+        game pages and should be allowed to do so (e.g., you can install some Skyrim LE mod even
+        when using Skyrim SE).
+
+        The short name should be considered the primary handler for a directly supported game
+        for puroses of auto-launching an instance.
+      returns: The list of valid short names for this game.
+
+  IPluginInstaller:
+    __doc__: |
+      This is the top-level class for installer. Actual installers should inherit either:
+        - `IPluginInstallerSimple` if the installer can work directly with the archive. This is what
+          most installers use.
+        - `IPluginInstallerCustom` if the installer needs to perform custom operations. This is only
+          used by the external NCC installer and the OMOD installer.
+
+    isArchiveSupported:
+      __doc__: Check if the given file tree corresponds to a supported archive for this installer.
+      args:
+        tree: The tree representing the content of the archive.
+      returns: True if this installer can handle the archive, False otherwise.
+
+    isManualInstaller:
+      __doc__: Check if this installer is a manual installer.
+      returns: True if this installer is a manual installer, False otherwise.
+
+    priority:
+      __doc__: |
+        Retrieve the priority of this installer.
+
+        If multiple installers are able to handle an archive, the one with the highest priority wins.
+      returns: The priority of this installer.
+
+    setInstallationManager:
+      __doc__: |
+        Set the installation manager for this installer.
+
+        Python plugins usually do not need to re-implement this and can directly access the installation
+        manager using `_manager()`.
+      abstract: false
+      args:
+        manager: The installation manager.
+
+    setParentWidget:
+      __doc__: |
+        Set the parent widget for this installer.
+
+        Python plugins usually do not need to re-implement this and can directly access the parent
+        widget using `_parentWidget()` once the UI has been initialized.
+      abstract: false
+      args:
+        parent: The parent widget.
+
+  IPluginInstallerCustom:
+    __doc__: |
+      Custom installer for mods. Custom installers receive the archive name and have to go
+      from there. They have to be able to extract the archive themself.
+
+      Example of such installers are the external NCC installer or the OMOD installer.
+
+    _manager:
+      abstract: false
+      returns: The installation manager.
+
+    _parentWidget:
+      abstract: false
+      returns: The parent widget.
+
+    install:
+      __doc__: |
+        Install the given archive.
+
+        The mod needs to be created by calling `IOrganizer.createMod` first.
+      args:
+        mod_name: |
+          Name of the mod to install. As an input parameter this is the suggested name
+          (e.g. from meta data) The installer may change this parameter to rename the mod).
+        game_name: Name of the game for which the mod is installed.
+        archive_name: Name of the archive to install.
+        version: |
+          Version of the mod. May be empty if the version is not yet known. The plugin is responsible
+          for setting the version on the created mod.
+        nexus_id: |
+          ID of the mod or -1 if unknown. The plugin is responsible for setting the mod ID for the
+          created mod.
+      returns: The result of the installation process.
+
+    isArchiveSupported.1:
+      __doc__: Check if the given file tree corresponds to a supported archive for this installer.
+      args:
+        tree: The tree representing the content of the archive.
+      returns: True if this installer can handle the archive, False otherwise.
+
+    isArchiveSupported.2:
+      __doc__: Check if the given file is a supported archive for this installer.
+      args:
+        archive_name: Name of the archive.
+      returns: True if this installer can handle the archive, False otherwise.
+
+    supportedExtensions:
+      returns: A list of file extensions that this installer can handle.
+
+  IPluginInstallerSimple:
+    __doc__: |
+      Simple installer for mods. Simple installers only deal with an in-memory structure
+      representing the archive and can modify what to install and where by editing this structure.
+      Actually extracting the archive is handled by the manager.
+
+    _manager:
+      abstract: false
+      returns: The installation manager.
+
+    _parentWidget:
+      abstract: false
+      returns: The parent widget.
+
+    install:
+      __doc__: |
+        Install a mod from an archive filetree.
+
+        The installer can modify the given tree and use the manager to extract or create new
+        files.
+
+        This method returns different type of objects depending on the actual result of the
+        installation. The C++ bindings for this method always returns a tuple (result, tree,
+        version, id).
+      args:
+        name: |
+          Name of the mod to install. As an input parameter this is the suggested name
+          (e.g. from meta data) The installer may change this parameter to rename the mod).
+        tree: In-memory representation of the archive content.
+        version: Version of the mod, or an empty string is unknown.
+        nexus_id: ID of the mod, or -1 if unknown.
+      returns: |
+        In case of failure, the result of the installation, otherwise the modified tree or
+        a tuple (result, tree, version, id) containing the result of the installation, the
+        modified tree, the new version and the new ID. The tuple can be returned even if the
+        installation did not succeed.
+
+  IPluginList:
+
+    __doc__: Primary interface to the list of plugins.
+
+    isMaster:
+      __doc__: |
+        Check if a plugin is a master file (basically a library, referenced by other plugins).
+
+        In gamebryo games, a master file will usually have a .esm file extension but technically
+        an esp can be flagged as master and an esm might not be.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: True if the given plugin is a master plugin, False otherwise or if the file does not exist.
+
+    loadOrder:
+      __doc__: Retrieve the load order of a plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: |
+        The load order of the plugin (the order in which the game loads it). If all plugins are enabled this
+        is the same as the priority but disabled plugins will have a load order of -1. This also returns -1
+        if the plugin does not exist.
+
+    masters:
+      __doc__: Retrieve the list of masters required for a plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The list of masters for the plugin (filenames with extension, no path).
+
+    onPluginMoved:
+      __doc__: Install a new handler to be called when a plugin is moved.
+      args:
+        callback: |
+          The function to call when a plugin is moved. The first parameter is the plugin name, the
+          second the old priority of the plugin and the third one the new priority.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onRefreshed:
+      __doc__: Install a new handler to be called when the list of plugins is refreshed.
+      args:
+        callback: The function to call when the list of plugins is refreshed.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    origin:
+      __doc__: |
+        Retrieve the origin of a plugin. This is either the (internal) name of a mod, `"overwrite"` or `"data"`.
+
+        The internal name of a mod can differ from the display name for disambiguation.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The name of the origin of the plugin, or an empty string if the plugin does not exist.
+
+    pluginNames:
+      returns: The list of all plugin names.
+
+    priority:
+      __doc__: |
+        Retrieve the priority of a plugin.
+
+        The higher the priority, the more important.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The priority of the given plugin, or -1 if the plugin does not exist.
+
+    setLoadOrder:
+      __doc__: |
+        Set the load order.
+
+        Plugins not included in the list will be placed at highest priority in the order they
+        were before.
+      args:
+        loadorder: The new load order, specified by the list of plugin names, sorted.
+
+    setState:
+      __doc__: Set the state of a plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+        state: New state of the plugin (`INACTIVE` or `ACTIVE`).
+
+    state:
+      __doc__: Retrieve the state of a plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The state of the plugin.
+
+  IPluginModPage:
+
+    _parentWidget:
+      returns: The parent widget.
+
+    displayName:
+      returns: The name of the page as displayed in the UI.
+
+    handlesDownload:
+      __doc__: Check if the plugin handles the specified download.
+      args:
+        page_url: URL of the page that contains the download link.
+        download_url: The download URL.
+        fileinfo: Not usable in python.
+      returns: True if this plugin wants to handle the specified download, False otherwise.
+
+    icon:
+      returns: The icon to display with the page.
+
+    pageURL:
+      returns: The URL to open when the user wants to visit this mod page.
+
+    setParentWidget:
+      __doc__: |
+        Set the parent widget for this mod page.
+
+        Python plugins usually do not need to re-implement this and can directly access the parent
+        widget using `_parentWidget()` once the UI has been initialized.
+      abstract: false
+      args:
+        parent: The parent widget.
+
+    useIntegratedBrowser:
+      __doc__: |
+        Indicates if the page should be displayed in the integrated browser.
+
+        Unless the page provides a special means of starting downloads (like the nxm:// url schema
+        on nexus),  it will not be possible to handle downloads unless the integrated browser is used!
+      returns: True if the page should be opened in the integrated browser, False otherwise.
+
+  IPluginPreview:
+    __doc__: |
+      These plugins add support for previewing files in the data pane. Right now all image formats supported
+      by qt are implemented (including dds) but no audio files and no 3d mesh formats.
+
+    genFilePreview:
+      __doc__: Generate a preview for the specified file.
+      args:
+        filename: Path to the file to preview.
+        max_size: Maximum size of the generated widget.
+      returns: The widget showing a preview of the file.
+
+    supportedExtensions:
+      returns: The list of file extensions that are supported by this preview plugin.
+
+  IPluginTool:
+    __doc__: |
+      This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools submenu
+      and get invoked when the user clicks it. They are expected to have a user interface of some sort. These
+      are almost like independent applications except they can access all Mod Organizer interfaces like querying
+      and modifying the current profile, mod list, load order, use MO to install mods and so on. A tool plugin
+      can (and should!) integrate its UI as a window inside MO and thus doesn't have to initialize a windows
+      application itself.
+
+    _parentWidget:
+      returns: The parent widget.
+
+    display:
+      __doc__: Called when the user starts the tool.
+
+    displayName:
+      returns: The display name for this tool, as shown in the tool menu.
+
+    icon:
+      returns: The icon for this tool, or a default-constructed QICon().
+
+    setParentWidget:
+      __doc__: |
+        Set the parent widget for this tool.
+
+        Python plugins usually do not need to re-implement this and can directly access the parent
+        widget using `_parentWidget()` once the UI has been initialized.
+      abstract: false
+      args:
+        parent: The parent widget.
+
+    tooltip:
+      returns: The tooltip for this tool.
+
+  IProfile:
+    __doc__:
+    absolutePath:
+      __doc__:
+      returns:
+    invalidationActive:
+      __doc__:
+      returns:
+    localSavesEnabled:
+      __doc__:
+      returns:
+    localSettingsEnabled:
+      __doc__:
+      returns:
+    name:
+      __doc__:
+      returns:
+
+  ISaveGame:
+    __doc__: Base class for information about what is in a save game.
+
+    allFiles:
+      returns: The list of all files related to this save.
+
+    getCreationTime:
+      __doc__: |
+        Retrieve the creation time of the save.
+
+        The creation time of a save is not always the same as the creation time of
+        the file containing the save.
+      returns: The creation time of the save.
+
+    getFilename:
+      returns: The name of the (main) save file.
+
+    getSaveGroupIdentifier:
+      __doc__: |
+        Retrieve the name of the group this files belong to.
+
+        The name can be used to identify sets of saves to transfer between profiles. For
+        RPG games, this is usually the name of a character.
+      returns: The group identifier for this save game.
+
+    hasScriptExtenderFile:
+      returns: True if this save game has an associated script extender save, False otherwise.
+
+  ISaveGameInfoWidget:
+    __doc__: Base class for a save game info widget.
+    __abstract__: true
+    __init__:
+      args:
+        parent: Parent widget.
+    _widget:
+      abstract: false
+      returns: The underlying `QWidget`.
+    setSave:
+      __doc__: Set the save file to display in this widget.
+      args:
+        save: Path to the save file.
+
+  LocalSavegames:
+    __doc__:
+    __abstract__: true
+    __init__:
+      __doc__:
+    mappings:
+      __doc__:
+      args:
+        profile_save_dir:
+      returns:
+    prepareProfile:
+      __doc__:
+      args:
+        profile:
+      returns:
+
+  Mapping:
+
+    __init__:
+      __doc__: Creates an empty Mapping.
+
+    properties[]:
+      createTarget:
+        type: bool
+        desc: True if file creation (including move or copy) should be redirected to source.
+      destination:
+        type: str
+        desc: The destination of this mapping (absolute path).
+      isDirectory:
+        type: bool
+        desc: True if this mapping corresponds to a directory, False otherwise.
+      source:
+        type: str
+        desc: The source of this mapping (absolute path).
+
+  ModDataChecker:
+    __doc__: Game feature that is used to check the content of a data tree.
+
+    __abstract__: true
+
+    CheckReturn:
+      __doc__:
+      INVALID: The data tree looks invalid and cannot be fixed (automatically).
+      FIXABLE: The data tree looks valid.
+      VALID: The data tree looks invalid but can be automatically fixed.
+
+    __init__:
+      __doc__:
+
+    dataLooksValid:
+      __doc__: |
+        Check that the given filetree represent a valid mod layout, or can be easily
+        fixed.
+
+        This method is mainly used during installation (to find which installer should
+        be used or to recurse into multi-level archives), or to quickly indicates to a
+        user if a mod looks valid.
+
+        This method does not have to be exact, it only has to indicate if the given tree
+        looks like a valid mod or not by quickly checking the structure (heavy operations
+        should be avoided).
+
+        If the tree can be fixed by the `fix()` method, this method should return `FIXABLE`.
+        `FIXABLE` should only be returned when it is guaranteed that `fix()` can fix the tree.
+      args:
+        filetree: The tree starting at the root of the "data" folder.
+      returns: Whether the tree is invalid, fixable or valid.
+
+    fix:
+      __doc__: |
+        Try to fix the given tree.
+
+        This method is used during installation to try to fix invalid archives and will only be
+        called if dataLooksValid returned `FIXABLE`.
+      abstract: false
+      args:
+        filetree: The tree to try to fix. Can be modified during the process.
+      returns: The fixed tree, or a null pointer if the tree could not be fixed.
+
+  ModDataContent:
+    __doc__: |
+      The ModDataContent feature is used (when available) to indicate to users the content
+      of mods in the "Content" column.
+
+      The feature exposes a list of possible content types, each associated with an ID, a name
+      and an icon. The icon is the path to either:
+
+        - A Qt resource or;
+        - A file on the disk.
+
+      In order to facilitate the implementation, MO2 already provides a set of icons that can
+      be used. Those icons are all under ``:/MO/gui/content`` (e.g. ``:/MO/gui/content/plugin`` or ``:/MO/gui/content/music`` `).
+
+      The list of available icons is:
+
+        - ``plugin``: |plugin-icon|
+        - ``skyproc``: |skyproc-icon|
+        - ``texture``: |texture-icon|
+        - ``music``: |music-icon|
+        - ``sound``: |sound-icon|
+        - ``interface``: |interface-icon|
+        - ``skse``: |skse-icon|
+        - ``script``: |script-icon|
+        - ``mesh``: |mesh-icon|
+        - ``string``: |string-icon|
+        - ``bsa``: |bsa-icon|
+        - ``menu``: |menu-icon|
+        - ``inifile``: |inifile-icon|
+        - ``modgroup``: |modgroup-icon|
+
+      .. |plugin-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/jigsaw-piece.png
+      .. |skyproc-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/hand-of-god.png
+      .. |texture-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/empty-chessboard.png
+      .. |music-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/double-quaver.png
+      .. |sound-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/lyre.png
+      .. |interface-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/usable.png
+      .. |skse-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/checkbox-tree.png
+      .. |script-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/tinker.png
+      .. |mesh-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/breastplate.png
+      .. |string-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/conversation.png
+      .. |bsa-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/locked-chest.png
+      .. |menu-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/config.png
+      .. |inifile-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/feather-and-scroll.png
+      .. |modgroup-icon| image:: https://raw.githubusercontent.com/ModOrganizer2/modorganizer/master/src/resources/contents/xedit.png
+
+    __abstract__: true
+
+    Content:
+      __doc__:
+
+      __init__:
+        __doc__:
+
+        args:
+          id: ID of this content.
+          name: Name of this content.
+          icon: |
+            Path to the icon for this content. Can be either a path
+            to an image on the disk, or to a resource. Can be an empty string if filterOnly
+            is true.
+          filter_only: |
+            Indicates if the content should only be show in the filter
+            criteria and not in the actual Content column.
+
+      isOnlyForFilter:
+        __doc__:
+        returns: True if this content is only meant to be used as a filter criteria.
+
+      properties[]:
+        id:
+          type: int
+          desc: The ID of this content.
+        name:
+          type: str
+          desc: The name of this content.
+        icon:
+          type: str
+          desc: The path to the icon of this content (can be a Qt resource path).
+
+    __init__:
+      __doc__:
+
+    getAllContents:
+      __doc__:
+      returns: The list of all possible contents for the corresponding game.
+
+    getContentsFor:
+      __doc__: Retrieve the list of contents in the given tree.
+      args:
+        filetree: The tree corresponding to the mod to retrieve contents for.
+      returns: The IDs of the content in the given tree.
+
+  ModRepositoryFileInfo:
+    __doc__:
+    properties[]:
+      categoryID:
+        type: int
+        desc:
+      description:
+        type: str
+        desc:
+      fileCategory:
+        type: int
+        desc:
+      fileID:
+        type: int
+        desc:
+      fileName:
+        type: str
+        desc:
+      fileSize:
+        type: int
+        desc:
+      fileTime:
+        type: PyQt5.QtCore.QDateTime
+        desc:
+      gameName:
+        type: str
+        desc:
+      modID:
+        type: int
+        desc:
+      modName:
+        type: str
+        desc:
+      name:
+        type: str
+        desc:
+      newestVersion:
+        type: VersionInfo
+        desc:
+      repository:
+        type: str
+        desc:
+      uri:
+        type: str
+        desc:
+      userData:
+        type: MoVariant
+        desc:
+      version:
+        type: VersionInfo
+        desc:
+
+    __init__.1:
+      __doc__:
+      args:
+        other:
+    __init__.2:
+      __doc__:
+      args:
+        game_name:
+        mod_id:
+        file_id:
+    __str__:
+      __doc__:
+      returns:
+    createFromJson:
+      __doc__:
+      args:
+        data:
+      returns:
+
+  PluginSetting:
+    __doc__: |
+      Class to hold the user-configurable parameters a plugin accepts. The purpose of this class is
+      only to inform the application what settings to offer to the user, it does not hold the actual value.
+    properties[]:
+      default_value:
+        type: MoVariant
+        desc: Default value of the setting.
+      description:
+        type: str
+        desc: Description of the setting.
+      key:
+        type: str
+        desc: Name of the setting.
+
+    __init__:
+      __doc__:
+      args:
+        key: Name of the setting.
+        description: Description of the setting.
+        default_value: Default value of the setting.
+
+  SaveGameInfo:
+    __doc__: Feature to get hold of stuff to do with save games.
+    __abstract__: true
+    __init__:
+      __doc__:
+
+    getMissingAssets:
+      __doc__: Retrieve missing assets from the save.
+      args:
+        filepath: Path to the save file.
+      returns: |
+        A collection of missing assets and the modules that can supply those assets.
+
+    getSaveGameInfo:
+      __doc__: Retrieve the information about the supplied save game.
+      args:
+        filepath: Path to the save file.
+      returns: A SaveGame corresponding to the given save file.
+
+    getSaveGameWidget:
+      __doc__: |
+        Retrieve a widget to display over the save game list.
+
+        This method is allowed to return `None` in case no widget has been implemented.
+      args:
+        parent: The parent widget.
+      returns:
+        __doc__: A SaveGameInfoWidget to display information about save game.
+        type: Optional["ISaveGameInfoWidget"]
+
+    hasScriptExtenderSave:
+      __doc__: Check whether or not the save has a paired script extender save.
+      args:
+        filepath: Path to the save file.
+      returns: |
+        True if the given save file has a paired script extender save, False otherwise.
+
+  ScriptExtender:
+    __doc__:
+    __abstract__: true
+
+    BinaryName:
+      __doc__:
+      returns: The name of the script extender binary.
+
+    PluginPath:
+      __doc__:
+      returns: The script extender plugin path, relative to the data folder.
+
+    getArch:
+      __doc__:
+      returns: The CPU platform of the extender.
+
+    getExtenderVersion:
+      __doc__:
+      returns: The version of the script extender.
+
+    isInstalled:
+      __doc__:
+      returns: True if the script extender is installed, False otherwise.
+
+    loaderName:
+      __doc__:
+      returns: The loader to use to ensure the game runs with the script extender.
+
+    loaderPath:
+      __doc__:
+      returns: The fullpath to the script extender loader.
+
+    # TODO: Remove this? Deprecated?
+    saveGameAttachmentExtensions:
+      __doc__:
+      returns: Additional savegame attachments.
+
+  UnmanagedMods:
+    __doc__:
+    __abstract__: true
+
+    displayName:
+      __doc__: Retrieve the display name of a given mod.
+      args:
+        mod_name: Internal name of the mod.
+      returns: The display name of the mod.
+
+    mods:
+      __doc__: Retrieve the list of unmanaged mods for the corresponding game.
+      args:
+        official_only: Retrieve only unmanaged official mods.
+      returns: The list of unmanaged mods (internal names).
+
+    referenceFile:
+      __doc__: |
+        Retrieve the reference file for the requested mod.
+
+        Example: For Bethesda games, the reference file may be the main
+        plugin (esp or esm) for the game or a DLCs.
+      args:
+        mod_name: Internal name of the mod.
+      returns: The reference file (absolute path) for the requested mod.
+
+    secondaryFiles:
+      __doc__: |
+        Retrieve the secondary files for the requested mod.
+
+        Example: For Bethesda games, the secondary files may be the archives
+        corresponding to the reference file.
+      args:
+        mod_name: Internal name of the mod.
+      returns: The secondary files (absolute paths) for the request mod.
+
+  VersionInfo:
+    __doc__: Represents the version of a mod or plugin.
+
+    __init__.1: Construct an invalid VersionInfo.
+
+    __init__.2:
+      __doc__: Construct a VersionInfo by parsing the given string according to the given scheme.
+
+      args:
+        value: String to parse.
+        scheme: Scheme to use to parse the string.
+
+    __init__.3:
+      __doc__: Construct a VersionInfo using the given elements.
+
+      args:
+        major: Major version.
+        minor: Minor version.
+        subminor: Subminor version.
+        subsubminor: Subsubminor version.
+        release_type: Type of release.
+
+    __init__.4:
+      __doc__: Construct a VersionInfo using the given elements.
+
+      args:
+        major: Major version.
+        minor: Minor version.
+        subminor: Subminor version.
+        release_type: Type of release.
+
+    __str__:
+      returns: >
+        See `canonicalString()`.
+
+    canonicalString:
+      returns: >
+        A canonical string representing this version, that can be stored and then parsed using
+        the parse() method.
+
+    clear: Resets this VersionInfo to an invalid version.
+
+    displayString:
+      args:
+        forced_segments: |
+          The number of version segments to display even if the version is 0. 1 is major, 2 is major
+          and minor, etc. The only implemented ranges are (-inf,2] for major/minor, [3] for major/minor/subminor,
+          and [4,inf) for major/minor/subminor/subsubminor. This only versions with a regular scheme.
+      returns: >
+        A string for display to the user. The returned string may not contain enough information
+        to reconstruct this version info.
+
+    isValid:
+      returns: True if this VersionInfo is valid, False otherwise.
+
+    parse:
+      __doc__: Update this VersionInfo by parsing the given string using the given scheme.
+
+      args:
+        value: String to parse.
+        scheme: Scheme to use to parse the string.
+        manual_input: True if the given string should be treated as user input.
+
+    scheme:
+      returns: The version scheme in effect for this VersionInfo.
