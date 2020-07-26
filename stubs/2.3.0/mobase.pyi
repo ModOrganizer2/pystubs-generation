@@ -2874,7 +2874,7 @@ class ISaveGame:
         """
         ...
 
-class ISaveGameInfoWidget(abc.ABC, PyQt5.QtWidgets.QWidget):
+class ISaveGameInfoWidget(PyQt5.QtWidgets.QWidget):
     """
     Base class for a save game info widget.
     """

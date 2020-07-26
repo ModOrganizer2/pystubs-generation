@@ -2166,14 +2166,15 @@ mobase:
 
   ISaveGameInfoWidget:
     __doc__: Base class for a save game info widget.
-    __abstract__: true
+    # Class not abstract because it conflicts with Qt metaclass:
+    # __abstract__: true
     __init__:
       args:
         parent: Parent widget.
     _widget:
-      abstract: false
       returns: The underlying `QWidget`.
     setSave:
+      abstract: true
       __doc__: Set the save file to display in this widget.
       args:
         save: Path to the save file.
