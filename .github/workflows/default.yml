@@ -15,7 +15,7 @@ jobs:
     # Standard drop-in approach that should work for most people.
     - uses: ammaraskar/sphinx-action@master
       with:
-        pre-build-command: "cp ../stubs/2.3.0/mobase.pyi ./mobase.py"
+        pre-build-command: "cp ../stubs/2.3.0/mobase.pyi ./mobase.py && pip install sphinx-rtd-theme sphinx-autodoc-typehints sphinx-automodapi"
         docs-folder: "docs/"
 
     # Publish built docs to gh-pages branch.
