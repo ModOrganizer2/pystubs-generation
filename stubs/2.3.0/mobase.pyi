@@ -2020,7 +2020,7 @@ class IPluginGame(IPlugin):
     Each game requires a specific game plugin. These plugins were initially designed for
     Bethesda games, so a lot of methods and attributes are irrelevant for other games. If
     you wish to write a plugin for a much simpler game, please consider the `basic_games`
-    plugin: https://github.com/Holt59/modorganizer-basic_games
+    plugin: https://github.com/ModOrganizer2/modorganizer-basic_games
     """
 
     def __init__(self): ...
@@ -2340,6 +2340,7 @@ class IPluginGame(IPlugin):
 class IPluginInstaller(IPlugin):
     """
     This is the top-level class for installer. Actual installers should inherit either:
+
       - `IPluginInstallerSimple` if the installer can work directly with the archive. This is what
         most installers use.
       - `IPluginInstallerCustom` if the installer needs to perform custom operations. This is only
