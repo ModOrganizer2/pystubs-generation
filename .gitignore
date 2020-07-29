@@ -5,3 +5,6 @@ __pycache__
 
 # The 'bin/' directory:
 bin
+docs/build
+docs/mobase.py
+docs/source/api
