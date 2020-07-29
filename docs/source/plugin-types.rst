@@ -1,3 +1,5 @@
+.. _type-of-plugins:
+
 Type of Plugins
 ===============
 
@@ -16,8 +18,9 @@ to MO.
 Installers
 ----------
 
-**Interface:** :class:`IPluginInstaller`, :class:`IPluginInstallerSimple`, `IPluginInstallerCustom`
-**Examples:** ``installer_bain``, ``installer_bundle``, ``installer_fomod``, ``installer_ncc``, ``installer_quick``, ``installer_manual``.
+| **Interface:** :class:`IPluginInstaller<mobase.IPluginInstaller>`, :class:`IPluginInstallerSimple<mobase.IPluginInstallerSimple>`,
+  :class:`IPluginInstallerCustom<mobase.IPluginInstallerCustom>`
+| **Examples:** ``installer_bain``, ``installer_bundle``, ``installer_fomod``, ``installer_ncc``, ``installer_quick``, ``installer_manual``.
 
 An installer is invoked when the user tries to install a mod, either by double clicking in the download
 view or through the "Install Mod.." button or "Reinstall mod" item from the mod lists context menu.
@@ -30,8 +33,8 @@ There are actually two ways to write an installer, *simple* or *complex*:
 Previewers
 ----------
 
-**Interface:** :class:`IPluginPreview`
-**Examples:** ``preview_base``
+| **Interfaces:** :class:`IPluginPreview<mobase.IPluginPreview>`
+| **Examples:** ``preview_base``
 
 These plugins add support for previewing files in the data pane.
 Right now all image formats supported by Qt are implemented (including `.dds`) but no audio files and
@@ -42,8 +45,8 @@ Mod Page
 
 *WIP*
 
-**Interface:** :class:`IPluginModPage`
-**Examples:** ``page_tesalliance``
+| **Interfaces:** :class:`IPluginModPage<mobase.IPluginModPage>`
+| **Examples:** ``page_tesalliance``
 
 Mod Page plugins implement interfaces to modding communities where mods can be downloaded, checked
 for updates and so on.
@@ -54,8 +57,8 @@ from the core application. This is a task for the distant future, unless someone
 Game
 ----
 
-**Interface:** :class:`IPluginGame`
-**Examples:** ``game_oblivion``, ``game_fallout3``, ``game_falloutnv``, ``game_skyrim``, ...
+| **Interfaces:** :class:`IPluginGame<mobase.IPluginGame>`
+| **Examples:** ``game_oblivion``, ``game_fallout3``, ``game_falloutnv``, ``game_skyrim``, ...
 
 These plugins (shall eventually) implement all the game specific features and further game plugins are
 able to add support for further games.
@@ -72,16 +75,16 @@ Wherever the core can support BSA invalidation it will query whether the current
 query the implementation on specifics (like "How should the invalidation BSA be called" and "what's the right bsa version").
 Of course, the goal is for feature interfaces to be as generic as possible without limiting usefulness.
 
-**Note:** The :class:`IPluginGame` interface is complex, and mostly designed for Gamebryo games. If you plan
+**Note:** The :class:`IPluginGame<mobase.IPluginGame>` interface is complex, and mostly designed for Gamebryo games. If you plan
 on writting a game plugin for another type of games, you might be interested by a simpler interface and might
-want to check out the `Basic Games <https://github.com/Holt59/modorganizer-basic_games>`_ meta-plugin.
+want to check out the `Basic Games <https://github.com/ModOrganizer2/modorganizer-basic_games>`_ meta-plugin.
 
 
 Tool
 ----
 
-**Interface:** :class:`IPluginTool`
-**Examples:** ``tool_configurator``, ``tool_inieditor``, ``fnistool``
+| **Interfaces:** :class:`IPluginTool<mobase.IPluginTool>`
+| **Examples:** ``tool_configurator``, ``tool_inieditor``, ``fnistool``
 
 This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools submenu and get
 invoked when the user clicks it. They are expected to have a user interface of some sort.
@@ -93,8 +96,8 @@ windows application itself.
 Proxies
 -------
 
-**Interface:** :class:`IPluginProxy`
-**Examples:** ``plugin_python``
+| **Interfaces:** :class:`IPluginProxy<mobase.IPluginProxy>`
+| **Examples:** ``plugin_python``
 
 Proxy Plugins expose the plugin api to foreign languages. This is what allows you to write plugins using python
 in the first place.
@@ -106,8 +109,8 @@ And no, you can not write a proxy for a third language in Python, do not be sill
 *Free Plugins*
 --------------
 
-**Interface:** :class:`IPlugin`
-**Examples:** ``check_fnis``, ``bsa_extractor``, ``diagnose_basic``, ``tool_inibakery``
+| **Interfaces:** :class:`IPlugin<mobase.IPlugin>`
+| **Examples:** ``check_fnis``, ``bsa_extractor``, ``diagnose_basic``, ``tool_inibakery``
 
 "Free" plugins implement none of the interfaces and thus initially do not integrate with MO at all.
 They are initialized by MO and get access to the MO interface.
@@ -123,8 +126,8 @@ that plugins can implement one or more of these interfaces, in addition to a nor
 Diagnose
 ........
 
-**Interface:** :class:`IPluginDiagnose`
-**Examples:** ``diagnose_basic``, ``installer_ncc``, ``plugin_python``, ``script_extender_plugin_checker``
+| **Interfaces:** :class:`IPluginDiagnose<mobase.IPluginDiagnose>`
+| **Examples:** ``diagnose_basic``, ``installer_ncc``, ``plugin_python``, ``script_extender_plugin_checker``
 
 This interface lets the plugin report issues that are then listed in the "Problems" icon in the main window.
 If possible the plugin can also provide an automatic or guided fix to the problem.
@@ -139,8 +142,8 @@ An empty problem list should always be achievable.
 File Mappings
 .............
 
-**Interface:** :class:`IPluginFileMapper`
-**Examples:** ``tool_inibakery``, ``game_gamebryo``
+| **Interfaces:** :class:`IPluginFileMapper<mobase.IPluginFileMapper>`
+| **Examples:** ``tool_inibakery``, ``game_gamebryo``
 
 This interface allows plugins to add virtual file (or directory) links to the virtual file system in addition to the
 mod files.
