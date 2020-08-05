@@ -22,7 +22,7 @@ This guide assumes that:
   - This guide is written for MO2 ≥ 2.3.0.
 
 **Note:** In the following, I will refer to the MO2 installation directory as ``$MO2DIR``. So if you
-installed MO2 at `C:\MO2` and you are asked to copy a file to ``$MO2DIR/plugins``, it refers to ``C:\MO2\plugins``.
+installed MO2 at ``C:\MO2`` and you are asked to copy a file to ``$MO2DIR/plugins``, it refers to ``C:\MO2\plugins``.
 
 Preparation
 -----------

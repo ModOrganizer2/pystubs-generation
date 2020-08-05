@@ -15,7 +15,7 @@ in ``boost::python``:
 
     class MySaveGame(mobase.ISaveGame):
         def __init__(self):
-                super().__init__()  # Mandatory!
+            super().__init__()  # Mandatory!
 
 2. How can I be sure to implement all the required methods when creating a plugin?
 ..................................................................................
