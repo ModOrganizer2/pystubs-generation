@@ -2073,7 +2073,6 @@ class IPluginGame(IPlugin):
             A list of automatically discovered executables of the game itself and tools surrounding it.
         """
         ...
-    @abc.abstractmethod
     def feature(self, feature_type: Type[GameFeatureType]) -> GameFeatureType:
         """
         Retrieve a specified game feature from this plugin.
@@ -2086,7 +2085,6 @@ class IPluginGame(IPlugin):
         not implemented.
         """
         ...
-    @abc.abstractmethod
     def featureList(self) -> Dict[Type[GameFeatureType], GameFeatureType]:
         """
         Retrieve the list of game features implemented for this plugin.

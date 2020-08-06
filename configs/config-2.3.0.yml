@@ -1651,6 +1651,7 @@ mobase:
 
     feature:
       __doc__: Retrieve a specified game feature from this plugin.
+      abstract: false
       args:
         feature_type:
           __doc__: The class of feature to retrieve.
@@ -1666,6 +1667,7 @@ mobase:
         Retrieve the list of game features implemented for this plugin.
 
         Python plugin should not implement this method but `_featureList()`.
+      abstract: false
       returns:
         __doc__: A mapping from feature type to actual game features.
         type: Dict[Type[GameFeatureType], GameFeatureType]
