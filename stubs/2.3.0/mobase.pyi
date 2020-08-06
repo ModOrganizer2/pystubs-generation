@@ -2971,7 +2971,7 @@ class ModDataChecker(abc.ABC):
             Whether the tree is invalid, fixable or valid.
         """
         ...
-    def fix(self, filetree: "IFileTree") -> "IFileTree":
+    def fix(self, filetree: "IFileTree") -> Optional["IFileTree"]:
         """
         Try to fix the given tree.
 

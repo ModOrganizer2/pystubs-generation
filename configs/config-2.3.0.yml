@@ -2259,7 +2259,9 @@ mobase:
       abstract: false
       args:
         filetree: The tree to try to fix. Can be modified during the process.
-      returns: The fixed tree, or a null pointer if the tree could not be fixed.
+      returns:
+        __doc__: The fixed tree, or a null pointer if the tree could not be fixed.
+        type: Optional["IFileTree"]
 
   ModDataContent:
     __doc__: |
