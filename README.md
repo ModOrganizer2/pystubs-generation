@@ -13,6 +13,12 @@ pip install mobase-stubs
 
 This will install the latest stubs on PyPi which usually corresponds to the latest release of
 MO2.
+You can install stubs for a specific version of MO2:
+
+```bash
+pip install mobase-stubs==2.3.2.*
+```
+
 If you want development stubs, you can install them this way:
 ```bash
 # Clone this repository:
