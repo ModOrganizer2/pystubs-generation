@@ -5,8 +5,11 @@ interface `mobase`.
 
 ## Using the stubs
 
-If you do not want to generate them, the generated stubs are available under [`stubs/`](stubs/) for latest
-versions of MO2.
+You can install the `stubs` with `pip`:
+
+```bash
+pip install mobase-stubs
+```
 
 Some words of warning:
 - The stubs are as correct as possible, but some errors are expected.
@@ -18,16 +21,6 @@ Some words of warning:
     expected with these class (e.g., `isintance(myObject, QObject)` will return `False`), which is why a
     `_object()` and `_widget()` method is also provided.
 
-### Visual Studio Code
-
-The `mobase` stubs can be used with [Visual Studio Code](https://code.visualstudio.com/) to enable auto-completion and eventually linting using `mypy`:
-- To use the stubs for auto-completion, you can use the
-[`python.autoComplete.extraPaths`](https://code.visualstudio.com/docs/python/editing#_enable-intellisense-for-custom-package-locations)
-setting.
-- If you want them to work with `mypy`, the easiest way is to create a `setup.cfg` file at the root of your
-project (or any file that `mypy` recognize) and set the `mypy_path` property, see
-[`mypy` documentation](https://mypy.readthedocs.io/en/stable/config_file.html#import-discovery).
-
 ## Generating the stubs
 
 The stubs are generated using python by parsing the `mobase` module.
@@ -38,16 +31,13 @@ To generate the stubs, you can run:
 
 ```
 # Change the output folder to whatever you want:
-python main.py -c configs\config-2.3.0a10.json -o stubs\2.3.0a10\mobase.pyi ${MO2_INSTALL_PATH}
-
-# [Optional] Run black on the file to get it clean:
-black stubs\2.3.0a10\mobase.pyi
+python main.py -c configs\config-2.3.yml -o stubs\2.3.0\mobase.pyi ${MO2_INSTALL_PATH}
 ```
 
 Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one containing `ModOrganizer.exe`).
 
-If you do not specify a `-o` option, output will go to `stdout`, so you should redirect. Warning and "critical"
-messages are printed to `stderr`.
+If you do not specify a `-o` option, output will go to `stdout`, so you should redirect.
+Warning and "critical" messages are printed to `stderr`.
 
 A few options are available for `main.py`:
 
@@ -68,34 +58,46 @@ optional arguments:
 
 The stubs generator will try hard to find a valid stubs for all classes and methods of `mobase`.
 A lot of information is available through the `-v` options. Without it, only conversions or fixes
-considered "strange" will be outputed. For instance, here is the output with the current `config.json`
-file:
+considered "strange" will be outputed.
+For instance, here is the output with the current `config-2.3.yml` file:
 
 ```
 WARNING: Replacing IOrganizer::FileInfo with FileInfo.
 WARNING: Replacing IOrganizer::FileInfo with FileInfo.
 WARNING: Replacing IPluginInstaller::EInstallResult with InstallResult.
 WARNING: Replacing IPluginInstaller::EInstallResult with InstallResult.
-CRITICAL: Found bool * which is a pointer to a built-in python type.
 ```
 
-As you can see, only a few types were manually fixed (specified in `config.json`), but a `bool *`
-parameter was found, which is not valid, so this would require a change in the actual C++ bindings.
+As you can see, only a few types were manually fixed (specified in `config-2.3.yml`).
 
 ## Configuration file
 
 The configuration file contains information for the stubs that cannot be deduced by `main` (or are too
-complex to deduce). In particular:
+complex to deduce), and the documentation for everything.
 
-- list of names to ignore - can be used to hide name or to ignore object for which stubs cannot be generated (currently
-    only stubs for classes can be generated, so functions are ignored);
-- list of methods to override - can be used to override method signatures for methods that are too complex (see below);
-- list of property types - should be used to specify the types of the property since these cannot be deduced;
-- list of bases - should be used to override the bases of a class (e.g., to add `QObject`);
-- list of Qt signals - should be used to indicate available signals (new ones).
+## Uploading the stubs to pypi
 
-An example of configuration file is [`config.json`](config.json), and an empty configuration is provided ([`empty.json`](empty.json))
-to show what happens with an empty configuration.
+The upload of the stubs to https://pypi.org/project/mobase-stubs/ has to be done manually. Here
+are the steps:
+
+1. Check the version of the stubs:
+  - The version is specified in the configuration file. If you need to modify the stubs of the
+    current version, you need to add a `.postX` after the version since PyPi does not allow
+    re-upload of the same release.
+2. Generate the stubs using the procedure above. Currently, stubs are stored under `stubs/x.y.z/mobase.pyi`
+  for each release of MO2.
+3. Copy the `stubs/x.y.z/mobase.pyi` stubs to `stubs/setup/mobase-stubs/__init__.pyi`.
+4. If necessary, update the dependencies in `setup.py` (`PyQt5-stubs` version and python version).
+5. Go to `stubs/setup` and run:
+
+```bash
+python setup.py sdist bdist_wheel
+twine upload dist/*
+```
+
+You need to set the environment variables `TWINE_USERNAME` and `TWINE_PASSWORD` to appropriate values
+before running `twine upload`.
+
 
 ## Extras &mdash; Starts a python interpreter with `mobase`
 
@@ -111,7 +113,7 @@ This has no real usage except for MO2 developers since most classes from the `mo
 
 The MIT License (MIT)
 
-Copyright (c) 2020, Mikaël Capelle.
+Copyright (c) 2020, Holt59.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
