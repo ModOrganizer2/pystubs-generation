@@ -11,6 +11,18 @@ You can install the `stubs` with `pip`:
 pip install mobase-stubs
 ```
 
+This will install the latest stubs on PyPi which usually corresponds to the latest release of
+MO2.
+If you want development stubs, you can install them this way:
+```bash
+# Clone this repository:
+git clone https://github.com/ModOrganizer2/pystubs-generation.git
+
+# Install the stubs:
+cd pystubs-generation/stubs/setup
+pip install .
+```
+
 Some words of warning:
 - The stubs are as correct as possible, but some errors are expected.
 - If you see a `InterfaceNotImplemented` class anywhere in the stubs, it means that a proper interface is
@@ -31,10 +43,14 @@ To generate the stubs, you can run:
 
 ```
 # Change the output folder to whatever you want:
-python main.py -c configs\config-2.3.yml -o stubs\2.3.0\mobase.pyi ${MO2_INSTALL_PATH}
+python main.py -c configs\config-2.3.yml -o stubs\setup\mobase-stubs\__init__.pyi ${MO2_INSTALL_PATH}
 ```
 
 Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one containing `ModOrganizer.exe`).
+
+The latest stubs are kept under `stubs/setup/mobase-stubs/__init__.pyi`, and when a new version is released,
+the stubs are backed-up under `stubs/x.y.z/mobase.pyi`.
+
 
 If you do not specify a `-o` option, output will go to `stdout`, so you should redirect.
 Warning and "critical" messages are printed to `stderr`.
@@ -84,11 +100,9 @@ are the steps:
   - The version is specified in the configuration file. If you need to modify the stubs of the
     current version, you need to add a `.postX` after the version since PyPi does not allow
     re-upload of the same release.
-2. Generate the stubs using the procedure above. Currently, stubs are stored under `stubs/x.y.z/mobase.pyi`
-  for each release of MO2.
-3. Copy the `stubs/x.y.z/mobase.pyi` stubs to `stubs/setup/mobase-stubs/__init__.pyi`.
-4. If necessary, update the dependencies in `setup.py` (`PyQt5-stubs` version and python version).
-5. Go to `stubs/setup` and run:
+2. Generate the stubs using the procedure above. You should generate the stubs under `stubs/setup/mobase-stubs/__init__.pyi`.
+3. If necessary, update the dependencies in `setup.py` (`PyQt5-stubs` version and python version).
+4. Go to `stubs/setup` and run:
 
 ```bash
 python setup.py sdist bdist_wheel
@@ -97,7 +111,6 @@ twine upload dist/*
 
 You need to set the environment variables `TWINE_USERNAME` and `TWINE_PASSWORD` to appropriate values
 before running `twine upload`.
-
 
 ## Extras &mdash; Starts a python interpreter with `mobase`
 
