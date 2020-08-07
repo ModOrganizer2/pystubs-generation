@@ -1,4 +1,4 @@
-__version__ = "2.3.0"
+__version__ = "2.3.2.post2"
 
 import abc
 from enum import Enum
@@ -2663,7 +2663,6 @@ class IPluginList:
 
 class IPluginModPage(IPlugin):
     def __init__(self): ...
-    @abc.abstractmethod
     def _parentWidget(self) -> PyQt5.QtWidgets.QWidget:
         """
         Returns:
@@ -2775,7 +2774,6 @@ class IPluginTool(IPlugin):
     """
 
     def __init__(self): ...
-    @abc.abstractmethod
     def _parentWidget(self) -> PyQt5.QtWidgets.QWidget:
         """
         Returns:

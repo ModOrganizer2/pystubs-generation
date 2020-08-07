@@ -15,6 +15,9 @@ ignores:
 # related to functions / classes, including their documentation.
 mobase:
 
+  # Version of the stubs.
+  __version__: 2.3.2.post2
+
   getFileVersion:
     __doc__: Retrieve the file version of the given executable.
     args:
@@ -2035,6 +2038,7 @@ mobase:
   IPluginModPage:
 
     _parentWidget:
+      abstract: false
       returns: The parent widget.
 
     displayName:
@@ -2097,6 +2101,7 @@ mobase:
       application itself.
 
     _parentWidget:
+      abstract: false
       returns: The parent widget.
 
     display:

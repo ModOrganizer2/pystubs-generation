@@ -111,6 +111,7 @@ for n, o in objects:
 with open(args.output, "w") as output:
 
     writer = Writer(output, settings)
+    writer.print_version(settings.mobase["__version__"])  # type: ignore
     writer.print_imports(
         [
             "abc",

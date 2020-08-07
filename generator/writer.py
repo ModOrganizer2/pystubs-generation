@@ -31,6 +31,10 @@ class Writer:
         doc = '"""\n' + doc.strip() + '\n"""'
         self._print("\n".join((indent + line).rstrip() for line in doc.split("\n")))
 
+    def print_version(self, version: str):
+        self._print('__version__ = "{}"'.format(version))
+        self._print()
+
     def print_imports(self, imports: List[Union[str, Tuple[str, List[str]]]]):
         """ Print the given imports. """
         for imp in imports:

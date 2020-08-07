@@ -1,3 +1,5 @@
+__version__ = "2.2.2.1"
+
 from enum import Enum
 from typing import (
     Dict,
@@ -227,15 +229,33 @@ class IModList:
         pass
 
 class IModRepositoryBridge(PyQt5.QtCore.QObject):
-    descriptionAvailable: PyQt5.QtCore.pyqtSignal = ...  # descriptionAvailable[str, int, QVariant, QVariant]
-    filesAvailable: PyQt5.QtCore.pyqtSignal = ...  # filesAvailable[str, int, QVariant, List[ModRepositoryFileInfo]]
-    fileInfoAvailable: PyQt5.QtCore.pyqtSignal = ...  # fileInfoAvailable[str, int, int, QVariant, QVariant]
-    downloadURLsAvailable: PyQt5.QtCore.pyqtSignal = ...  # downloadURLsAvailable[str, int, int QVariant, QVariant]
-    endorsementsAvailable: PyQt5.QtCore.pyqtSignal = ...  # endorsementsAvailable[QVariant, QVariant]
-    endorsementToggled: PyQt5.QtCore.pyqtSignal = ...  # endorsementToggled[str, int, QVariant, QVariant]
-    trackedModsAvailable: PyQt5.QtCore.pyqtSignal = ...  # trackedModsAvailable[QVariant, QVariant]
-    trackingToggled: PyQt5.QtCore.pyqtSignal = ...  # trackingToggled[str, int, QVariant, bool]
-    requestFailed: PyQt5.QtCore.pyqtSignal = ...  # requestFailed[str, int, int, QVariant, NetworkError, str]
+    descriptionAvailable: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # descriptionAvailable[str, int, QVariant, QVariant]
+    filesAvailable: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # filesAvailable[str, int, QVariant, List[ModRepositoryFileInfo]]
+    fileInfoAvailable: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # fileInfoAvailable[str, int, int, QVariant, QVariant]
+    downloadURLsAvailable: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # downloadURLsAvailable[str, int, int QVariant, QVariant]
+    endorsementsAvailable: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # endorsementsAvailable[QVariant, QVariant]
+    endorsementToggled: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # endorsementToggled[str, int, QVariant, QVariant]
+    trackedModsAvailable: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # trackedModsAvailable[QVariant, QVariant]
+    trackingToggled: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # trackingToggled[str, int, QVariant, bool]
+    requestFailed: PyQt5.QtCore.pyqtSignal = (
+        ...
+    )  # requestFailed[str, int, int, QVariant, NetworkError, str]
     def __init__(self):
         pass
     def requestDescription(self, arg1: str, arg2: int, arg3: MoVariant):
