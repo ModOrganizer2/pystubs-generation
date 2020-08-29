@@ -13,4 +13,4 @@ It uses the stub files that are produced by https://github.com/ModOrganizer2/pys
 
 Simply install `mobase-stubs` with pip:
 
-    $ pip install `mobase-stubs`
+    $ pip install mobase-stubs
