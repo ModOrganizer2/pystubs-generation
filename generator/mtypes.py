@@ -423,6 +423,7 @@ class Function:
     overloads: bool
     raises: List[Exc]
     doc: str
+    deprecated: bool
 
     def __init__(
         self,
@@ -438,9 +439,13 @@ class Function:
         self.overloads = has_overloads
         self.raises = []
         self.doc = ""
+        self.deprecated = False
 
     def has_overloads(self):
         return self.overloads
+
+    def is_deprecated(self):
+        return self.deprecated
 
 
 class Method(Function):
@@ -529,6 +534,7 @@ class Class:
     outer_class: Optional["Class"]
     doc: str
     abstract: bool
+    deprecated: bool
 
     def __init__(
         self,
@@ -550,6 +556,7 @@ class Class:
         self.doc = ""
         self.abstract = False
         self.outer_class = None
+        self.deprecated = False
 
         # Update class in method:
         for m in self.methods:
@@ -574,6 +581,9 @@ class Class:
             oc = oc.outer_class
 
         return name
+
+    def is_deprecated(self):
+        return self.deprecated
 
     def __str__(self):
         return self.canonical_name

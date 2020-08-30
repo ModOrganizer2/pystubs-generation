@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from collections import OrderedDict, defaultdict
-from typing import List, Dict, Any, Tuple, TextIO, Optional, Union
+from typing import List, Dict, Any, Tuple, TextIO, Optional, Union, NamedTuple
 
 from . import logger
 from . import register
@@ -11,6 +11,15 @@ import yaml
 
 
 class Settings:
+    class FunctionSettings(NamedTuple):
+
+        doc: str
+        args: Optional[List["mtypes.Arg"]] = None
+        ret: Optional["mtypes.Ret"] = None
+        raises: List["mtypes.Exc"] = []
+        static: Optional[bool] = None
+        abstract: Optional[bool] = None
+        deprecated: bool = False
 
     register: "register.MobaseRegister"
 
@@ -74,33 +83,27 @@ class Settings:
 
     def _parse_function_settings(
         self, settings: Union[str, Dict[str, Any]]
-    ) -> Tuple[
-        str,
-        Optional[List["mtypes.Arg"]],
-        Optional["mtypes.Ret"],
-        List["mtypes.Exc"],
-        Optional[bool],  # static
-        Optional[bool],  # abstract
-    ]:
+    ) -> "FunctionSettings":
         """Parse settings for a function or method.
 
         Args:
             settings: Settings corresponding to a function.
 
         Returns:
-            A Tuple containing details about the parsed function. A None value
-            indicates that nothing was specified in the settings.
+            The parsed settings for the function.
         """
+        FunctionSettings = Settings.FunctionSettings
 
         if settings is None:
-            return ("", None, None, [], None, None)
+            return FunctionSettings("")
 
         if isinstance(settings, str):
-            return (settings, None, None, [], None, None)
+            return FunctionSettings(settings)
 
         doc = settings.get("__doc__", "")
         static = settings.get("static", None)
         abstract = settings.get("abstract", None)
+        deprecated = settings.get("deprecated", False)
 
         # Arguments:
         args: Optional[List[mtypes.Arg]] = None
@@ -143,7 +146,7 @@ class Settings:
                     v = ""
                 excs.append(mtypes.Exc(mtypes.Type(r), v))
 
-        return (doc, args, ret, excs, static, abstract)
+        return FunctionSettings(doc, args, ret, excs, static, abstract, deprecated)
 
     def patch_functions(self, fns: List["mtypes.Function"]):
         for i, fn in enumerate(fns):
@@ -156,38 +159,39 @@ class Settings:
 
             # If the name is in the settings:
             if sname in self._mobase:
-                (sdoc, sargs, ret, raises, _, _,) = self._parse_function_settings(
-                    self._mobase[sname]
-                )
+                fsettings = self._parse_function_settings(self._mobase[sname])
 
                 # Force raises:
-                fn.raises = raises
+                fn.raises = fsettings.raises
 
                 # Check the args:
-                if sargs is not None:
-                    if len(sargs) != len(fn.args):
+                if fsettings.args is not None:
+                    if len(fsettings.args) != len(fn.args):
                         logger.warn(
                             "Mismatch number of arguments for function mobase.{}."
                             .format(sname)  # noqa
                         )
 
-                    for sarg, marg in zip(sargs, fn.args):
+                    for sarg, marg in zip(fsettings.args, fn.args):
                         marg.doc = sarg.doc
                         if not sarg.type.is_none():
                             marg.type = sarg.type
 
                 # Check the return type:
-                if ret is not None:
+                if fsettings.ret is not None:
 
                     # Force the doc anyway:
-                    fn.ret.doc = ret.doc
+                    fn.ret.doc = fsettings.ret.doc
 
                     # Update the type if specified:
-                    if not ret.type.is_none():
-                        fn.ret.type = ret.type
+                    if not fsettings.ret.type.is_none():
+                        fn.ret.type = fsettings.ret.type
 
                 # Force the doc:
-                fn.doc = sdoc
+                fn.doc = fsettings.doc
+
+                # Force depreciation:
+                fn.deprecated = fsettings.deprecated
 
             else:
                 logger.warn("Missing settings for function mobase.{}.".format(sname))
@@ -288,61 +292,57 @@ class Settings:
                 # If the name is in the settings:
                 if sname in csettings:
                     keys[sname] = True
-                    (
-                        sdoc,
-                        sargs,
-                        ret,
-                        raises,
-                        static,
-                        abstract,
-                    ) = self._parse_function_settings(csettings[sname])
+                    fsettings = self._parse_function_settings(csettings[sname])
 
                     # Force raises:
-                    m.raises = raises
+                    m.raises = fsettings.raises
 
                     # Force static:
-                    if static is not None:
-                        if m.is_static() != static:
+                    if fsettings.static is not None:
+                        if m.is_static() != fsettings.static:
                             logger.warn(
                                 "Forcing method {}.{} to be {}.".format(
                                     cls.canonical_name,
                                     sname,
-                                    "static" if static else "non static",
+                                    "static" if fsettings.static else "non static",
                                 )
                             )
-                        m.static = static
+                        m.static = fsettings.static
 
-                    if abstract is not None:
-                        m.abstract = abstract
+                    if fsettings.abstract is not None:
+                        m.abstract = fsettings.abstract
 
                     # Check the args:
-                    if sargs is not None:
+                    if fsettings.args is not None:
                         margs = m.args if m.is_static() else m.args[1:]
-                        if len(sargs) != len(margs):
+                        if len(fsettings.args) != len(margs):
                             logger.warn(
                                 "Mismatch number of arguments for method {}.{}.".format(
                                     cls.canonical_name, sname
                                 )
                             )
 
-                        for sarg, marg in zip(sargs, margs):
+                        for sarg, marg in zip(fsettings.args, margs):
                             marg.doc = sarg.doc
                             marg.name = sarg.name
                             if not sarg.type.is_none():
                                 marg.type = sarg.type
 
                     # Check the return type:
-                    if ret is not None:
+                    if fsettings.ret is not None:
 
                         # Force the doc anyway:
-                        m.ret.doc = ret.doc
+                        m.ret.doc = fsettings.ret.doc
 
                         # Update the type if specified:
-                        if not ret.type.is_none():
-                            m.ret.type = ret.type
+                        if not fsettings.ret.type.is_none():
+                            m.ret.type = fsettings.ret.type
 
                     # Force the doc:
-                    m.doc = sdoc
+                    m.doc = fsettings.doc
+
+                    # Force deprecated:
+                    m.deprecated = fsettings.deprecated
 
                 # Only warn for "normal" methods:
                 elif not m.name.startswith("__"):
@@ -351,6 +351,17 @@ class Settings:
                             cls.canonical_name, sname
                         )
                     )
+
+            # Remove the deprecated methods:
+            noverloads = 0
+            for m in ms:
+                if m.is_deprecated():
+                    cls.methods.remove(m)
+                else:
+                    noverloads += 1
+
+            for m in ms:
+                m.overloads = noverloads > 1
 
         # Patch inner classes:
         for ic in cls.inner_classes:
