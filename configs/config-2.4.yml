@@ -981,11 +981,11 @@ mobase:
       returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
     onModStateChanged.2:
-      __doc__: Install a handler to be called when a mod state changes (enabled/disabled, endorsed, ...).
+      __doc__: Install a handler to be called when mod states change (enabled/disabled, endorsed, ...).
       args:
         callback: |
-          The function to call when the state of a mod changes. The first argument is the internal
-          mod name, and the second one the new state of the mod.
+          The function to call when the states of mod change. The argument is a map containing the
+          mods whose states have changed. Keys are internal mod names and values are mod states.
       returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
     priority:
