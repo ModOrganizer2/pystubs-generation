@@ -89,7 +89,7 @@ class Writer:
             doc += "\nArgs:\n"
             for arg in args:
                 adocl = arg.doc.strip().split("\n")
-                adoc = adocl[0] + "\n".join("        " + ldoc for ldoc in adocl[1:])
+                adoc = "\n".join([adocl[0]] + ["        " + ldoc for ldoc in adocl[1:]])
                 doc += "    " + arg.name + ": " + adoc + "\n"
 
         if not fn.ret.type.is_none() and fn.ret.doc:
