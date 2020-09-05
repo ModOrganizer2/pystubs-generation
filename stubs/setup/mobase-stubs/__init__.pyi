@@ -1,4 +1,4 @@
-__version__ = "2.3.2.post2"
+__version__ = "2.4.0.alpha1"
 
 import abc
 from enum import Enum
@@ -179,7 +179,8 @@ class DataArchives(abc.ABC):
 
         Args:
             profile: Profile to add the archive to.
-            index: Index to insert before. Use 0 for the beginning of the list or INT_MAX for        the end of the list).
+            index: Index to insert before. Use 0 for the beginning of the list or INT_MAX for
+                the end of the list).
             name: Name of the archive to add.
         """
         ...
@@ -717,7 +718,8 @@ class IFileTree(FileTreeEntry):
 
         Args:
             path: Path to the file to create.
-            replace_if_exists: If True and an entry already exists at the given location, it will be replaced by        a new entry. This will replace both files and directories.
+            replace_if_exists: If True and an entry already exists at the given location, it will be replaced by
+                a new entry. This will replace both files and directories.
 
         Returns:
             A FileTreeEntry corresponding to the created file.
@@ -759,7 +761,8 @@ class IFileTree(FileTreeEntry):
 
         Args:
             entry: Entry to copy.
-            path: The path to copy the entry to. If the path ends with / or \\, the entry will        be copied in the corresponding directory instead of replacing it. If the
+            path: The path to copy the entry to. If the path ends with / or \\, the entry will
+                be copied in the corresponding directory instead of replacing it. If the
                 given path is empty (`""`), the entry is copied directly under this tree.
             policy: Policy to use to resolve conflicts.
 
@@ -907,7 +910,8 @@ class IFileTree(FileTreeEntry):
 
         Args:
             entry: Entry to move.
-            path: The path to move the entry to. If the path ends with / or \\, the entry will        be inserted in the corresponding directory instead of replacing it. If the
+            path: The path to move the entry to. If the path ends with / or \\, the entry will
+                be inserted in the corresponding directory instead of replacing it. If the
                 given path is empty (`""`), this is equivalent to `insert()`.
             policy: Policy to use to resolve conflicts.
 
@@ -1242,18 +1246,20 @@ class IModList:
         Install a handler to be called when a mod is moved.
 
         Args:
-            callback: The function to call when a mod is moved. The first argument is the internal name of the        mod, the second argument the old priority and the third argument the new priority.
+            callback: The function to call when a mod is moved. The first argument is the internal name of the
+                mod, the second argument the old priority and the third argument the new priority.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onModStateChanged(self, callback: Callable[[str, int], None]) -> bool:
+    def onModStateChanged(self, callback: Callable[[Dict[str, int]], None]) -> bool:
         """
-        Install a handler to be called when a mod state changes (enabled/disabled, endorsed, ...).
+        Install a handler to be called when mod states change (enabled/disabled, endorsed, ...).
 
         Args:
-            callback: The function to call when the state of a mod changes. The first argument is the internal        mod name, and the second one the new state of the mod.
+            callback: The function to call when the states of mod change. The argument is a map containing the
+                mods whose states have changed. Keys are internal mod names and values are mod states.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1270,6 +1276,23 @@ class IModList:
             The priority of the given mod.
         """
         ...
+    @overload
+    def setActive(self, names: List[str], active: bool) -> int:
+        """
+        Enable or disable a list of mods.
+
+        Calling this will cause MO to re-evaluate its virtual file system so this is
+        a fairly expensive call.
+
+        Args:
+            names: Internal names of the mod to enable or disable.
+            active: True to enable the mods, False to disable them.
+
+        Returns:
+            True on success, False otherwise.
+        """
+        ...
+    @overload
     def setActive(self, name: str, active: bool) -> bool:
         """
         Enable or disable a mod.
@@ -1595,7 +1618,8 @@ class IOrganizer:
         not run.
 
         Args:
-            callback: The function to call when an application is about to run. The parameter is the absolute path        to the application to run. The function can return False to prevent the application from running.
+            callback: The function to call when an application is about to run. The parameter is the absolute path
+                to the application to run. The function can return False to prevent the application from running.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1606,7 +1630,8 @@ class IOrganizer:
         Install a new handler to be called when an application has finished running.
 
         Args:
-            callback: The function to call when an application has finished running. The first parameter is the absolute        path to the application, and the second parameter is the exit code of the application.
+            callback: The function to call when an application has finished running. The first parameter is the absolute
+                path to the application, and the second parameter is the exit code of the application.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1617,7 +1642,8 @@ class IOrganizer:
         Install a new handler to be called when a new mod is installed.
 
         Args:
-            callback: The function to call when a mod is installed. The parameter of the function is the name of the        installed mod.
+            callback: The function to call when a mod is installed. The parameter of the function is the name of the
+                installed mod.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1630,7 +1656,8 @@ class IOrganizer:
         Install a new handler to be called when a plugin setting is changed.
 
         Args:
-            callback: The function to call when a plugin setting is changed. The parameters are: The name of the plugin, the        name of the setting, the old value (or `None` if the setting did not exist before) and the new value
+            callback: The function to call when a plugin setting is changed. The parameters are: The name of the plugin, the
+                name of the setting, the old value (or `None` if the setting did not exist before) and the new value
                 of the setting (or `None` if the setting has been removed).
 
         Returns:
@@ -1648,7 +1675,8 @@ class IOrganizer:
         might not be up-to-date).
 
         Args:
-            callback: The function to call when the current profile is changed. The first parameter is the old profile (can        be `None`, e.g. at startup), and the second parameter is the new profile (cannot be `None`).
+            callback: The function to call when the current profile is changed. The first parameter is the old profile (can
+                be `None`, e.g. at startup), and the second parameter is the new profile (cannot be `None`).
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1661,7 +1689,8 @@ class IOrganizer:
         Install a new handler to be called when the UI has been fully initialized.
 
         Args:
-            callback: The function to call when the user-interface has been fully initialized. The parameter is the main        window of the application (`QMainWindow`).
+            callback: The function to call when the user-interface has been fully initialized. The parameter is the main
+                window of the application (`QMainWindow`).
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1684,7 +1713,8 @@ class IOrganizer:
         the storage
 
         Args:
-            plugin_name: Name of the plugin for which to retrieve the value. This should always be IPlugin::name() unless you have a        really good reason to access data of another mod AND if you can verify that plugin is actually installed.
+            plugin_name: Name of the plugin for which to retrieve the value. This should always be IPlugin::name() unless you have a
+                really good reason to access data of another mod AND if you can verify that plugin is actually installed.
             key: Identifier of the setting.
             default: Default value to return if the key is not set (yet).
 
@@ -1778,7 +1808,8 @@ class IOrganizer:
         This does not update the in-memory value for this setting, see `setPluginSetting()` for this.
 
         Args:
-            plugin_name: Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a        really good reason to access data of another mod AND if you can verify that plugin is actually installed.
+            plugin_name: Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+                really good reason to access data of another mod AND if you can verify that plugin is actually installed.
             key: Identifier of the setting.
             value: New value for the setting.
             sync: If True, the storage is immediately written to disc. This costs performance but is safer against data loss.
@@ -1791,7 +1822,8 @@ class IOrganizer:
         This automatically notify handlers register with `onPluginSettingChanged`, so you do not have to do it yourself.
 
         Args:
-            plugin_name: Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a        really good reason to access data of another mod AND if you can verify that plugin is actually installed.
+            plugin_name: Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+                really good reason to access data of another mod AND if you can verify that plugin is actually installed.
             key: Identifier of the setting.
             value: New value for the setting.
         """
@@ -1809,9 +1841,12 @@ class IOrganizer:
         Starts an application with virtual filesystem active.
 
         Args:
-            executable: Name or path of the executable. If this is only a filename, it will only work if it has been configured        in MO as an executable. If it is a relative path it is expected to be relative to the game directory.
-            args: Arguments to pass to the executable. If the list is empty, and `executable` refers to a configured executable,        the configured arguments are used.
-            cwd: The working directory for the executable. If this is empty, the path to the executable is used unless `executable`        referred to a configured MO executable, in which case the configured cwd is used.
+            executable: Name or path of the executable. If this is only a filename, it will only work if it has been configured
+                in MO as an executable. If it is a relative path it is expected to be relative to the game directory.
+            args: Arguments to pass to the executable. If the list is empty, and `executable` refers to a configured executable,
+                the configured arguments are used.
+            cwd: The working directory for the executable. If this is empty, the path to the executable is used unless `executable`
+                referred to a configured MO executable, in which case the configured cwd is used.
             profile: Profile to use. If this is empty (the default) the current profile is used.
             forcedCustomOverwrite: The mod to set as the custom overwrite, regardless of what the profile has configured.
             ignoreCustomOverwrite: Set to true to ignore the profile's configured custom overwrite.
@@ -2438,11 +2473,14 @@ class IPluginInstallerCustom(IPluginInstaller):
         The mod needs to be created by calling `IOrganizer.createMod` first.
 
         Args:
-            mod_name: Name of the mod to install. As an input parameter this is the suggested name        (e.g. from meta data) The installer may change this parameter to rename the mod).
+            mod_name: Name of the mod to install. As an input parameter this is the suggested name
+                (e.g. from meta data) The installer may change this parameter to rename the mod).
             game_name: Name of the game for which the mod is installed.
             archive_name: Name of the archive to install.
-            version: Version of the mod. May be empty if the version is not yet known. The plugin is responsible        for setting the version on the created mod.
-            nexus_id: ID of the mod or -1 if unknown. The plugin is responsible for setting the mod ID for the        created mod.
+            version: Version of the mod. May be empty if the version is not yet known. The plugin is responsible
+                for setting the version on the created mod.
+            nexus_id: ID of the mod or -1 if unknown. The plugin is responsible for setting the mod ID for the
+                created mod.
 
         Returns:
             The result of the installation process.
@@ -2519,7 +2557,8 @@ class IPluginInstallerSimple(IPluginInstaller):
         version, id).
 
         Args:
-            name: Name of the mod to install. As an input parameter this is the suggested name        (e.g. from meta data) The installer may change this parameter to rename the mod).
+            name: Name of the mod to install. As an input parameter this is the suggested name
+                (e.g. from meta data) The installer may change this parameter to rename the mod).
             tree: In-memory representation of the archive content.
             version: Version of the mod, or an empty string is unknown.
             nexus_id: ID of the mod, or -1 if unknown.
@@ -2580,7 +2619,20 @@ class IPluginList:
         Install a new handler to be called when a plugin is moved.
 
         Args:
-            callback: The function to call when a plugin is moved. The first parameter is the plugin name, the        second the old priority of the plugin and the third one the new priority.
+            callback: The function to call when a plugin is moved. The first parameter is the plugin name, the
+                second the old priority of the plugin and the third one the new priority.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onPluginStateChanged(self, callback: Callable[[str, int], None]) -> bool:
+        """
+        Install a new handler to be called when a plugin state changes.
+
+        Args:
+            callback: The function to call when a plugin state changes. The first parameter is the plugin name, the
+                second the new state of the plugin.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -2640,6 +2692,7 @@ class IPluginList:
             loadorder: The new load order, specified by the list of plugin names, sorted.
         """
         ...
+    def setPriority(self, name: str, priority: int) -> bool: ...
     def setState(self, name: str, state: int):
         """
         Set the state of a plugin.
@@ -3045,9 +3098,11 @@ class ModDataContent(abc.ABC):
             Args:
                 id: ID of this content.
                 name: Name of this content.
-                icon: Path to the icon for this content. Can be either a path        to an image on the disk, or to a resource. Can be an empty string if filterOnly
+                icon: Path to the icon for this content. Can be either a path
+                    to an image on the disk, or to a resource. Can be an empty string if filterOnly
                     is true.
-                filter_only: Indicates if the content should only be show in the filter        criteria and not in the actual Content column.
+                filter_only: Indicates if the content should only be show in the filter
+                    criteria and not in the actual Content column.
             """
             ...
         def isOnlyForFilter(self) -> bool:
@@ -3445,7 +3500,8 @@ class VersionInfo:
     def displayString(self, forced_segments: int = 2) -> str:
         """
         Args:
-            forced_segments: The number of version segments to display even if the version is 0. 1 is major, 2 is major        and minor, etc. The only implemented ranges are (-inf,2] for major/minor, [3] for major/minor/subminor,
+            forced_segments: The number of version segments to display even if the version is 0. 1 is major, 2 is major
+                and minor, etc. The only implemented ranges are (-inf,2] for major/minor, [3] for major/minor/subminor,
                 and [4,inf) for major/minor/subminor/subsubminor. This only versions with a regular scheme.
 
         Returns:
