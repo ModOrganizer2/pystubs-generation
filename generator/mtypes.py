@@ -369,17 +369,6 @@ class Arg:
         if value is not None and value.startswith("mobase."):
             value = value[7:]
 
-        # I have issues with inner classes, so we need to prepend manually...
-        # if value.find(".") != -1:
-        #     print(value)
-        #     parts = value.split(".")
-        #     tvalue = ".".join(parts[:-1])
-        #     print("  " + tvalue)
-        #     for k in MOBASE_REGISTER.objects:
-        #         if k != tvalue and k.endswith(tvalue) and k[-len(tvalue) - 1] == ".":
-        #             value = "{}.{}".format(k, parts[-1])
-        #     print("  " + value)
-
         return value
 
     def has_default_value(self) -> bool:
@@ -581,6 +570,17 @@ class Class:
             oc = oc.outer_class
 
         return name
+
+    @property
+    def all_bases(self):
+        """
+        Returns:
+            All the bases of this class, including bases of bases and so on.
+        """
+        bases = set(self.bases)
+        for b in self.bases:
+            bases = bases.union(b.all_bases)
+        return bases
 
     def is_deprecated(self):
         return self.deprecated

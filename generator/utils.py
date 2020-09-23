@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from collections import OrderedDict, defaultdict
-from typing import List, Dict, Any, Tuple, TextIO, Optional, Union, NamedTuple
+from typing import List, Dict, Any, Tuple, TextIO, Optional, Union, NamedTuple, Set
 
 from . import logger
 from . import register
@@ -289,6 +289,8 @@ class Settings:
                 else:
                     sname = m.name
 
+                missing_settings: Set[str] = set()
+
                 # If the name is in the settings:
                 if sname in csettings:
                     keys[sname] = True
@@ -346,22 +348,36 @@ class Settings:
 
                 # Only warn for "normal" methods:
                 elif not m.name.startswith("__"):
-                    logger.warn(
-                        "Missing settings for method {}.{}.".format(
-                            cls.canonical_name, sname
-                        )
-                    )
+                    missing_settings.add(sname)
 
             # Remove the deprecated methods:
             noverloads = 0
             for m in ms:
-                if m.is_deprecated():
+                overriden: bool = False
+                for bc in cls.all_bases:
+                    for bm in bc.methods:
+                        if bm.name == "__init__" or bm.name != m.name:
+                            continue
+                        if len(bm.args) == len(m.args) and all(
+                            ba.type == ma.type
+                            for ba, ma in zip(bm.args[1:], m.args[1:])
+                        ):
+                            overriden = True
+                if m.is_deprecated() or overriden:
                     cls.methods.remove(m)
                 else:
                     noverloads += 1
 
             for m in ms:
                 m.overloads = noverloads > 1
+
+            if noverloads > 0 and missing_settings:
+                for sname in missing_settings:
+                    logger.warn(
+                        "Missing settings for method {}.{}.".format(
+                            cls.canonical_name, sname
+                        )
+                    )
 
         # Patch inner classes:
         for ic in cls.inner_classes:

@@ -38,6 +38,17 @@ mobase:
     returns: |
       The product version, or an empty string if the product version could not be retrieved.
 
+  EndorsedState:
+    ENDORSED_TRUE:
+    ENDORSED_FALSE:
+    ENDORSED_UNKNOWN:
+    ENDORSED_NEVER:
+
+  TrackedState:
+    TRACKED_FALSE:
+    TRACKED_TRUE:
+    TRACKED_UNKNOWN:
+
   GuessQuality:
     __doc__: |
       Describes how good the code considers a guess (i.e. for a mod name) this is used to
@@ -870,6 +881,84 @@ mobase:
     absolutePath:
       returns: Absolute path to the mod to be used in file system operations.
 
+    name:
+      returns: The name of this mod.
+
+    comments:
+      returns: The comments for this mod, if any.
+
+    notes:
+      returns: The notes for this mod, if any.
+
+    gameName:
+      __doc__: |
+        Retrieve the short name of the game associated with this mod. This may differ
+        from the current game plugin (e.g. you can install a Skyrim LE game in a SSE
+        installation).
+
+      returns: The name of the game associated with this mod.
+
+    repository:
+      returns: The name of the repository from which this mod was installed.
+
+    nexusId:
+      returns: The Nexus ID of this mod.
+
+    version:
+      returns: The current version of this mod.
+
+    newestVersion:
+      returns: |
+        The newest version of thid mod (as known by MO2). If this matches version(),
+        then the mod is up-to-date.
+
+    ignoredVersion:
+      returns: |
+        The ignored version of this mod (for update), or an invalid version if the user
+        did not ignore version for this mod.
+
+    installationFile:
+      returns: The absolute path to the file that was used to install this mod.
+
+    converted:
+      __doc__: |
+        Check if the mod was marked as converted by the user.
+
+        When a mod is for a different game, a flag is shown to users to warn them, but
+        they can mark mods as converted to remove this flag.
+
+      returns: True if this mod was marked as converted by the user.
+
+    validated:
+      __doc__: |
+        Check if the mod was marked as validated by the user.
+
+        MO2 uses ModDataChecker to check the content of mods, but sometimes these fail, in
+        which case mods are incorrectly marked as 'not containing valid games data'. Users can
+        choose to mark these mods as valid to hide the warning / flag.
+
+      returns: True if th is mod was marked as containing valid game data.
+
+    color:
+      returns: The color of the 'Notes' column chosen by the user.
+
+    url:
+      returns: |
+        The URL of this mod, or an empty QString() if no URL is associated
+        with this mod.
+
+    primaryCategory:
+      returns: The ID of the primary category of this mod.
+
+    categories:
+      returns: The list of categories this mod belongs to.
+
+    trackedState:
+      returns: The tracked state of this mod.
+
+    endorsedState:
+      returns: The endorsement state of this mod.
+
     addCategory:
       __doc__: Assign a category to the mod. If the named category does not exist it is created.
       args:
@@ -882,12 +971,6 @@ mobase:
         If a mapping is not possible, the category is set to the default value.
       args:
         category_id: The Nexus category ID.
-
-    categories:
-      returns: The list of categories assigned to this mod.
-
-    name:
-      returns: The name of this mod.
 
     remove:
       __doc__: |
@@ -939,6 +1022,50 @@ mobase:
       __doc__: Set the version of this mod.
       args:
         version: The new version of this mod.
+
+    pluginSetting:
+      __doc__: Retrieve the specified setting in this mod for a plugin.
+
+      args:
+        plugin_name: |
+          Name of the plugin for which to retrieve a setting. This should always be `IPlugin.name()`
+          unless you have a really good reason to access settings of another plugin.
+        key: Identifier of the setting.
+        default: The default value to return if the setting does not exist.
+
+      returns: The setting, if found, or the default value.
+
+    pluginSettings:
+      __doc__: Retrieve the settings in this mod for a plugin.
+
+      args:
+        plugin_name: |
+          Name of the plugin for which to retrieve settings. This should always be `IPlugin.name()`
+          unless you have a really good reason to access settings of another plugin.
+
+      returns: A map from setting key to value. The map is empty if there are not settings for this mod.
+
+    setPluginSetting:
+      __doc__: Set the specified setting in this mod for a plugin.
+
+      args:
+        plugin_name: |
+          Name of the plugin for which to retrieve a setting. This should always be `IPlugin.name()`
+          unless you have a really good reason to access settings of another plugin.
+        key: Identifier of the setting.
+        value: New value for the setting to set.
+
+      returns: True if the setting was set correctly, False otherwise.
+
+    clearPluginSettings:
+      __doc__: Remove all the settings of the specified plugin this mod.
+
+      args:
+        plugin_name: |
+          Name of the plugin for which settings should be removed. This should always be `IPlugin.name()`
+          unless you have a really good reason to access settings of another plugin.
+
+      returns: The old settings from the given plugin, as returned by `pluginSettings()`.
 
   IModList:
     __doc__: |
@@ -1575,6 +1702,32 @@ mobase:
         such as `localizedName()`.
       returns: The name of the plugin.
 
+    localizedName:
+      abstract: false
+
+      __doc__: |
+        Retrieve the localized name of the plugin.
+
+        Unlike `name()`, this method can (and should!) return a localized name for the plugin.
+        This method returns name() by default.
+
+      returns: The localized name of the plugin.
+
+    master:
+      abstract: false
+
+      __doc__: |
+        Retrieve the master plugin of this plugin.
+
+        It is often easier to implement a functionality as multiple plugins in MO2, but ship the
+        plugins together, e.g. as a Python module or using `createFunctions()`. In this case, having
+        a master plugin (one of the plugin, or a separate one) tells MO2 that these plugins are
+        linked and should also be displayed together in the UI. If MO2 ever implements automatic
+        updates for plugins, the `master()` plugin will also be used for this purpose.
+
+      returns: |
+        The master plugin of this plugin, or a null pointer if this plugin does not have a master.
+
     settings:
       returns: A list of settings for this plugin.
 
@@ -1857,6 +2010,37 @@ mobase:
       __doc__: Check if this installer is a manual installer.
       returns: True if this installer is a manual installer, False otherwise.
 
+    onInstallationStart:
+      __doc__: |
+        Method calls at the start of the installation process, before any other methods.
+        This method is only called once per installation process, even for recursive
+        installations (e.g. with the bundle installer).
+
+        If `reinstallation` is true, then the given mod is the mod being reinstalled (the one
+        selected by the user). If `reinstallation` is false and `currentMod` is not null, then
+        it corresponds to a mod MO2 thinks corresponds to the archive (e.g. based on matching Nexus ID
+        or name).
+
+        The default implementation does nothing.
+
+      args:
+        archive: Path to the archive that is going to be installed.
+        reinstallation: True if this is a reinstallation, False otherwise.
+        current_mod: |
+          A currently installed mod corresponding to the archive being installed, or None
+          if there is no such mod.
+
+    onInstallationEnd:
+      __doc__: |
+        Method calls at the end of the installation process. This method is only called once
+        per installation process, even for recursive installations (e.g. with the bundle installer).
+
+      args:
+        result: The result of the installation.
+        new_mod: |
+          If the installation succeeded (result is RESULT_SUCCESS), contains the newly
+          installed mod, otherwise it contains a null pointer.
+
     priority:
       __doc__: |
         Retrieve the priority of this installer.
@@ -2041,6 +2225,18 @@ mobase:
       args:
         name: Filename of the plugin (without path but with file extension).
       returns: The priority of the given plugin, or -1 if the plugin does not exist.
+
+    setPriority:
+      __doc__: Change the priority of a plugin.
+
+      args:
+        name: Filename of the plugin (without path but with file extension).
+        priority: New priority of the plugin.
+
+      returns: |
+        True on success, False if the priority change was not possible. This is usually because
+        one of the parameters is invalid. The function returns true even if the plugin was not moved
+        at the specified priority (e.g. when trying to move a non-master plugin before a master one).
 
     setLoadOrder:
       __doc__: |
