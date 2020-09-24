@@ -37,4 +37,4 @@ jobs:
         cd stubs/setup
         cp ../${{ steps.version.outputs.replaced }}/mobase.pyi mobase-stubs/__init__.pyi
         python setup.py sdist bdist_wheel
-        twine upload -r testpypi dist/*
+        twine upload dist/*
