@@ -45,4 +45,4 @@ jobs:
         SSH: true
         REPOSITORY_NAME: ModOrganizer2/python-plugins-doc
         BRANCH: master
-        FOLDER: .
+        FOLDER: gh-pages
