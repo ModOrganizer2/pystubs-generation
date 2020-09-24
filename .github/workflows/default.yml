@@ -24,7 +24,7 @@ jobs:
     # ===============================
     - name: Commit documentation changes
       run: |
-        git clone https://github.com/ModOrganizer2/mo2-pystubs-generation.git --branch gh-pages --single-branch gh-pages
+        git clone https://github.com/ModOrganizer2/python-plugins-doc.git gh-pages
         cp -r docs/build/html/* gh-pages/
         cd gh-pages
         git config --local user.email "action@github.com"
@@ -34,9 +34,14 @@ jobs:
         # The above command will fail if no changes were present, so we ignore
         # that.
 
-    - name: Push changes
-      uses: ad-m/github-push-action@master
+    - name: Install SSH Client 🔑
+      uses: webfactory/ssh-agent@v0.2.0
       with:
-        branch: gh-pages
-        directory: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@3.6.1
+      with:
+        SSH: true
+        REPOSITORY_NAME: ModOrganizer2/python-plugins-doc
+        BRANCH: master
