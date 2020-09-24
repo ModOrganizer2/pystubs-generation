@@ -1,4 +1,4 @@
-__version__ = "2.4.0.alpha1"
+__version__ = "2.4.0.alpha2"
 
 import abc
 from enum import Enum
