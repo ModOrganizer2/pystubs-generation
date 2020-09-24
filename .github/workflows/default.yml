@@ -20,20 +20,6 @@ jobs:
         pre-build-command: "apt-get update -y && apt-get install -y libgl1-mesa-glx && cp stubs/2.3.0/mobase.pyi docs/mobase.py"
         docs-folder: "docs/"
 
-    # Publish built docs to gh-pages branch.
-    # ===============================
-    - name: Commit documentation changes
-      run: |
-        git clone https://github.com/ModOrganizer2/python-plugins-doc.git gh-pages
-        cp -r docs/build/html/* gh-pages/
-        cd gh-pages
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add .
-        git commit -m "Update documentation." -a || true
-        # The above command will fail if no changes were present, so we ignore
-        # that.
-
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.2.0
       with:
@@ -45,4 +31,4 @@ jobs:
         SSH: true
         REPOSITORY_NAME: ModOrganizer2/python-plugins-doc
         BRANCH: master
-        FOLDER: gh-pages
+        FOLDER: docs/build/html
