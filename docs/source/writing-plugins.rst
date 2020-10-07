@@ -185,7 +185,7 @@ Most of these are pretty simple to understand:
   enable the plugin. You can also use a plugin setting to allow users to disable
   your plugins.
 - ``settings``: Returns the list of settings (that user can modify) for this plugin.
-  Settings can be ``int```, ``bool``, ``str`` or list of ``str``. Here we indicate
+  Settings can be ``int``, ``bool``, ``str`` or list of ``str``. Here we indicate
   that we have a "enabled" setting that user could use to disable the plugin (and
   we use it in ``isActive``).
 
@@ -199,3 +199,59 @@ The ``init`` method is called by MO2 to initialize the plugin. The given argumen
 is an instance of :class:`IOrganizer<mobase.IOrganizer>` which is the class used to interface with MO2.
 Here, we use it in the ``isActive()`` method to retrieve the "enabled" setting for our plugin.
 See :class:`IOrganizer<mobase.IOrganizer>` for more details.
+
+Examples
+--------
+
+This section contains (links to) examples of MO2 Python plugins.
+Some of these plugins have been created for educational purpose and are thus very detailed and
+easy to understand or get started from.
+
+Tutorial Plugins
+................
+
+`This repository <https://github.com/Holt59/modorganizer-python_plugins>`_ contains examples of Python
+plugins that were written only to help users write their own plugins.
+If you want to start somewhere, this is the place to go.
+
+Official Plugins
+................
+
+These plugins are (or will be) included in MO2 releases and are usually maintain by some members of
+the MO2 development teams.
+These plugins are not as well documented as the ones in the repository above.
+
+- `Basic Games <https://github.com/ModOrganizer2/modorganizer-basic_games>`_ [``IPluginGame``]
+    This is the meta-plugin for "basic" games. It is a complex
+    plugins and should mostly be investigated if you want to add a game to it.
+- `FNIS Tool <https://github.com/ModOrganizer2/modorganizer-fnistool>`_ [``IPluginTool``]:
+    Plugin to integrate FNIS into MO2.
+- `Preview DDS <https://github.com/ModOrganizer2/modorganizer-preview_dds>`_ [``IPluginPreview``]:
+    Plugin to preview DDS files. Quite complex due to the use
+    of OpenGL for display.
+- `Form 43 Checker <https://github.com/ModOrganizer2/modorganizer-form43_checker>`_ [``IPluginDiagnose``]:
+    Plugin that warn users if there are form 43 ESPs (Skyrim ESPs)
+    enabled when managing a Skyrim SE instance.
+- `Tool Configurator <https://github.com/ModOrganizer2/modorganizer-tool_configurator>`_ [``IPluginTool``]:
+    Plugin that allows easier modifications of game settings.
+    Mostly contains a complex GUI for managing INI files.
+- `Script Extender Plugin Checker <https://github.com/ModOrganizer2/modorganizer-script_extender_plugin_checker>`_ [``IPluginDiagnose``]:
+    Plugin that checks Script Extender logs to see
+    if some plugins have failed to load and display information to the user if possible.
+
+
+Unofficial Plugins
+..................
+
+These plugins have been created by developpers for MO2 and are usually distributed on Nexus.
+
+- `Merge Plugins Hide <https://github.com/deorder/mo2-plugins>`_ [``IPluginTool``]:
+    Hide / unhide plugins that were merged using ``Merge Plugins`` or ``zMerge``.
+- `OpenMW Exporter <https://github.com/AnyOldName3/ModOrganizer-to-OpenMW>`_ [``IPluginTool``]:
+    A Mod Organizer plugin to export your VFS, plugin selection and load order to OpenMW.
+- `Orphaned Script Extender Save Deleter <https://github.com/AnyOldName3/modorganizer-orphaned_script_extender_save_deleter>`_ [``IPluginTool``]:
+     Mod Organizer plugin to delete orphaned script extender co-saves.
+- `Sync Mod Order <https://github.com/deorder/mo2-plugins>`_ [``IPluginTool``]:
+    Synchronize mod order from current profile to another while keeping the (enabled/disabled) state intact.
+
+*Feel free to open an issue or a pull-request if you want to add your own plugin to the list.*
