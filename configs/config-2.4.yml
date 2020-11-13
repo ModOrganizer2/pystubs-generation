@@ -448,37 +448,6 @@ mobase:
       returns: The list of variants for this GuessedString.
 
   IDownloadManager:
-    __bases__:
-      - PyQt5.QtCore.QObject
-
-    signals[]:
-      downloadComplete:
-        __doc__: Emitted when a download finishes completely (including retrieval of meta information).
-        args:
-          id:
-            type: int
-            desc: ID of the download.
-      downloadPaused:
-        __doc__: Emitted when a download is paused by the user.
-        args:
-          id:
-            type: int
-            desc: ID of the download.
-      downloadFailed:
-        __doc__: Emitted when a download fails.
-        args:
-          id:
-            type: int
-            desc: ID of the download.
-      downloadRemoved:
-        __doc__: Emitted when a download is removed from the manager. The ID of the download is no longer valid.
-        args:
-          id:
-            type: int
-            desc: ID of the download.
-
-    _object:
-      returns: The underlying `QObject` for the manager.
 
     downloadPath:
       __doc__: Retrieve the (absolute) path of the specified download.
@@ -506,6 +475,34 @@ mobase:
       args:
         urls: List of urls to download from.
       returns: An ID identifying the download.
+
+    onDownloadComplete:
+      __doc__: Installs a handler to be called when a download completes.
+      args:
+        callback: |
+          The function to be called when a download complete. The parameter is the download ID.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onDownloadPaused:
+      __doc__: Installs a handler to be called when a download is paused.
+      args:
+        callback: |
+          The function to be called when a download is paused. The parameter is the download ID.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onDownloadFailed:
+      __doc__: Installs a handler to be called when a download fails.
+      args:
+        callback: |
+          The function to be called when a download fails. The parameter is the download ID.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onDownloadRemoved:
+      __doc__: Installs a handler to be called when a download is removed.
+      args:
+        callback: |
+          The function to be called when a download is removed. The parameter is the download ID.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
   IFileTree:
     __doc__: |
@@ -871,11 +868,6 @@ mobase:
         mod_id: ID of the mod, if available.
       returns: The result of the installation.
 
-    setURL:
-      __doc__: Set the url associated with the mod being installed.
-      args:
-        url: Url to set.
-
   IModInterface:
 
     absolutePath:
@@ -959,6 +951,14 @@ mobase:
     endorsedState:
       returns: The endorsement state of this mod.
 
+    fileTree:
+      __doc__: |
+        Retrieve a file tree corresponding to the underlying disk content of this mod.
+
+        The file tree should not be cached by plugins since it is already and updated when
+        required.
+      returns: A file tree representing the content of this mod.
+
     addCategory:
       __doc__: Assign a category to the mod. If the named category does not exist it is created.
       args:
@@ -1017,6 +1017,11 @@ mobase:
       __doc__: Set the Nexus ID of this mod.
       args:
         nexus_id: Thew new Nexus ID of this mod.
+
+    setUrl:
+      __doc__: Set the URL of this mod.
+      args:
+        url: The URL of this mod.
 
     setVersion:
       __doc__: Set the version of this mod.
@@ -1079,6 +1084,9 @@ mobase:
     allMods:
       returns: A list containing the internal names of all installed mods.
 
+    allModsByProfilePriority:
+      returns: The list of mod (names), sorted according to the current profile priorities.
+
     displayName:
       __doc__: |
         Retrieve the display name of a mod from its internal name.
@@ -1089,6 +1097,34 @@ mobase:
       args:
         name: Internal name of the mod.
       returns: The display name of the given mod.
+
+    getMod:
+      __doc__: Retrieve an interface to a mod using its name.
+      args:
+        name: Name of the mod to retrieve.
+      returns: An interface to the given mod, or `None` if there is no mod with this name.
+
+    removeMod:
+      __doc__: Remove a mod (from disc and from the UI).
+      args:
+        mod: The mod to remove.
+      returns: True if the mod was removed, False otherwise.
+
+    onModInstalled:
+      __doc__: Install a new handler to be called when a new mod is installed.
+      args:
+        callback: |
+          The function to call when a mod is installed. The parameter of the function is the name of the
+          newly installed mod.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onModRemoved:
+      __doc__: Install a new handler to be called when a mod is removed.
+      args:
+        callback: |
+          The function to call when a mod is removed. The parameter of the function is the name of the
+          removed mod.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
     onModMoved:
       __doc__: Install a handler to be called when a mod is moved.
@@ -1381,6 +1417,9 @@ mobase:
       Interface to class that provides information about the running session
       of Mod Organizer to be used by plugins.
 
+    getPluginDataPath:
+      returns: The directory for plugin data, typically plugins/data.
+
     appVersion:
       returns: The running version of Mod Organizer.
 
@@ -1453,12 +1492,6 @@ mobase:
         name: Name of the game (short name).
       returns: The plugin for the given game, or `None` if none was found.
 
-    getMod:
-      __doc__: Retrieve an interface to a mod using its name.
-      args:
-        name: Name of the mod to retrieve.
-      returns: An interface to the given mod, or `None` if there is no mod with this name
-
     installMod:
       __doc__: Install a mod archive at the specified location.
       args:
@@ -1486,9 +1519,6 @@ mobase:
     modsPath:
       returns: The (absolute) path to the mods directory.
 
-    modsSortedByProfilePriority:
-      returns: The list of mod (names), sorted according to the current profile priorities.
-
     onAboutToRun:
       __doc__: |
         Install a new handler to be called when an application is about to run.
@@ -1509,14 +1539,6 @@ mobase:
           path to the application, and the second parameter is the exit code of the application.
       returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
-    onModInstalled:
-      __doc__: Install a new handler to be called when a new mod is installed.
-      args:
-        callback: |
-          The function to call when a mod is installed. The parameter of the function is the name of the
-          installed mod.
-      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
-
     onPluginSettingChanged:
       __doc__: Install a new handler to be called when a plugin setting is changed.
       args:
@@ -1524,6 +1546,36 @@ mobase:
           The function to call when a plugin setting is changed. The parameters are: The name of the plugin, the
           name of the setting, the old value (or `None` if the setting did not exist before) and the new value
           of the setting (or `None` if the setting has been removed).
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onProfileCreated:
+      __doc__: |
+        Install a new handler to be called when a new profile is created.
+      args:
+        callback: |
+          The function to call when a new profile is created. The parameter is the new profile (can be
+          a temporary object and should not be stored).
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onProfileRenamed:
+      __doc__: |
+        Install a new handler to be called when a profile is renamed.
+      args:
+        callback: |
+          The function to call when a profile is renamed. The first parameter is the profile being renamed,
+          the second parameter the previous name and the third parameter the new name.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onProfileRemoved:
+      __doc__: |
+        Install a new handler to be called when a profile is remove.
+
+        The callbacks are called after the profile has been removed so the profile is not accessible
+        anymore.
+      args:
+        callback: |
+          The function to call when a profile is remove. The parameter is the name of the profile that was
+          removed.
       returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
     onProfileChanged:
@@ -1559,7 +1611,7 @@ mobase:
         the storage
       args:
         plugin_name: |
-          Name of the plugin for which to retrieve the value. This should always be IPlugin::name() unless you have a
+          Name of the plugin for which to retrieve the value. This should always be `IPlugin.name()` unless you have a
           really good reason to access data of another mod AND if you can verify that plugin is actually installed.
         key: Identifier of the setting.
         default: Default value to return if the key is not set (yet).
@@ -1592,16 +1644,15 @@ mobase:
     profilePath:
       returns: The absolute path to the active profile or an empty string if no profile has been loaded (yet).
 
-    refreshModList:
-      __doc__: Refresh the mod list.
+    refresh:
+      __doc__: |
+        Refresh the internal mods file structure from disk. This includes the mod list, the plugin
+        list, data tab and other smaller things like problems button (same as pressing F5).
+
+        The main part of the refresh of the mods file structure, mod list and plugin list is done
+        asynchronously, so you should not expect them to be up-to-date when this function returns.
       args:
         save_changes: If True, the relevant profile information is saved first (enabled mods and order of mods).
-
-    removeMod:
-      __doc__: Remove a mod (from disc and from the UI).
-      args:
-        mod: The mod to remove.
-      returns: True if the mod was removed, False otherwise.
 
     resolvePath:
       __doc__: Resolves a path relative to the virtual data directory to its absolute real path.
@@ -1616,7 +1667,7 @@ mobase:
         This does not update the in-memory value for this setting, see `setPluginSetting()` for this.
       args:
         plugin_name: |
-          Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+          Name of the plugin for which to change a value. This should always be `IPlugin.name()` unless you have a
           really good reason to access data of another mod AND if you can verify that plugin is actually installed.
         key: Identifier of the setting.
         value: New value for the setting.
@@ -1629,7 +1680,7 @@ mobase:
         This automatically notify handlers register with `onPluginSettingChanged`, so you do not have to do it yourself.
       args:
         plugin_name: |
-          Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+          Name of the plugin for which to change a value. This should always be `IPlugin.name()` unless you have a
           really good reason to access data of another mod AND if you can verify that plugin is actually installed.
         key: Identifier of the setting.
         value: New value for the setting.
@@ -1665,6 +1716,18 @@ mobase:
         A tuple `(result, exitcode)`, where `result` is a boolean indicating if the application
         completed successfully, and `exitcode` is the exit code of the application.
 
+    # IOrganizer has a bunch of deprecated functions:
+    getMod:
+      deprecated: true
+    removeMod:
+      deprecated: true
+    modsSortedByProfilePriority:
+      deprecated: true
+    refreshModList:
+      deprecated: true
+    onModInstalled:
+      deprecated: true
+
   IPlugin:
     __doc__: Base class for all plugins.
 
@@ -1677,7 +1740,20 @@ mobase:
       returns: The description for this plugin.
 
     init:
-      __doc__: Initialize this plugin.
+      __doc__: |
+        Initialize this plugin.
+
+        Note that this function may never be called if no `IOrganizer` is available
+        at that time, such as when creating the first instance in MO.
+
+        Plugins will probably want to store the organizer pointer. It is guaranteed
+        to be valid as long as the plugin is loaded.
+
+        These functions may be called before `init()`:
+
+          - `name()`
+          - see `IPluginGame` for more.
+
       args:
         organizer: The main organizer interface.
       returns: True if the plugin was initialized correctly, False otherwise.
@@ -1803,6 +1879,23 @@ mobase:
       Bethesda games, so a lot of methods and attributes are irrelevant for other games. If
       you wish to write a plugin for a much simpler game, please consider the `basic_games`
       plugin: https://github.com/ModOrganizer2/modorganizer-basic_games
+
+    detectGame:
+      __doc__: |
+        Detect the game.
+
+        This method is the first called for game plugins (before `init()`). The following
+        methods should work properly after the call to `detectGame()` (and before `init()`):
+
+          - gameName()
+          - isInstalled()
+          - gameIcon()
+          - gameDirectory()
+          - dataDirectory()
+          - gameVariants()
+          - looksValid()
+
+        See `IPlugin.init()` for more.
 
     CCPlugins:
       returns: The current list of active Creation Club plugins.
@@ -2191,12 +2284,21 @@ mobase:
           second the old priority of the plugin and the third one the new priority.
       returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
-    onPluginStateChanged:
+    onPluginStateChanged.1:
       __doc__: Install a new handler to be called when a plugin state changes.
+      deprecated: true
       args:
         callback: |
           The function to call when a plugin state changes. The first parameter is the plugin name, the
           second the new state of the plugin.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onPluginStateChanged.2:
+      __doc__: Install a new handler to be called when plugin states change.
+      args:
+        callback: |
+          The function to call when a plugin states change. The parameter is a map from plugin names to new
+          plugin states for the plugin whose states have changed.
       returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
     onRefreshed:
@@ -2351,22 +2453,36 @@ mobase:
       returns: The tooltip for this tool.
 
   IProfile:
-    __doc__:
+    __doc__: Interface to interact with Mod Organizer 2 profiles.
+
     absolutePath:
-      __doc__:
-      returns:
+      returns: The absolute path to the profile folder.
+
+    absoluteIniFilePath:
+      __doc__: |
+        Retrieve the absolute file path to the corresponding INI file for this profile.
+
+        If iniFile does not correspond to a file in the list of INI files for the
+        current game (as returned by IPluginGame::iniFiles), the path to the global
+        file will be returned (if iniFile is absolute, iniFile is returned, otherwise
+        the path is assumed relative to the game documents directory).
+      args:
+        inifile: |
+          INI file to retrieve a path for. This can either be the name of a file or a path to the
+          absolute file outside of the profile.
+      returns: The absolute path for the given INI file for this profile.
+
     invalidationActive:
-      __doc__:
-      returns:
+      returns: True if automatic archive invalidation is enabled for this profile, False otherwise.
+
     localSavesEnabled:
-      __doc__:
-      returns:
+      returns: True if profile-specific saves are enabled for this profile, False otherwise.
+
     localSettingsEnabled:
-      __doc__:
-      returns:
+      returns: True if profile-specific game settings are enabled for this profile, False otherwise.
+
     name:
-      __doc__:
-      returns:
+      returns: The name of this profile.
 
   ISaveGame:
     __doc__: Base class for information about what is in a save game.
@@ -2429,8 +2545,16 @@ mobase:
 
   Mapping:
 
-    __init__:
+    __init__.1:
       __doc__: Creates an empty Mapping.
+
+    __init__.2:
+      __doc__: Creates a Mapping with the given parameters.
+      args:
+        source: The source of this mapping (absolute path), i.e. the path to the actual file.
+        destination: Destination of this mapping (absolute path), i.e. the path in the virtual file system.
+        is_directory: True if this mapping corresponds to a directory, False otherwise.
+        create_target: True if file creation (including move or copy) should be redirected to source.
 
     properties[]:
       createTarget:

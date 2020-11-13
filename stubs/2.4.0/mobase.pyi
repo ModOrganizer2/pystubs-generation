@@ -562,17 +562,7 @@ class GuessedString:
         """
         ...
 
-class IDownloadManager(PyQt5.QtCore.QObject):
-    downloadComplete: PyQt5.QtCore.pyqtSignal = ...
-    downloadPaused: PyQt5.QtCore.pyqtSignal = ...
-    downloadFailed: PyQt5.QtCore.pyqtSignal = ...
-    downloadRemoved: PyQt5.QtCore.pyqtSignal = ...
-    def _object(self) -> PyQt5.QtCore.QObject:
-        """
-        Returns:
-            The underlying `QObject` for the manager.
-        """
-        ...
+class IDownloadManager:
     def downloadPath(self, id: int) -> str:
         """
         Retrieve the (absolute) path of the specified download.
@@ -583,6 +573,50 @@ class IDownloadManager(PyQt5.QtCore.QObject):
         Returns:
             The absolute path to the file corresponding to the given download. This file
         may not exist yet if the download is incomplete.
+        """
+        ...
+    def onDownloadComplete(self, callback: Callable[[int], None]) -> bool:
+        """
+        Installs a handler to be called when a download completes.
+
+        Args:
+            callback: The function to be called when a download complete. The parameter is the download ID.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onDownloadFailed(self, callback: Callable[[int], None]) -> bool:
+        """
+        Installs a handler to be called when a download fails.
+
+        Args:
+            callback: The function to be called when a download fails. The parameter is the download ID.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onDownloadPaused(self, callback: Callable[[int], None]) -> bool:
+        """
+        Installs a handler to be called when a download is paused.
+
+        Args:
+            callback: The function to be called when a download is paused. The parameter is the download ID.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onDownloadRemoved(self, callback: Callable[[int], None]) -> bool:
+        """
+        Installs a handler to be called when a download is removed.
+
+        Args:
+            callback: The function to be called when a download is removed. The parameter is the download ID.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
     def startDownloadNexusFile(self, mod_id: int, file_id: int) -> int:
@@ -1105,14 +1139,6 @@ class IInstallationManager:
             The result of the installation.
         """
         ...
-    def setURL(self, url: str):
-        """
-        Set the url associated with the mod being installed.
-
-        Args:
-            url: Url to set.
-        """
-        ...
 
 class IModInterface:
     def absolutePath(self) -> str:
@@ -1184,6 +1210,17 @@ class IModInterface:
         """
         Returns:
             The endorsement state of this mod.
+        """
+        ...
+    def fileTree(self) -> "IFileTree":
+        """
+        Retrieve a file tree corresponding to the underlying disk content of this mod.
+
+        The file tree should not be cached by plugins since it is already and updated when
+        required.
+
+        Returns:
+            A file tree representing the content of this mod.
         """
         ...
     def gameName(self) -> str:
@@ -1356,6 +1393,14 @@ class IModInterface:
             True if the setting was set correctly, False otherwise.
         """
         ...
+    def setUrl(self, url: str):
+        """
+        Set the URL of this mod.
+
+        Args:
+            url: The URL of this mod.
+        """
+        ...
     def setVersion(self, version: "VersionInfo"):
         """
         Set the version of this mod.
@@ -1412,6 +1457,12 @@ class IModList:
             A list containing the internal names of all installed mods.
         """
         ...
+    def allModsByProfilePriority(self, profile: "IProfile" = None) -> List[str]:
+        """
+        Returns:
+            The list of mod (names), sorted according to the current profile priorities.
+        """
+        ...
     def displayName(self, name: str) -> str:
         """
         Retrieve the display name of a mod from its internal name.
@@ -1427,6 +1478,29 @@ class IModList:
             The display name of the given mod.
         """
         ...
+    def getMod(self, name: str) -> "IModInterface":
+        """
+        Retrieve an interface to a mod using its name.
+
+        Args:
+            name: Name of the mod to retrieve.
+
+        Returns:
+            An interface to the given mod, or `None` if there is no mod with this name.
+        """
+        ...
+    def onModInstalled(self, callback: Callable[["IModInterface"], None]) -> bool:
+        """
+        Install a new handler to be called when a new mod is installed.
+
+        Args:
+            callback: The function to call when a mod is installed. The parameter of the function is the name of the
+                newly installed mod.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
     def onModMoved(self, callback: Callable[[str, int, int], None]) -> bool:
         """
         Install a handler to be called when a mod is moved.
@@ -1434,6 +1508,18 @@ class IModList:
         Args:
             callback: The function to call when a mod is moved. The first argument is the internal name of the
                 mod, the second argument the old priority and the third argument the new priority.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onModRemoved(self, callback: Callable[[str], None]) -> bool:
+        """
+        Install a new handler to be called when a mod is removed.
+
+        Args:
+            callback: The function to call when a mod is removed. The parameter of the function is the name of the
+                removed mod.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1460,6 +1546,17 @@ class IModList:
 
         Returns:
             The priority of the given mod.
+        """
+        ...
+    def removeMod(self, mod: "IModInterface") -> bool:
+        """
+        Remove a mod (from disc and from the UI).
+
+        Args:
+            mod: The mod to remove.
+
+        Returns:
+            True if the mod was removed, False otherwise.
         """
         ...
     @overload
@@ -1730,15 +1827,11 @@ class IOrganizer:
             The plugin for the given game, or `None` if none was found.
         """
         ...
-    def getMod(self, name: str) -> "IModInterface":
+    @staticmethod
+    def getPluginDataPath() -> str:
         """
-        Retrieve an interface to a mod using its name.
-
-        Args:
-            name: Name of the mod to retrieve.
-
         Returns:
-            An interface to the given mod, or `None` if there is no mod with this name
+            The directory for plugin data, typically plugins/data.
         """
         ...
     def installMod(self, filename: str, name_suggestion: str = "") -> "IModInterface":
@@ -1790,12 +1883,6 @@ class IOrganizer:
             The (absolute) path to the mods directory.
         """
         ...
-    def modsSortedByProfilePriority(self) -> List[str]:
-        """
-        Returns:
-            The list of mod (names), sorted according to the current profile priorities.
-        """
-        ...
     def onAboutToRun(self, callback: Callable[[str], bool]) -> bool:
         """
         Install a new handler to be called when an application is about to run.
@@ -1818,18 +1905,6 @@ class IOrganizer:
         Args:
             callback: The function to call when an application has finished running. The first parameter is the absolute
                 path to the application, and the second parameter is the exit code of the application.
-
-        Returns:
-            True if the handler was installed properly (there are currently no reasons for this to fail).
-        """
-        ...
-    def onModInstalled(self, callback: Callable[[str], None]) -> bool:
-        """
-        Install a new handler to be called when a new mod is installed.
-
-        Args:
-            callback: The function to call when a mod is installed. The parameter of the function is the name of the
-                installed mod.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -1868,6 +1943,47 @@ class IOrganizer:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
+    def onProfileCreated(self, callback: Callable[["IProfile"], None]) -> bool:
+        """
+        Install a new handler to be called when a new profile is created.
+
+        Args:
+            callback: The function to call when a new profile is created. The parameter is the new profile (can be
+                a temporary object and should not be stored).
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onProfileRemoved(self, callback: Callable[[str], None]) -> bool:
+        """
+        Install a new handler to be called when a profile is remove.
+
+        The callbacks are called after the profile has been removed so the profile is not accessible
+        anymore.
+
+        Args:
+            callback: The function to call when a profile is remove. The parameter is the name of the profile that was
+                removed.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onProfileRenamed(
+        self, callback: Callable[["IProfile", str, str], None]
+    ) -> bool:
+        """
+        Install a new handler to be called when a profile is renamed.
+
+        Args:
+            callback: The function to call when a profile is renamed. The first parameter is the profile being renamed,
+                the second parameter the previous name and the third parameter the new name.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
     def onUserInterfaceInitialized(
         self, callback: Callable[[PyQt5.QtWidgets.QMainWindow], None]
     ) -> bool:
@@ -1899,7 +2015,7 @@ class IOrganizer:
         the storage
 
         Args:
-            plugin_name: Name of the plugin for which to retrieve the value. This should always be IPlugin::name() unless you have a
+            plugin_name: Name of the plugin for which to retrieve the value. This should always be `IPlugin.name()` unless you have a
                 really good reason to access data of another mod AND if you can verify that plugin is actually installed.
             key: Identifier of the setting.
             default: Default value to return if the key is not set (yet).
@@ -1955,23 +2071,16 @@ class IOrganizer:
             The absolute path to the active profile or an empty string if no profile has been loaded (yet).
         """
         ...
-    def refreshModList(self, save_changes: bool = True):
+    def refresh(self, save_changes: bool = True):
         """
-        Refresh the mod list.
+        Refresh the internal mods file structure from disk. This includes the mod list, the plugin
+        list, data tab and other smaller things like problems button (same as pressing F5).
+
+        The main part of the refresh of the mods file structure, mod list and plugin list is done
+        asynchronously, so you should not expect them to be up-to-date when this function returns.
 
         Args:
             save_changes: If True, the relevant profile information is saved first (enabled mods and order of mods).
-        """
-        ...
-    def removeMod(self, mod: "IModInterface") -> bool:
-        """
-        Remove a mod (from disc and from the UI).
-
-        Args:
-            mod: The mod to remove.
-
-        Returns:
-            True if the mod was removed, False otherwise.
         """
         ...
     def resolvePath(self, filename: str) -> str:
@@ -1994,7 +2103,7 @@ class IOrganizer:
         This does not update the in-memory value for this setting, see `setPluginSetting()` for this.
 
         Args:
-            plugin_name: Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+            plugin_name: Name of the plugin for which to change a value. This should always be `IPlugin.name()` unless you have a
                 really good reason to access data of another mod AND if you can verify that plugin is actually installed.
             key: Identifier of the setting.
             value: New value for the setting.
@@ -2008,7 +2117,7 @@ class IOrganizer:
         This automatically notify handlers register with `onPluginSettingChanged`, so you do not have to do it yourself.
 
         Args:
-            plugin_name: Name of the plugin for which to change a value. This should always be IPlugin::name() unless you have a
+            plugin_name: Name of the plugin for which to change a value. This should always be `IPlugin.name()` unless you have a
                 really good reason to access data of another mod AND if you can verify that plugin is actually installed.
             key: Identifier of the setting.
             value: New value for the setting.
@@ -2083,6 +2192,17 @@ class IPlugin(abc.ABC):
     def init(self, organizer: "IOrganizer") -> bool:
         """
         Initialize this plugin.
+
+        Note that this function may never be called if no `IOrganizer` is available
+        at that time, such as when creating the first instance in MO.
+
+        Plugins will probably want to store the organizer pointer. It is guaranteed
+        to be valid as long as the plugin is loaded.
+
+        These functions may be called before `init()`:
+
+          - `name()`
+          - see `IPluginGame` for more.
 
         Args:
             organizer: The main organizer interface.
@@ -2297,7 +2417,26 @@ class IPluginGame(IPlugin):
     def dataDirectory(self) -> PyQt5.QtCore.QDir:
         """
         Returns:
-            The name of the directory containing data (relative to the game folder).
+            The path to the directory containing data (absolute path).
+        """
+        ...
+    @abc.abstractmethod
+    def detectGame(self):
+        """
+        Detect the game.
+
+        This method is the first called for game plugins (before `init()`). The following
+        methods should work properly after the call to `detectGame()` (and before `init()`):
+
+          - gameName()
+          - isInstalled()
+          - gameIcon()
+          - gameDirectory()
+          - dataDirectory()
+          - gameVariants()
+          - looksValid()
+
+        See `IPlugin.init()` for more.
         """
         ...
     @abc.abstractmethod
@@ -2858,13 +2997,13 @@ class IPluginList:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onPluginStateChanged(self, callback: Callable[[str, int], None]) -> bool:
+    def onPluginStateChanged(self, callback: Callable[[Dict[str, int]], None]) -> bool:
         """
-        Install a new handler to be called when a plugin state changes.
+        Install a new handler to be called when plugin states change.
 
         Args:
-            callback: The function to call when a plugin state changes. The first parameter is the plugin name, the
-                second the new state of the plugin.
+            callback: The function to call when a plugin states change. The parameter is a map from plugin names to new
+                plugin states for the plugin whose states have changed.
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
@@ -3118,11 +3257,57 @@ class IPluginTool(IPlugin):
         ...
 
 class IProfile:
-    def absolutePath(self) -> str: ...
-    def invalidationActive(self) -> Tuple[bool, bool]: ...
-    def localSavesEnabled(self) -> bool: ...
-    def localSettingsEnabled(self) -> bool: ...
-    def name(self) -> str: ...
+    """
+    Interface to interact with Mod Organizer 2 profiles.
+    """
+
+    def absoluteIniFilePath(self, inifile: str) -> str:
+        """
+        Retrieve the absolute file path to the corresponding INI file for this profile.
+
+        If iniFile does not correspond to a file in the list of INI files for the
+        current game (as returned by IPluginGame::iniFiles), the path to the global
+        file will be returned (if iniFile is absolute, iniFile is returned, otherwise
+        the path is assumed relative to the game documents directory).
+
+        Args:
+            inifile: INI file to retrieve a path for. This can either be the name of a file or a path to the
+                absolute file outside of the profile.
+
+        Returns:
+            The absolute path for the given INI file for this profile.
+        """
+        ...
+    def absolutePath(self) -> str:
+        """
+        Returns:
+            The absolute path to the profile folder.
+        """
+        ...
+    def invalidationActive(self) -> Tuple[bool, bool]:
+        """
+        Returns:
+            True if automatic archive invalidation is enabled for this profile, False otherwise.
+        """
+        ...
+    def localSavesEnabled(self) -> bool:
+        """
+        Returns:
+            True if profile-specific saves are enabled for this profile, False otherwise.
+        """
+        ...
+    def localSettingsEnabled(self) -> bool:
+        """
+        Returns:
+            True if profile-specific game settings are enabled for this profile, False otherwise.
+        """
+        ...
+    def name(self) -> str:
+        """
+        Returns:
+            The name of this profile.
+        """
+        ...
 
 class ISaveGame:
     """
@@ -3222,11 +3407,31 @@ class Mapping:
     def source(self) -> str: ...
     @source.setter
     def source(self, arg0: str): ...
+    @overload
     def __init__(self):
         """
         Creates an empty Mapping.
         """
         ...
+    @overload
+    def __init__(
+        self,
+        source: str,
+        destination: str,
+        is_directory: bool,
+        create_target: bool = False,
+    ) -> object:
+        """
+        Creates a Mapping with the given parameters.
+
+        Args:
+            source: The source of this mapping (absolute path), i.e. the path to the actual file.
+            destination: Destination of this mapping (absolute path), i.e. the path in the virtual file system.
+            is_directory: True if this mapping corresponds to a directory, False otherwise.
+            create_target: True if file creation (including move or copy) should be redirected to source.
+        """
+        ...
+    def __str__(self) -> str: ...
 
 class ModDataChecker(abc.ABC):
     """
