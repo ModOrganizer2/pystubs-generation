@@ -11,7 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
     # Standard drop-in approach that should work for most people.
     - uses: ammaraskar/sphinx-action@master
       env:
@@ -21,12 +23,12 @@ jobs:
         docs-folder: "docs/"
 
     - name: Install SSH Client 🔑
-      uses: webfactory/ssh-agent@v0.2.0
+      uses: webfactory/ssh-agent@v0.4.1
       with:
         ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
     - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@3.6.1
+      uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
         SSH: true
         REPOSITORY_NAME: ModOrganizer2/python-plugins-doc
