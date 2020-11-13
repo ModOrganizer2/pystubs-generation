@@ -1814,7 +1814,7 @@ mobase:
       returns: The name of the default executable to run (relative to the game folder).
 
     dataDirectory:
-      returns: The name of the directory containing data (relative to the game folder).
+      returns: The path to the directory containing data (absolute path).
 
     documentsDirectory:
       returns: The directory of the documents folder where configuration files and such for this game reside.
