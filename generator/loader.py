@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import importlib.machinery
+import importlib.util
 import os
 import sys
 
@@ -14,12 +15,10 @@ def load_module(name: str, path: Path):
     )
 
     # Extract the spec:
-    spec = importlib.machinery.ModuleSpec(
-        name, loader, origin=path.as_posix(), is_package=True
-    )
+    spec = importlib.util.spec_from_loader(name, loader)
 
     # Create the module and execute it?
-    module = loader.create_module(spec)
+    module = importlib.util.module_from_spec(spec)
     if module is None:
         raise ImportError(f"Failed to import module {name} from {path}.")
 
