@@ -51,8 +51,8 @@ def load_mobase(path: Path, moprivate: bool = False):
             [str(path), str(path.joinpath("dlls")), os.environ.get("PATH", "")]
         )
     else:
-        os.add_dll_directory(str(path))
-        os.add_dll_directory(str(path.joinpath("dlls")))
+        os.add_dll_directory(str(path))  # type: ignore[attr-defined]
+        os.add_dll_directory(str(path.joinpath("dlls")))  # type: ignore[attr-defined]
 
     # We need to add plugins/data to sys.path, mainly for PyQt5
     sys.path.insert(1, path.joinpath("plugins", "data").as_posix())
