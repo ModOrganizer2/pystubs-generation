@@ -7,7 +7,9 @@ from . import utils
 
 
 class Type:
-    """ Class representing a python type. """
+    """
+    Class representing a python type.
+    """
 
     # The `MoVariant` actual type - This should be List["MoVariant"] and
     # Dict[str, "MoVariant"], but mypy (and other type checkers) do not
@@ -35,7 +37,10 @@ class Type:
                 self.name = "{}.{}".format(m.__name__, self.name)
 
     def typing(self, settings: utils.Settings) -> str:
-        """ Returns a valid typing representation for this type. """
+        """
+        Returns:
+            A valid typing representation for this type.
+        """
         from .register import MOBASE_REGISTER
 
         # Check if this is a mobase object, in which case we escape:
@@ -51,15 +56,30 @@ class Type:
         return self.name
 
     def is_none(self) -> bool:
-        """ Check if this type represent None. """
+        """
+        Check if this type represent None.
+
+        Returns:
+            True if this type represents None.
+        """
         return self.name.lower() in ("none", "nonetype")
 
     def is_object(self) -> bool:
-        """ Check if this type represent the generic "object" type. """
+        """
+        Check if this type represent the generic "object" type.
+
+        Returns:
+            True if this type represent the generic object type.
+        """
         return self.name.lower() == "object"
 
     def is_any(self) -> bool:
-        """ Check if this type repesent the typing "Any". """
+        """
+        Check if this type represent the typing "Any".
+
+        Returns:
+            True if this type represent the typing "Any".
+        """
         return self.name == "Any"
 
     def __str__(self):
@@ -78,7 +98,9 @@ class Type:
 
 
 class CType(Type):
-    """ Class representing a C++ type from boost::python. """
+    """
+    Class representing a C++ type from boost::python.
+    """
 
     # List of smart pointer types - Not including pointer that should not
     # be exposed (unique_ptr, weak_ptr):
@@ -254,14 +276,30 @@ class CType(Type):
 
         return name
 
-    def _is_builtin_python_type(self, t: Type):
-        """Check if the given type is a 'raw' python type, i.e., a type that cannot
+    def _is_builtin_python_type(self, t: Type) -> bool:
+        """
+        Check if the given type is a 'raw' python type, i.e., a type that cannot
         be a C++ reference. This is mainly used to report errors when pointers to such
-        type are present in the interface."""
+        type are present in the interface.
+
+        Args:
+            t: The type to check.
+
+        Returns:
+            True if the given type is a raw python type, False otherwise.
+        """
         return t.name in ["bool", "int", "float", "str", "list", "std", "dict", "bytes"]
 
     def typing(self, settings: utils.Settings) -> str:
-        """ Returns a valid typing representation for this type. """
+        """
+        Create a valid typing representation for this type.
+
+        args:
+            settings: The settings to use.
+
+        Returns:
+            A valid typing representing for this type.
+        """
         from .register import MOBASE_REGISTER
 
         name = self.name
@@ -292,11 +330,21 @@ class CType(Type):
         return name
 
     def is_raw_pointer(self) -> bool:
-        """ Check if this type is a raw pointer type. """
+        """
+        Check if this type is a raw pointer type.
+
+        Returns:
+            True if this type is a raw point type, False otherwise.
+        """
         return self.name.endswith("*")
 
     def is_smart_pointer(self) -> bool:
-        """ Check if this type is a smart pointer type. """
+        """
+        Check if this type is a smart pointer type.
+
+        Returns:
+            True if this type is a smart pointer type, False otherwise.
+        """
 
         for ptr in self.SMART_POINTERS:
             if self.name.startswith(ptr):
@@ -305,19 +353,28 @@ class CType(Type):
         return False
 
     def is_pointer(self) -> bool:
-        """ Check if this type corresponds to a pointer type. """
+        """
+        Check if this type corresponds to a pointer type.
+
+        Returns:
+            True if this type represents a pointer type (raw or smart), False
+            otherwise.
+        """
         return self.is_raw_pointer() or self.is_smart_pointer()
 
     def is_optional(self) -> bool:
-        """ Check if this type is optional (i.e., can be None in python). """
+        """
+        Check if this type is optional (i.e., can be None in python).
+
+        Returns:
+            True if this type can be optional, False otherwise.
+        """
         return self._optional
 
     def is_none(self) -> bool:
-        """ Check if this type represent None. """
         return self.name.lower() == "void"
 
     def is_object(self) -> bool:
-        """ Check if this type represent the generic "object" type """
         return self.name.lower() == "_object *"
 
     def __str__(self) -> str:
@@ -328,7 +385,9 @@ class CType(Type):
 
 
 class Ret:
-    """ Class representing the return value of a function (type and documentation). """
+    """
+    Class representing the return value of a function (type and documentation).
+    """
 
     type: Type
     doc: str
@@ -339,7 +398,9 @@ class Ret:
 
 
 class Arg:
-    """ Class representing a function argument (type and eventual default value). """
+    """
+    Class representing a function argument (type and eventual default value).
+    """
 
     # Constant representing None since None indicates no default value:
     DEFAULT_NONE = "None"
@@ -393,7 +454,9 @@ class Arg:
 
 class Exc:
 
-    """ Small class representing exception that can be raised from functions. """
+    """
+    Small class representing exception that can be raised from functions.
+    """
 
     type: Type
     doc: str
@@ -404,7 +467,9 @@ class Exc:
 
 
 class Function:
-    """ Class representing a function. """
+    """
+    Class representing a function.
+    """
 
     name: str
     ret: Ret
@@ -438,7 +503,9 @@ class Function:
 
 
 class Method(Function):
-    """ Class representing a method. """
+    """
+    Class representing a method.
+    """
 
     cls: "Class"
     abstract: Union[str, bool]
@@ -475,7 +542,9 @@ class Method(Function):
 
 
 class Constant:
-    """ Class representing a constant. """
+    """
+    Class representing a constant.
+    """
 
     name: str
     type: Optional[Type]
@@ -494,7 +563,9 @@ class Constant:
 
 
 class Property:
-    """ Class representing a property. """
+    """
+    Class representing a property.
+    """
 
     name: str
     type: Type
@@ -512,7 +583,9 @@ class Property:
 
 
 class Class:
-    """ Class representing a class. """
+    """
+    Class representing a class.
+    """
 
     name: str
     bases: List["Class"]
@@ -562,7 +635,10 @@ class Class:
 
     @property
     def canonical_name(self):
-        """ Return the canonical name of this class. """
+        """
+        Returns:
+            The canonical name of this class.
+        """
         name = self.name
         oc = self.outer_class
         while oc is not None:
@@ -591,18 +667,24 @@ class Class:
 
 class PyClass(Class):
 
-    """Class use to wrap Python class to be used as parent class for some classes
-    in mobase."""
+    """
+    Class use to wrap Python class to be used as parent class for some classes
+    in mobase.
+    """
 
     def __init__(
-        self, name: str,
+        self,
+        name: str,
     ):
         super().__init__(name, [], [])
         self.abstract = False
 
 
 class Enum(Class):
-    """ Class representing an enum. """
+
+    """
+    Class representing an enum.
+    """
 
     def __init__(self, name: str, values: Dict[str, int]):
         # Note: Boost.Python.enum inherits int() not enum.Enum() but for the sake

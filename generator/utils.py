@@ -1,13 +1,26 @@
 # -*- encoding: utf-8 -*-
 
 from collections import OrderedDict, defaultdict
-from typing import List, Dict, Any, Tuple, TextIO, Optional, Union, NamedTuple, Set
+from typing import (
+    Any,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Set,
+    TextIO,
+    Tuple,
+    Union,
+    TYPE_CHECKING,
+)
 
 from . import logger
-from . import register
 from . import mtypes
 
 import yaml
+
+if TYPE_CHECKING:
+    from .register import MobaseRegister
 
 
 class Settings:
@@ -21,7 +34,7 @@ class Settings:
         abstract: Optional[bool] = None
         deprecated: bool = False
 
-    register: "register.MobaseRegister"
+    register: "MobaseRegister"
 
     # Name to ignore:
     _ignore_names: List[str]
@@ -32,9 +45,7 @@ class Settings:
     # Content of mobase:
     _mobase: Dict[str, Dict[str, Any]]
 
-    def __init__(
-        self, register: "register.MobaseRegister", fp: Optional[TextIO] = None
-    ):
+    def __init__(self, register: "MobaseRegister", fp: Optional[TextIO] = None):
 
         self.register = register
 
@@ -63,7 +74,8 @@ class Settings:
         return self._mobase
 
     def _get_class_settings(self, canonical_name: str) -> Optional[Dict[str, Any]]:
-        """Retrieve the settings for the given class.
+        """
+        Retrieve the settings for the given class.
 
         Args:
             canonical_name: Canonical name of the class.
@@ -84,7 +96,8 @@ class Settings:
     def _parse_function_settings(
         self, settings: Union[str, Dict[str, Any]]
     ) -> "FunctionSettings":
-        """Parse settings for a function or method.
+        """
+        Parse settings for a function or method.
 
         Args:
             settings: Settings corresponding to a function.
@@ -168,8 +181,7 @@ class Settings:
                 if fsettings.args is not None:
                     if len(fsettings.args) != len(fn.args):
                         logger.warn(
-                            "Mismatch number of arguments for function mobase.{}."
-                            .format(sname)  # noqa
+                            f"Mismatch number of arguments for function mobase.{sname}."
                         )
 
                     for sarg, marg in zip(fsettings.args, fn.args):
@@ -197,7 +209,8 @@ class Settings:
                 logger.warn("Missing settings for function mobase.{}.".format(sname))
 
     def patch_class(self, cls: "mtypes.Class"):
-        """Patch the given class using the given overwrites.
+        """
+        Patch the given class using the given overwrites.
 
         See config.json for some examples of valid overwrites.
 
@@ -398,12 +411,14 @@ class Settings:
 
 
 def clean_class(cls: "mtypes.Class", settings: Settings):
-    """Clean the given class object.
+    """
+    Clean the given class object.
 
     Args:
         cls: The class object to clean.
         settings: The settings.
     """
+
     from .register import MOBASE_REGISTER
 
     # Remove duplicate methods (based on name and argument types):

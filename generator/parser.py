@@ -313,7 +313,8 @@ def make_enum(fullname: str, e: type) -> Enum:
     values = e.values  # type: ignore
 
     return Enum(
-        e.__name__, OrderedDict((values[k].name, k) for k in sorted(values.keys())),
+        e.__name__,
+        OrderedDict((values[k].name, k) for k in sorted(values.keys())),
     )
 
 
@@ -387,7 +388,10 @@ def make_functions(name: str, e) -> List[Function]:
 
     return [
         Function(
-            e.__name__, Ret(ovld.rtype), ovld.args, has_overloads=len(overloads) > 1,
+            e.__name__,
+            Ret(ovld.rtype),
+            ovld.args,
+            has_overloads=len(overloads) > 1,
         )
         for ovld in overloads
     ]
@@ -475,7 +479,7 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
 
     # Find the methods:
     methods = [m[1] for m in all_attrs if callable(m[1])]
-    methods = sorted(methods, key=lambda m: m.__name__)
+    methods = sorted(methods, key=lambda m: str(m.__name__))
 
     # Filter out methods not provided or implemented:
     methods = [

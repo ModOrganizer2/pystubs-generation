@@ -29,7 +29,7 @@ parser.add_argument(
     "-o",
     "--output",
     type=Path,
-    default=sys.stdout,
+    default="stubs/setup/mobase-stubs/__init__.pyi",
     help="output file (output to stdout if not specified)",
 )
 parser.add_argument(

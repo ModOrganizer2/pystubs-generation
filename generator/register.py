@@ -8,12 +8,13 @@ from .mtypes import Class, Type, CType, Function
 
 
 class MobaseRegister:
-    """ Class that register class. """
+    """
+    Class that register classes.
+    """
 
     objects: Dict[str, Union[Class, List[Function]]]
 
     def __init__(self):
-        """ Create a new register with the list of objects. """
         self.raw_objects: Dict[str, Union[type]] = OrderedDict()
         self.objects = {}
 
@@ -26,13 +27,15 @@ class MobaseRegister:
     def make_object(
         self, name: str, e: Optional[type] = None
     ) -> Union["Class", List["Function"]]:
-        """Construct a Function, Class or Enum for the given object.
+        """
+        Construct a Function, Class or Enum for the given object.
 
         Args:
             name: The name of the object to inspect.
             e: The object to inspect, or None to fetch it from the underlying list.
 
-        Returns: A Class object for the given type, or a list of function overloads.
+        Returns:
+            A Class object for the given type, or a list of function overloads.
         """
         from .parser import make_enum, make_class, is_enum, make_functions
 

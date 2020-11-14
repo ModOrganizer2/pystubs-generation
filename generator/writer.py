@@ -21,7 +21,8 @@ class Writer:
         print(*args, **kwargs)
 
     def _print_doc(self, doc: str, indent: str):
-        """Print the given documentation at the given indentaiton level.
+        """
+        Print the given documentation at the given indentation level.
 
         Args:
             doc: Documentation to print.
@@ -36,7 +37,9 @@ class Writer:
         self._print()
 
     def print_imports(self, imports: List[Union[str, Tuple[str, List[str]]]]):
-        """ Print the given imports. """
+        """
+        Print the given imports.
+        """
         for imp in imports:
             if isinstance(imp, str):
                 self._print("import {}".format(imp))
@@ -45,7 +48,9 @@ class Writer:
         self._print()
 
     def print_function(self, fn: Function, indent: str = ""):
-        """ Print the given Function object at the given indentation level. """
+        """
+        Print the given Function object at the given indentation level.
+        """
 
         if fn.has_overloads():
             self._print("{}@overload".format(indent))
@@ -117,7 +122,9 @@ class Writer:
             self._print()
 
     def print_property(self, cls: Class, prop: Property, indent: str):
-        """ Print the given Property object at the given indentation level. """
+        """
+        Print the given Property object at the given indentation level.
+        """
 
         if prop.type.is_object() or prop.type.is_any():
             logger.warning(
@@ -142,7 +149,9 @@ class Writer:
         self._print()
 
     def print_class(self, cls: Class, indent: str = ""):
-        """ Print the given Class object at the given indentation level. """
+        """
+        Print the given Class object at the given indentation level.
+        """
 
         bc = ""
         if cls.bases or cls.is_abstract():
@@ -187,7 +196,11 @@ class Writer:
             # Note: We do not print the value, we use ...
             self._print(
                 "{}{}{} = {}{}".format(
-                    indent + "    ", constant.name, typing, "...", comment,
+                    indent + "    ",
+                    constant.name,
+                    typing,
+                    "...",
+                    comment,
                 )
             )
 

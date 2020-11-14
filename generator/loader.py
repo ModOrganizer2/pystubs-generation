@@ -7,16 +7,39 @@ import sys
 from pathlib import Path
 
 
+def load_module(name: str, path: Path):
+    # Create the loader:
+    loader = importlib.machinery.ExtensionFileLoader(  # type: ignore
+        name, path.as_posix()
+    )
+
+    # Extract the spec:
+    spec = importlib.machinery.ModuleSpec(
+        name, loader, origin=path.as_posix(), is_package=True
+    )
+
+    # Create the module and execute it?
+    module = loader.create_module(spec)
+    if module is None:
+        raise ImportError(f"Failed to import module {name} from {path}.")
+
+    loader.exec_module(module)
+
+    return module
+
+
 def load_mobase(path: Path, moprivate: bool = False):
-    """ Load the mobase from the given MO2 installation path and
+    """
+    Load the mobase from the given MO2 installation path and
     returns it.
 
     Args:
-        path: Path to the MO2 installation (folder containg the ModOrganizer.exe).
+        path: Path to the MO2 installation (folder containing the ModOrganizer.exe).
         moprivate: If True, the moprivate module will also be loaded and returned
-            alongisde mobase.
+            alongside mobase.
 
-    Returns: The mobase module. """
+    Returns: The mobase module.
+    """
 
     # We need absolute path for loading DLL and modules:
     path = path.resolve()
@@ -35,16 +58,14 @@ def load_mobase(path: Path, moprivate: bool = False):
     # We need to add plugins/data to sys.path, mainly for PyQt5
     sys.path.insert(1, path.joinpath("plugins", "data").as_posix())
 
-    mobase = importlib.machinery.ExtensionFileLoader(
-        "mobase", path.joinpath("plugins", "data", "pythonrunner.dll").as_posix()
-    ).load_module()
+    mobase = load_module("mobase", path.joinpath("plugins", "data", "pythonrunner.dll"))
 
     if not moprivate:
         return mobase
 
-    moprivate = importlib.machinery.ExtensionFileLoader(
-        "moprivate", path.joinpath("plugins", "data", "pythonrunner.dll").as_posix()
-    ).load_module()
+    moprivate = load_module(
+        "moprivate", path.joinpath("plugins", "data", "pythonrunner.dll")
+    )
 
     return mobase, moprivate
 
