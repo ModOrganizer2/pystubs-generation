@@ -1,6 +1,6 @@
 # Mod Organizer 2 - Python stubs generation
 
-This little project can be used to generate python stubs (`.pyi` file) for the MO2 python
+This project can be used to generate python stubs (`.pyi` file) for the MO2 python
 interface `mobase`.
 
 ## Using the stubs
@@ -31,35 +31,35 @@ pip install .
 
 Some words of warning:
 - The stubs are as correct as possible, but some errors are expected.
-- If you see a `InterfaceNotImplemented` class anywhere in the stubs, it means that a proper interface is
-    currently not available.
-- Some classes are said (in the stubs) to inherit `QWidget` or `QObject`. This is true on the C++ side but NOT
-    on the python side. The inheritance is only added to help with auto-completion since these classes also
-    override `__getattr__` to dispatch to the underlying `QWidget` or `QObject`. Some things might not work as
-    expected with these class (e.g., `isintance(myObject, QObject)` will return `False`), which is why a
-    `_object()` and `_widget()` method is also provided.
+- If you see a `InterfaceNotImplemented` class anywhere in the stubs, it means that
+  a proper interface is currently not available.
+- Some classes are said (in the stubs) to inherit `QWidget` or `QObject`. This is true
+  on the C++ side but NOT on the python side. The inheritance is only added to help with
+  auto-completion since these classes also override `__getattr__` to dispatch to the
+  underlying `QWidget` or `QObject`. Some things might not work as expected with these
+  class (e.g., `isinstance(myObject, QObject)` will return `False`), which is why a
+  `_object()` and `_widget()` method is also provided.
 
 ## Generating the stubs
 
 The stubs are generated using python by parsing the `mobase` module.
-You need the version of python that matches your current MO2 installation: e.g., if you have a `python38.dll` in
-your MO2 installation path, then you need **python 3.8**.
+You need the version of python that matches your current MO2 installation: e.g., if you
+have a `python38.dll` in your MO2 installation path, then you need **Python 3.8**.
 
 To generate the stubs, you can run:
 
 ```
 # Change the output folder to whatever you want:
-python main.py -c configs\config-2.3.yml -o stubs\setup\mobase-stubs\__init__.pyi ${MO2_INSTALL_PATH}
+python main.py -c configs\config-2.4.yml ${MO2_INSTALL_PATH}
 ```
 
 Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one containing `ModOrganizer.exe`).
 
-The latest stubs are kept under `stubs/setup/mobase-stubs/__init__.pyi`, and when a new version is released,
-the stubs are backed-up under `stubs/x.y.z/mobase.pyi`.
-
-
-If you do not specify a `-o` option, output will go to `stdout`, so you should redirect.
-Warning and "critical" messages are printed to `stderr`.
+The stubs are generated under `stubs/setup/mobase-stubs/__init__.pyi`, you
+can change the output file by using the `-o` option
+The latest stubs are kept under `stubs/setup/mobase-stubs/__init__.pyi`,
+and when a new version is released, the stubs are backed-up under
+`stubs/x.y.z/mobase.pyi`.
 
 A few options are available for `main.py`:
 
@@ -72,16 +72,18 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTPUT, --output OUTPUT
-                        output file (output to stdout if not specified)
+                        output file (default stubs/setup/mobase-stubs/__init__.pyi)
   -v, --verbose         verbose mode (all logs go to stderr)
   -c CONFIG, --config CONFIG
                         configuration file
 ```
 
-The stubs generator will try hard to find a valid stubs for all classes and methods of `mobase`.
-A lot of information is available through the `-v` options. Without it, only conversions or fixes
-considered "strange" will be outputed.
-For instance, here is the output with the current `config-2.3.yml` file:
+The stubs generator will try hard to find a valid stubs for all classes
+and methods of `mobase`.
+A lot of information is available through the `-v` options. Without it,
+only conversions or fixes
+considered "strange" will be shown.
+For instance, here is the output with the current `config-2.4.yml` file:
 
 ```
 WARNING: Replacing IOrganizer::FileInfo with FileInfo.
@@ -90,33 +92,18 @@ WARNING: Replacing IPluginInstaller::EInstallResult with InstallResult.
 WARNING: Replacing IPluginInstaller::EInstallResult with InstallResult.
 ```
 
-As you can see, only a few types were manually fixed (specified in `config-2.3.yml`).
+As you can see, only a few types were manually fixed (specified in
+`config-2.4.yml`).
 
 ## Configuration file
 
-The configuration file contains information for the stubs that cannot be deduced by `main` (or are too
-complex to deduce), and the documentation for everything.
+The configuration file contains information for the stubs that cannot be
+deduced by `main` (or are too complex to deduce), and the documentation for everything.
 
 ## Uploading the stubs to pypi
 
-The upload of the stubs to https://pypi.org/project/mobase-stubs/ has to be done manually. Here
-are the steps:
-
-1. Check the version of the stubs:
-  - The version is specified in the configuration file. If you need to modify the stubs of the
-    current version, you need to add a `.postX` after the version since PyPi does not allow
-    re-upload of the same release.
-2. Generate the stubs using the procedure above. You should generate the stubs under `stubs/setup/mobase-stubs/__init__.pyi`.
-3. If necessary, update the dependencies in `setup.py` (`PyQt5-stubs` version and python version).
-4. Go to `stubs/setup` and run:
-
-```bash
-python setup.py sdist bdist_wheel
-twine upload dist/*
-```
-
-You need to set the environment variables `TWINE_USERNAME` and `TWINE_PASSWORD` to appropriate values
-before running `twine upload`.
+The upload of the stubs to https://pypi.org/project/mobase-stubs/ should be
+done automatically when a new Github release is made.
 
 ## Extras &mdash; Starts a python interpreter with `mobase`
 

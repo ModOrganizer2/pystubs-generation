@@ -29,7 +29,7 @@ parser.add_argument(
     "--output",
     type=Path,
     default="stubs/setup/mobase-stubs/__init__.pyi",
-    help="output file (output to stdout if not specified)",
+    help="output file (default stubs/setup/mobase-stubs/__init__.pyi)",
 )
 parser.add_argument(
     "-v", "--verbose", action="store_true", help="verbose mode (all logs go to stderr)"
