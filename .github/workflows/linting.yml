@@ -1,4 +1,4 @@
-name: linters
+name: Check Linting
 
 on: [push, pull_request]
 
