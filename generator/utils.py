@@ -427,7 +427,7 @@ def clean_class(cls: "mtypes.Class", settings: Settings):
     ] = OrderedDict()
     methods_by_name = defaultdict(list)
     for m in cls.methods:
-        k = (m.name, tuple(m.args[1:]))
+        k = (m.name, tuple(m.args if m.is_static() else m.args[1:]))
         if k not in methods:
             methods[k] = []
         methods[k].append(m)
