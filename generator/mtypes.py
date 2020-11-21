@@ -243,7 +243,12 @@ class CType(Type):
                 args = [a for a in args if a != "boost::tuples::null_type"]
                 name = "Tuple[{}]".format(", ".join(args))
 
-        # Fix for function...
+        # Fix for optional:
+        if name.startswith("std::optional"):
+            name = name[13:].strip()[1:-1].strip()
+            name = "Optional[{}]".format(parse_ctype(name).typing(settings))
+
+        # Fix for function:
         if name.startswith("std::function"):
             name = name[13:].strip()[1:-1].strip()
             rtype, vargs = parse_csig(name, "")
