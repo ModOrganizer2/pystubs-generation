@@ -1499,6 +1499,18 @@ mobase:
         name_suggestion: Suggested name for this mod. This can still be changed by the user.
       returns: An interface to the new installed mod, or `None` if no installation took place (canceled or failure).
 
+    isPluginEnabled.1:
+      __doc__: Check if a plugin is enabled.
+      args:
+        plugin: The plugin to check.
+      returns: True if the plugin is enabled, False otherwise.
+
+    isPluginEnabled.2:
+      __doc__: Check if a plugin is enabled.
+      args:
+        plugin: The name of the plugin to check.
+      returns: True if the plugin is enabled, False otherwise.
+
     listDirectories:
       __doc__: Retrieve the list of (virtual) subdirectories in the given path.
       args:
@@ -1537,6 +1549,36 @@ mobase:
         callback: |
           The function to call when an application has finished running. The first parameter is the absolute
           path to the application, and the second parameter is the exit code of the application.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onPluginDisabled.1:
+      __doc__: Install a new handler to be called when a plugin is disabled.
+      args:
+        callback: |
+          The function to call when a plugin is disabled. The parameter is the plugin being disabled.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onPluginDisabled.2:
+      __doc__: Install a new handler to be called when the given plugin is disabled.
+      args:
+        name: Name of the plugin to watch.
+        callback: |
+          The function to call when the plugin is disabled.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onPluginEnabled.1:
+      __doc__: Install a new handler to be called when a plugin is enabled.
+      args:
+        callback: |
+          The function to call when a plugin is enabled. The parameter is the plugin being enabled.
+      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+
+    onPluginEnabled.2:
+      __doc__: Install a new handler to be called when the given plugin is enabled.
+      args:
+        name: Name of the plugin to watch.
+        callback: |
+          The function to call when the plugin is enabled.
       returns: True if the handler was installed properly (there are currently no reasons for this to fail).
 
     onPluginSettingChanged:
@@ -1758,14 +1800,6 @@ mobase:
         organizer: The main organizer interface.
       returns: True if the plugin was initialized correctly, False otherwise.
 
-    isActive:
-      __doc__: |
-        Check if this plugin is active.
-
-        It is possible to use a plugin setting (specified in `settings()`) here to allow
-        users to manually enable/disable a plugin.
-      returns: True if this plugin is active, False otherwise.
-
     name:
       __doc__: |
         Retrieve the name of the plugin.
@@ -1803,6 +1837,13 @@ mobase:
 
       returns: |
         The master plugin of this plugin, or a null pointer if this plugin does not have a master.
+
+    requirements:
+      __doc__: |
+        Retrieve the requirements for this plugin.
+
+        This method is called right after `init()` and the ownership the requirements is
+      returns: The list of requirements for this plugin.
 
     settings:
       returns: A list of settings for this plugin.
@@ -1994,6 +2035,12 @@ mobase:
     isInstalled:
       returns: True if this game has been discovered as installed, False otherwise.
 
+    listSaves:
+      __doc__: List saves in the given directory.
+      args:
+        folder: The folder to list saves from.
+      returns: The list of game saves in the given folder.
+
     loadOrderMechanism:
       returns: The load order mechanism used by this game.
 
@@ -2028,13 +2075,6 @@ mobase:
         This is used to determine if a Nexus (or other) download source should be considered
         as a primary source for the game so that it is not flagged as an alternative one.
       returns: The list of primary alternative 'short' names for this game, or an empty list.
-
-    savegameExtension:
-      __doc__:
-      returns: The file extension of save games for this game.
-
-    savegameSEExtension:
-      returns: The file extension of Script Extender saves for this game.
 
     savesDirectory:
       returns: The directory where save games are stored.
@@ -2417,6 +2457,89 @@ mobase:
     supportedExtensions:
       returns: The list of file extensions that are supported by this preview plugin.
 
+  IPluginRequirement:
+    __doc__: Class representing requirements for plugins.
+
+    Problem:
+      __doc__: Class representing a problem found by a requirement.
+
+      __init__:
+        args:
+          short_description: Short description of the problem.
+          long_description: Long description of the problem.
+
+      shortDescription:
+        returns: A short description of the problem.
+
+      longDescription:
+        returns: A long description of the problem.
+
+    check:
+      __doc__: Check if the requirement is met, and return a problem if not.
+      args:
+        organizer: The IOrganizer instance.
+      returns: The problem found if the requirement is not met, otherwise None.
+
+  PluginRequirementFactory:
+    __doc__:
+
+    basic:
+      __doc__: Create a basic requirement.
+      args:
+        checker: |
+          The callable to use to check if the requirement is met. Should return True
+          if the requirement is met, False otherwise.
+        description: The description of the problem, when the requirement is not met.
+      returns: The constructed requirement.
+
+    diagnose:
+      __doc__: |
+        Construct a requirement from a diagnose plugin.
+
+        If the wrapped diagnose plugin reports a problem, the requirement fails
+        and the associated message is the one from the diagnose plugin (or the
+        list of messages if multiple problems were reported).
+      args:
+        diagnose: The diagnose plugin to wrap in this requirement.
+      returns: The constructed requirement.
+
+    gameDependency.1:
+      __doc__: |
+        Create a new game dependency requirement.
+
+        The requirement is met when the managed game is one of the specified game.
+      args:
+        games: The names of the required games.
+      returns: The constructed requirement.
+
+    gameDependency.2:
+      __doc__: |
+        Create a new game dependency requirement.
+
+        The requirement is met when the managed game is the specified game.
+      args:
+        game: The name of the required game.
+      returns: The constructed requirement.
+
+    pluginDependency.1:
+      __doc__: |
+        Create a new plugin dependency requirement.
+
+        The requirement is met when one of the specified plugins is enabled.
+      args:
+        plugins: The name of the plugins.
+      returns: The constructed requirement.
+
+    pluginDependency.2:
+      __doc__: |
+        Create a new plugin dependency requirement.
+
+        The requirement is met when the specified plugin is enabled.
+      args:
+        plugin: The name of the plugin that must be enabled.
+      returns: The constructed requirement.
+
+
   IPluginTool:
     __doc__: |
       This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools submenu
@@ -2498,8 +2621,11 @@ mobase:
         the file containing the save.
       returns: The creation time of the save.
 
-    getFilename:
-      returns: The name of the (main) save file.
+    getFilepath:
+      returns: The path name to the (main) file or folder for the save.
+
+    getName:
+      returns: The name of this save, for display purpose.
 
     getSaveGroupIdentifier:
       __doc__: |
@@ -2508,9 +2634,6 @@ mobase:
         The name can be used to identify sets of saves to transfer between profiles. For
         RPG games, this is usually the name of a character.
       returns: The group identifier for this save game.
-
-    hasScriptExtenderFile:
-      returns: True if this save game has an associated script extender save, False otherwise.
 
   ISaveGameInfoWidget:
     __doc__: Base class for a save game info widget.
@@ -2525,7 +2648,7 @@ mobase:
       abstract: true
       __doc__: Set the save file to display in this widget.
       args:
-        save: Path to the save file.
+        save: The save to display in the widget
 
   LocalSavegames:
     __doc__:
@@ -2811,15 +2934,9 @@ mobase:
     getMissingAssets:
       __doc__: Retrieve missing assets from the save.
       args:
-        filepath: Path to the save file.
+        filepath: The save to find missing assets for.
       returns: |
         A collection of missing assets and the modules that can supply those assets.
-
-    getSaveGameInfo:
-      __doc__: Retrieve the information about the supplied save game.
-      args:
-        filepath: Path to the save file.
-      returns: A SaveGame corresponding to the given save file.
 
     getSaveGameWidget:
       __doc__: |
@@ -2831,13 +2948,6 @@ mobase:
       returns:
         __doc__: A SaveGameInfoWidget to display information about save game.
         type: Optional["ISaveGameInfoWidget"]
-
-    hasScriptExtenderSave:
-      __doc__: Check whether or not the save has a paired script extender save.
-      args:
-        filepath: Path to the save file.
-      returns: |
-        True if the given save file has a paired script extender save, False otherwise.
 
   ScriptExtender:
     __doc__:
@@ -2871,10 +2981,9 @@ mobase:
       __doc__:
       returns: The fullpath to the script extender loader.
 
-    # TODO: Remove this? Deprecated?
-    saveGameAttachmentExtensions:
-      __doc__:
-      returns: Additional savegame attachments.
+    savegameExtension:
+      __doc__: Retrieve the extension of script extender save files.
+      returns: The extension of script extender save files (e.g. "skse").
 
   UnmanagedMods:
     __doc__:

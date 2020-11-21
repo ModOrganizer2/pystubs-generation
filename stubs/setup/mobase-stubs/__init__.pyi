@@ -464,7 +464,7 @@ class GuessedString:
         """
         ...
     @overload
-    def __init__(self, value: str, quality: "GuessQuality"):
+    def __init__(self, value: str, quality: "GuessQuality" = GuessQuality.USER):
         """
         Creates a GuessedString with the given value and quality.
 
@@ -1846,6 +1846,30 @@ class IOrganizer:
             An interface to the new installed mod, or `None` if no installation took place (canceled or failure).
         """
         ...
+    @overload
+    def isPluginEnabled(self, plugin: "IPlugin") -> bool:
+        """
+        Check if a plugin is enabled.
+
+        Args:
+            plugin: The plugin to check.
+
+        Returns:
+            True if the plugin is enabled, False otherwise.
+        """
+        ...
+    @overload
+    def isPluginEnabled(self, plugin: str) -> bool:
+        """
+        Check if a plugin is enabled.
+
+        Args:
+            plugin: The name of the plugin to check.
+
+        Returns:
+            True if the plugin is enabled, False otherwise.
+        """
+        ...
     def listDirectories(self, directory: str) -> List[str]:
         """
         Retrieve the list of (virtual) subdirectories in the given path.
@@ -1908,6 +1932,44 @@ class IOrganizer:
 
         Returns:
             True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    @overload
+    def onPluginDisabled(self, callback: Callable[["IPlugin"], None]):
+        """
+        Install a new handler to be called when a plugin is disabled.
+
+        Args:
+            callback: The function to call when a plugin is disabled. The parameter is the plugin being disabled.
+        """
+        ...
+    @overload
+    def onPluginDisabled(self, name: str, callback: Callable[[], None]):
+        """
+        Install a new handler to be called when the given plugin is disabled.
+
+        Args:
+            name: Name of the plugin to watch.
+            callback: The function to call when the plugin is disabled.
+        """
+        ...
+    @overload
+    def onPluginEnabled(self, callback: Callable[["IPlugin"], None]):
+        """
+        Install a new handler to be called when a plugin is enabled.
+
+        Args:
+            callback: The function to call when a plugin is enabled. The parameter is the plugin being enabled.
+        """
+        ...
+    @overload
+    def onPluginEnabled(self, name: str, callback: Callable[[], None]):
+        """
+        Install a new handler to be called when the given plugin is enabled.
+
+        Args:
+            name: Name of the plugin to watch.
+            callback: The function to call when the plugin is enabled.
         """
         ...
     def onPluginSettingChanged(
@@ -2211,18 +2273,6 @@ class IPlugin(abc.ABC):
             True if the plugin was initialized correctly, False otherwise.
         """
         ...
-    @abc.abstractmethod
-    def isActive(self) -> bool:
-        """
-        Check if this plugin is active.
-
-        It is possible to use a plugin setting (specified in `settings()`) here to allow
-        users to manually enable/disable a plugin.
-
-        Returns:
-            True if this plugin is active, False otherwise.
-        """
-        ...
     def localizedName(self) -> str:
         """
         Retrieve the localized name of the plugin.
@@ -2234,7 +2284,7 @@ class IPlugin(abc.ABC):
             The localized name of the plugin.
         """
         ...
-    def master(self) -> "IPlugin":
+    def master(self) -> str:
         """
         Retrieve the master plugin of this plugin.
 
@@ -2262,6 +2312,17 @@ class IPlugin(abc.ABC):
 
         Returns:
             The name of the plugin.
+        """
+        ...
+    @abc.abstractmethod
+    def requirements(self) -> List["IPluginRequirement"]:
+        """
+        Retrieve the requirements for this plugin.
+
+        This method is called right after `init()` and the ownership the requirements is
+
+        Returns:
+            The list of requirements for this plugin.
         """
         ...
     @abc.abstractmethod
@@ -2577,6 +2638,18 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
+    def listSaves(self, folder: PyQt5.QtCore.QDir) -> List["ISaveGame"]:
+        """
+        List saves in the given directory.
+
+        Args:
+            folder: The folder to list saves from.
+
+        Returns:
+            The list of game saves in the given folder.
+        """
+        ...
+    @abc.abstractmethod
     def loadOrderMechanism(self) -> "LoadOrderMechanism":
         """
         Returns:
@@ -2635,20 +2708,6 @@ class IPluginGame(IPlugin):
 
         Returns:
             The list of primary alternative 'short' names for this game, or an empty list.
-        """
-        ...
-    @abc.abstractmethod
-    def savegameExtension(self) -> str:
-        """
-        Returns:
-            The file extension of save games for this game.
-        """
-        ...
-    @abc.abstractmethod
-    def savegameSEExtension(self) -> str:
-        """
-        Returns:
-            The file extension of Script Extender saves for this game.
         """
         ...
     @abc.abstractmethod
@@ -3009,7 +3068,7 @@ class IPluginList:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onRefreshed(self, callback: Callable[[None], None]) -> bool:
+    def onRefreshed(self, callback: Callable[[], None]) -> bool:
         """
         Install a new handler to be called when the list of plugins is refreshed.
 
@@ -3200,6 +3259,48 @@ class IPluginPreview(IPlugin):
         """
         ...
 
+class IPluginRequirement:
+    """
+    Class representing requirements for plugins.
+    """
+
+    class Problem:
+        """
+        Class representing a problem found by a requirement.
+        """
+
+        def __init__(self, short_description: str, long_description: str = ""):
+            """
+            Args:
+                short_description: Short description of the problem.
+                long_description: Long description of the problem.
+            """
+            ...
+        def longDescription(self) -> str:
+            """
+            Returns:
+                A long description of the problem.
+            """
+            ...
+        def shortDescription(self) -> str:
+            """
+            Returns:
+                A short description of the problem.
+            """
+            ...
+    def __init__(self): ...
+    def check(self, organizer: "IOrganizer") -> Optional["IPluginRequirement.Problem"]:
+        """
+        Check if the requirement is met, and return a problem if not.
+
+        Args:
+            organizer: The IOrganizer instance.
+
+        Returns:
+            The problem found if the requirement is not met, otherwise None.
+        """
+        ...
+
 class IPluginTool(IPlugin):
     """
     This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools submenu
@@ -3332,10 +3433,16 @@ class ISaveGame:
             The creation time of the save.
         """
         ...
-    def getFilename(self) -> str:
+    def getFilepath(self) -> str:
         """
         Returns:
-            The name of the (main) save file.
+            The path name to the (main) file or folder for the save.
+        """
+        ...
+    def getName(self) -> str:
+        """
+        Returns:
+            The name of this save, for display purpose.
         """
         ...
     def getSaveGroupIdentifier(self) -> str:
@@ -3347,12 +3454,6 @@ class ISaveGame:
 
         Returns:
             The group identifier for this save game.
-        """
-        ...
-    def hasScriptExtenderFile(self) -> bool:
-        """
-        Returns:
-            True if this save game has an associated script extender save, False otherwise.
         """
         ...
 
@@ -3374,12 +3475,12 @@ class ISaveGameInfoWidget(PyQt5.QtWidgets.QWidget):
         """
         ...
     @abc.abstractmethod
-    def setSave(self, save: str):
+    def setSave(self, save: "ISaveGame"):
         """
         Set the save file to display in this widget.
 
         Args:
-            save: Path to the save file.
+            save: The save to display in the widget
         """
         ...
 
@@ -3657,6 +3758,101 @@ class ModRepositoryFileInfo:
     @staticmethod
     def createFromJson(data: str) -> "ModRepositoryFileInfo": ...
 
+class PluginRequirementFactory:
+    def __init__(self): ...
+    @staticmethod
+    def basic(
+        checker: Callable[["IOrganizer"], bool], description: str
+    ) -> "IPluginRequirement":
+        """
+        Create a basic requirement.
+
+        Args:
+            checker: The callable to use to check if the requirement is met. Should return True
+                if the requirement is met, False otherwise.
+            description: The description of the problem, when the requirement is not met.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @staticmethod
+    def diagnose(diagnose: "IPluginDiagnose") -> "IPluginRequirement":
+        """
+        Construct a requirement from a diagnose plugin.
+
+        If the wrapped diagnose plugin reports a problem, the requirement fails
+        and the associated message is the one from the diagnose plugin (or the
+        list of messages if multiple problems were reported).
+
+        Args:
+            diagnose: The diagnose plugin to wrap in this requirement.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def gameDependency(games: List[str]) -> "IPluginRequirement":
+        """
+        Create a new game dependency requirement.
+
+        The requirement is met when the managed game is one of the specified game.
+
+        Args:
+            games: The names of the required games.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def gameDependency(game: str) -> "IPluginRequirement":
+        """
+        Create a new game dependency requirement.
+
+        The requirement is met when the managed game is the specified game.
+
+        Args:
+            game: The name of the required game.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def pluginDependency(plugins: List[str]) -> "IPluginRequirement":
+        """
+        Create a new plugin dependency requirement.
+
+        The requirement is met when one of the specified plugins is enabled.
+
+        Args:
+            plugins: The name of the plugins.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def pluginDependency(plugin: str) -> "IPluginRequirement":
+        """
+        Create a new plugin dependency requirement.
+
+        The requirement is met when the specified plugin is enabled.
+
+        Args:
+            plugin: The name of the plugin that must be enabled.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+
 class PluginSetting:
     """
     Class to hold the user-configurable parameters a plugin accepts. The purpose of this class is
@@ -3691,27 +3887,15 @@ class SaveGameInfo(abc.ABC):
 
     def __init__(self): ...
     @abc.abstractmethod
-    def getMissingAssets(self, filepath: str) -> Dict[str, List[str]]:
+    def getMissingAssets(self, filepath: "ISaveGame") -> Dict[str, List[str]]:
         """
         Retrieve missing assets from the save.
 
         Args:
-            filepath: Path to the save file.
+            filepath: The save to find missing assets for.
 
         Returns:
             A collection of missing assets and the modules that can supply those assets.
-        """
-        ...
-    @abc.abstractmethod
-    def getSaveGameInfo(self, filepath: str) -> "ISaveGame":
-        """
-        Retrieve the information about the supplied save game.
-
-        Args:
-            filepath: Path to the save file.
-
-        Returns:
-            A SaveGame corresponding to the given save file.
         """
         ...
     @abc.abstractmethod
@@ -3728,18 +3912,6 @@ class SaveGameInfo(abc.ABC):
 
         Returns:
             A SaveGameInfoWidget to display information about save game.
-        """
-        ...
-    @abc.abstractmethod
-    def hasScriptExtenderSave(self, filepath: str) -> bool:
-        """
-        Check whether or not the save has a paired script extender save.
-
-        Args:
-            filepath: Path to the save file.
-
-        Returns:
-            True if the given save file has a paired script extender save, False otherwise.
         """
         ...
 
@@ -3795,10 +3967,12 @@ class ScriptExtender(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def saveGameAttachmentExtensions(self) -> List[str]:
+    def savegameExtension(self) -> str:
         """
+        Retrieve the extension of script extender save files.
+
         Returns:
-            Additional savegame attachments.
+            The extension of script extender save files (e.g. "skse").
         """
         ...
 
