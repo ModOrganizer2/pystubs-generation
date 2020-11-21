@@ -167,7 +167,7 @@ def parse_csig(s, name) -> Tuple[CType, List[Arg]]:
     args_ss = magic_split(args_s, ",", "(<", ")>")
     args = [parse_carg(v, i > len(args_ss) - c - 1) for i, v in enumerate(args_ss)]
 
-    return rtype, args
+    return rtype, [arg for arg in args if not arg.type.is_none()]
 
 
 def parse_psig(s: str, name: str) -> Tuple[Type, List[Arg]]:
