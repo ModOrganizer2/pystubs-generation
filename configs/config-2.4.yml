@@ -1754,6 +1754,7 @@ mobase:
         which case this will return False.
       args:
         handle: Handle of the application to wait for (as returned by `startApplication()`).
+        refresh: Whether ModOrganizer should refresh after the process completed or not.
       returns: |
         A tuple `(result, exitcode)`, where `result` is a boolean indicating if the application
         completed successfully, and `exitcode` is the exit code of the application.

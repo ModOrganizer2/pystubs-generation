@@ -2212,7 +2212,7 @@ class IOrganizer:
             The handle to the started application, or 0 if the application failed to start.
         """
         ...
-    def waitForApplication(self, handle: int) -> Tuple[bool, int]:
+    def waitForApplication(self, handle: int, refresh: bool = True) -> Tuple[bool, int]:
         """
         Wait for the application corresponding to the given handle to finish.
 
@@ -2223,6 +2223,7 @@ class IOrganizer:
 
         Args:
             handle: Handle of the application to wait for (as returned by `startApplication()`).
+            refresh: Whether ModOrganizer should refresh after the process completed or not.
 
         Returns:
             A tuple `(result, exitcode)`, where `result` is a boolean indicating if the application
