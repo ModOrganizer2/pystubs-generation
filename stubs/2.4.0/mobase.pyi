@@ -265,7 +265,7 @@ class ExecutableInfo:
 
 class FileInfo:
     """
-    Information about a virtualised file
+    Information about a virtualized file
     """
 
     @property
@@ -325,7 +325,7 @@ class FileTreeEntry:
         Detach this entry from its parent tree.
 
         Returns:
-            True if the entry was removed correctly, False otherwize.
+            True if the entry was removed correctly, False otherwise.
         """
         ...
     def fileType(self) -> "FileTreeEntry.FileTypes":
@@ -378,7 +378,7 @@ class FileTreeEntry:
             tree: The tree to move this entry to.
 
         Returns:
-            True if the entry was moved correctly, False otherwize.
+            True if the entry was moved correctly, False otherwise.
         """
         ...
     def name(self) -> str:
@@ -665,7 +665,7 @@ class IFileTree(FileTreeEntry):
 
     The tree is built upon FileTreeEntry. A given tree holds shared pointers to its entries
     while each entry holds a weak pointer to its parent, this means that the descending link
-    are strong (shared pointers) but the uplink are weaks.
+    are strong (shared pointers) but the uplink are weak.
 
     Accessing the parent is always done by locking the weak pointer so that returned pointer
     or either null or valid. This structure implies that as long as the initial root lives,
@@ -879,7 +879,7 @@ class IFileTree(FileTreeEntry):
     ) -> bool:
         """
         Insert the given entry in this tree, removing it from its
-        previouis parent.
+        previous parent.
 
         The entry must not be this tree or a parent entry of this tree.
 
@@ -893,7 +893,7 @@ class IFileTree(FileTreeEntry):
 
               - If both entries are files, the old file is replaced by the given entry.
               - If both entries are directories, a merge is performed as if using merge().
-              - Otherwize the insertion fails (two entries with different types).
+              - Otherwise the insertion fails (two entries with different types).
 
         This method invalidates iterator to this tree, to the parent tree of the given
         entry, and to subtrees of this tree if the insert policy is MERGE.
@@ -917,7 +917,7 @@ class IFileTree(FileTreeEntry):
         will be replaced by files in the given tree. After a merge, the source tree will be
         empty but still attached to its parent.
 
-        If `overwrites` is `True`, a map from overriden files to new files will be returned.
+        If `overwrites` is `True`, a map from overridden files to new files will be returned.
 
         Note that the merge process makes no distinction between files and directories
         when merging: if a directory is present in this tree and a file from source
@@ -930,10 +930,10 @@ class IFileTree(FileTreeEntry):
 
         Args:
             other: Tree to merge.
-            overwrites: If True, a mapping from overriden files to new files will be returned.
+            overwrites: If True, a mapping from overridden files to new files will be returned.
 
         Returns:
-            If `overwrites` is True, a mapping from overriden files to new files, otherwise
+            If `overwrites` is True, a mapping from overridden files to new files, otherwise
         the number of overwritten entries.
 
         Raises:
@@ -1255,7 +1255,7 @@ class IModInterface:
     def newestVersion(self) -> "VersionInfo":
         """
         Returns:
-            The newest version of thid mod (as known by MO2). If this matches version(),
+            The newest version of this mod (as known by MO2). If this matches version(),
         then the mod is up-to-date.
         """
         ...
@@ -1359,7 +1359,7 @@ class IModInterface:
             name: New name for this mod.
 
         Returns:
-            True if the name was changed, False if an error occured (e.g. if the name is not a valid
+            True if the name was changed, False if an error occurred (e.g. if the name is not a valid
         directory name).
         """
         ...
@@ -1719,7 +1719,7 @@ class IOrganizer:
         Create a new mod with the specified name.
 
         If a mod with the same name already exists, the user will be queried. If the user chooses
-        to merge or replace, the call will succeed, otheriwse the call will fail.
+        to merge or replace, the call will succeed, otherwise the call will fail.
 
         Args:
             name: Name of the mod to create.
@@ -1804,7 +1804,7 @@ class IOrganizer:
         ...
     def getFileOrigins(self, filename: str) -> List[str]:
         """
-        Retrieve the file origins for the speicified file.
+        Retrieve the file origins for the specified file.
 
         The origins are listed with their internal name. The internal name of a mod can differ
         from the display name for disambiguation.
@@ -2775,7 +2775,7 @@ class IPluginGame(IPlugin):
         when using Skyrim SE).
 
         The short name should be considered the primary handler for a directly supported game
-        for puroses of auto-launching an instance.
+        for purposes of auto-launching an instance.
 
         Returns:
             The list of valid short names for this game.
@@ -2885,7 +2885,7 @@ class IPluginInstaller(IPlugin):
 class IPluginInstallerCustom(IPluginInstaller):
     """
     Custom installer for mods. Custom installers receive the archive name and have to go
-    from there. They have to be able to extract the archive themself.
+    from there. They have to be able to extract the archive themselves.
 
     Example of such installers are the external NCC installer or the OMOD installer.
     """
@@ -3304,7 +3304,7 @@ class IPluginRequirement:
 
 class IPluginTool(IPlugin):
     """
-    This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools submenu
+    This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools sub-menu
     and get invoked when the user clicks it. They are expected to have a user interface of some sort. These
     are almost like independent applications except they can access all Mod Organizer interfaces like querying
     and modifying the current profile, mod list, load order, use MO to install mods and so on. A tool plugin
@@ -3964,7 +3964,7 @@ class ScriptExtender(abc.ABC):
     def loaderPath(self) -> str:
         """
         Returns:
-            The fullpath to the script extender loader.
+            The full path to the script extender loader.
         """
         ...
     @abc.abstractmethod

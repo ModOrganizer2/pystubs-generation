@@ -253,7 +253,7 @@ mobase:
       returns:
 
   FileInfo:
-    __doc__: Information about a virtualised file
+    __doc__: Information about a virtualized file
     properties[]:
       archive:
         type: str
@@ -291,7 +291,7 @@ mobase:
 
     detach:
       __doc__: Detach this entry from its parent tree.
-      returns: True if the entry was removed correctly, False otherwize.
+      returns: True if the entry was removed correctly, False otherwise.
 
     fileType:
       returns: The filetype of this entry.
@@ -318,7 +318,7 @@ mobase:
       __doc__: Move this entry to the given tree.
       args:
         tree: The tree to move this entry to.
-      returns: True if the entry was moved correctly, False otherwize.
+      returns: True if the entry was moved correctly, False otherwise.
 
     name:
       returns: The name of this entry.
@@ -522,7 +522,7 @@ mobase:
 
       The tree is built upon FileTreeEntry. A given tree holds shared pointers to its entries
       while each entry holds a weak pointer to its parent, this means that the descending link
-      are strong (shared pointers) but the uplink are weaks.
+      are strong (shared pointers) but the uplink are weak.
 
       Accessing the parent is always done by locking the weak pointer so that returned pointer
       or either null or valid. This structure implies that as long as the initial root lives,
@@ -677,7 +677,7 @@ mobase:
     insert:
       __doc__: |
         Insert the given entry in this tree, removing it from its
-        previouis parent.
+        previous parent.
 
         The entry must not be this tree or a parent entry of this tree.
 
@@ -691,7 +691,7 @@ mobase:
 
               - If both entries are files, the old file is replaced by the given entry.
               - If both entries are directories, a merge is performed as if using merge().
-              - Otherwize the insertion fails (two entries with different types).
+              - Otherwise the insertion fails (two entries with different types).
 
         This method invalidates iterator to this tree, to the parent tree of the given
         entry, and to subtrees of this tree if the insert policy is MERGE.
@@ -709,7 +709,7 @@ mobase:
         will be replaced by files in the given tree. After a merge, the source tree will be
         empty but still attached to its parent.
 
-        If `overwrites` is `True`, a map from overriden files to new files will be returned.
+        If `overwrites` is `True`, a map from overridden files to new files will be returned.
 
         Note that the merge process makes no distinction between files and directories
         when merging: if a directory is present in this tree and a file from source
@@ -721,9 +721,9 @@ mobase:
         present in the given path, and all the subtrees of the given source.
       args:
         other: Tree to merge.
-        overwrites: If True, a mapping from overriden files to new files will be returned.
+        overwrites: If True, a mapping from overridden files to new files will be returned.
       returns: |
-        If `overwrites` is True, a mapping from overriden files to new files, otherwise
+        If `overwrites` is True, a mapping from overridden files to new files, otherwise
         the number of overwritten entries.
       raises:
         RuntimeError: If the merge failed.
@@ -901,7 +901,7 @@ mobase:
 
     newestVersion:
       returns: |
-        The newest version of thid mod (as known by MO2). If this matches version(),
+        The newest version of this mod (as known by MO2). If this matches version(),
         then the mod is up-to-date.
 
     ignoredVersion:
@@ -1005,7 +1005,7 @@ mobase:
       args:
         name: New name for this mod.
       returns: |
-        True if the name was changed, False if an error occured (e.g. if the name is not a valid
+        True if the name was changed, False if an error occurred (e.g. if the name is not a valid
         directory name).
 
     setNewestVersion:
@@ -1431,7 +1431,7 @@ mobase:
         Create a new mod with the specified name.
 
         If a mod with the same name already exists, the user will be queried. If the user chooses
-        to merge or replace, the call will succeed, otheriwse the call will fail.
+        to merge or replace, the call will succeed, otherwise the call will fail.
       args:
         name: Name of the mod to create.
       returns: |
@@ -1478,7 +1478,7 @@ mobase:
 
     getFileOrigins:
       __doc__: |
-        Retrieve the file origins for the speicified file.
+        Retrieve the file origins for the specified file.
 
         The origins are listed with their internal name. The internal name of a mod can differ
         from the display name for disambiguation.
@@ -2122,7 +2122,7 @@ mobase:
         when using Skyrim SE).
 
         The short name should be considered the primary handler for a directly supported game
-        for puroses of auto-launching an instance.
+        for purposes of auto-launching an instance.
       returns: The list of valid short names for this game.
 
   IPluginInstaller:
@@ -2205,7 +2205,7 @@ mobase:
   IPluginInstallerCustom:
     __doc__: |
       Custom installer for mods. Custom installers receive the archive name and have to go
-      from there. They have to be able to extract the archive themself.
+      from there. They have to be able to extract the archive themselves.
 
       Example of such installers are the external NCC installer or the OMOD installer.
 
@@ -2543,7 +2543,7 @@ mobase:
 
   IPluginTool:
     __doc__: |
-      This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools submenu
+      This is the simplest of plugin interfaces. Such plugins simply place an icon inside the tools sub-menu
       and get invoked when the user clicks it. They are expected to have a user interface of some sort. These
       are almost like independent applications except they can access all Mod Organizer interfaces like querying
       and modifying the current profile, mod list, load order, use MO to install mods and so on. A tool plugin
@@ -2638,7 +2638,7 @@ mobase:
 
   ISaveGameInfoWidget:
     __doc__: Base class for a save game info widget.
-    # Class not abstract because it conflicts with Qt metaclass:
+    # Class not abstract because it conflicts with Qt meta-class:
     # __abstract__: true
     __init__:
       args:
@@ -2980,7 +2980,7 @@ mobase:
 
     loaderPath:
       __doc__:
-      returns: The fullpath to the script extender loader.
+      returns: The full path to the script extender loader.
 
     savegameExtension:
       __doc__: Retrieve the extension of script extender save files.
