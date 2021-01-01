@@ -873,6 +873,18 @@ mobase:
     absolutePath:
       returns: Absolute path to the mod to be used in file system operations.
 
+    isBackup:
+      returns: True if this mod represents a backup.
+
+    isForeign:
+      returns: True if this mod represents a foreign mod, not managed by MO2.
+
+    isOverwrite:
+      returns: True if this mod represents the overwrite mod.
+
+    isSeparator:
+      returns: True if this mod represents a separator.
+
     name:
       returns: The name of this mod.
 
@@ -1840,6 +1852,8 @@ mobase:
         The master plugin of this plugin, or a null pointer if this plugin does not have a master.
 
     requirements:
+      abstract: false
+
       __doc__: |
         Retrieve the requirements for this plugin.
 
@@ -2145,6 +2159,7 @@ mobase:
       returns: True if this installer is a manual installer, False otherwise.
 
     onInstallationStart:
+      abstract: false
       __doc__: |
         Method calls at the start of the installation process, before any other methods.
         This method is only called once per installation process, even for recursive
@@ -2165,6 +2180,7 @@ mobase:
           if there is no such mod.
 
     onInstallationEnd:
+      abstract: false
       __doc__: |
         Method calls at the end of the installation process. This method is only called once
         per installation process, even for recursive installations (e.g. with the bundle installer).
@@ -2183,12 +2199,12 @@ mobase:
       returns: The priority of this installer.
 
     setInstallationManager:
+      abstract: false
       __doc__: |
         Set the installation manager for this installer.
 
         Python plugins usually do not need to re-implement this and can directly access the installation
         manager using `_manager()`.
-      abstract: false
       args:
         manager: The installation manager.
 

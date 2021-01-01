@@ -1246,6 +1246,30 @@ class IModInterface:
             The absolute path to the file that was used to install this mod.
         """
         ...
+    def isBackup(self) -> bool:
+        """
+        Returns:
+            True if this mod represents a backup.
+        """
+        ...
+    def isForeign(self) -> bool:
+        """
+        Returns:
+            True if this mod represents a foreign mod, not managed by MO2.
+        """
+        ...
+    def isOverwrite(self) -> bool:
+        """
+        Returns:
+            True if this mod represents the overwrite mod.
+        """
+        ...
+    def isSeparator(self) -> bool:
+        """
+        Returns:
+            True if this mod represents a separator.
+        """
+        ...
     def name(self) -> str:
         """
         Returns:
@@ -2315,7 +2339,6 @@ class IPlugin(abc.ABC):
             The name of the plugin.
         """
         ...
-    @abc.abstractmethod
     def requirements(self) -> List["IPluginRequirement"]:
         """
         Retrieve the requirements for this plugin.
@@ -2813,7 +2836,6 @@ class IPluginInstaller(IPlugin):
             True if this installer is a manual installer, False otherwise.
         """
         ...
-    @abc.abstractmethod
     def onInstallationEnd(self, result: "InstallResult", new_mod: "IModInterface"):
         """
         Method calls at the end of the installation process. This method is only called once
@@ -2825,7 +2847,6 @@ class IPluginInstaller(IPlugin):
                 installed mod, otherwise it contains a null pointer.
         """
         ...
-    @abc.abstractmethod
     def onInstallationStart(
         self, archive: str, reinstallation: bool, current_mod: "IModInterface"
     ):
