@@ -71,6 +71,11 @@ for name in dir(mobase):
     if name == "MoVariant":
         continue
 
+    # For now, ignore this since it is a submodule and we
+    # not handle them.
+    if name == "widgets":
+        continue
+
     objects.append((name, getattr(mobase, name)))
 
 # Enum first, and then alphabetical. Might cause issue with base classes, so
