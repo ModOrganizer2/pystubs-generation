@@ -6,6 +6,7 @@ replacements:
   Organizer::FileInfo: FileInfo
   IOrganizer::FileInfo: FileInfo
   IPluginInstaller::EInstallResult: InstallResult
+  GuessedValue< QString>: GuessedString
 
 # List of names to ignores:
 ignores:
@@ -984,13 +985,6 @@ mobase:
       args:
         category_id: The Nexus category ID.
 
-    remove:
-      __doc__: |
-        Delete the mod from the disc.
-
-        This does not update the global ModInfo structure or indices.
-      returns: True if the mod was deleted, False otherwise.
-
     removeCategory:
       __doc__: Unassign a category from this mod.
       args:
@@ -1008,17 +1002,6 @@ mobase:
       __doc__: Set endorsement state of the mod.
       args:
         endorsed: New endorsement state of this mod.
-
-    setName:
-      __doc__: |
-        Set the name of this mod.
-
-        This will also update the name of the directory that contains this mod
-      args:
-        name: New name for this mod.
-      returns: |
-        True if the name was changed, False if an error occurred (e.g. if the name is not a valid
-        directory name).
 
     setNewestVersion:
       __doc__: Set the latest known version of this mod.
@@ -1168,6 +1151,19 @@ mobase:
       args:
         name: Internal name of the mod.
       returns: The priority of the given mod.
+
+    renameMod:
+      __doc__: |
+        Rename the given mod.
+
+        This method usually invalidates the given mod so you should use the returned value
+        after calling it instead of the passed value.
+
+      args:
+        mod: The mod to rename.
+        name: The new name of the mod.
+
+      returns: A valid reference to the given mod after renaming it.
 
     setActive.1:
       __doc__: |

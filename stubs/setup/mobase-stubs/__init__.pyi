@@ -1125,8 +1125,8 @@ class IInstallationManager:
         """
         ...
     def installArchive(
-        self, mod_name: "GuessedString", archive: str, mod_id: int
-    ) -> "InstallResult":
+        self, mod_name: Union[str, "GuessedString"], archive: str, mod_id: int = 0
+    ) -> Tuple["InstallResult", str, int]:
         """
         Install the given archive.
 
@@ -1329,16 +1329,6 @@ class IModInterface:
             The ID of the primary category of this mod.
         """
         ...
-    def remove(self) -> bool:
-        """
-        Delete the mod from the disc.
-
-        This does not update the global ModInfo structure or indices.
-
-        Returns:
-            True if the mod was deleted, False otherwise.
-        """
-        ...
     def removeCategory(self, name: str) -> bool:
         """
         Unassign a category from this mod.
@@ -1371,20 +1361,6 @@ class IModInterface:
 
         Args:
             endorsed: New endorsement state of this mod.
-        """
-        ...
-    def setName(self, name: str) -> bool:
-        """
-        Set the name of this mod.
-
-        This will also update the name of the directory that contains this mod
-
-        Args:
-            name: New name for this mod.
-
-        Returns:
-            True if the name was changed, False if an error occurred (e.g. if the name is not a valid
-        directory name).
         """
         ...
     def setNewestVersion(self, version: "VersionInfo"):
@@ -1581,6 +1557,21 @@ class IModList:
 
         Returns:
             True if the mod was removed, False otherwise.
+        """
+        ...
+    def renameMod(self, mod: "IModInterface", name: str) -> "IModInterface":
+        """
+        Rename the given mod.
+
+        This method usually invalidates the given mod so you should use the returned value
+        after calling it instead of the passed value.
+
+        Args:
+            mod: The mod to rename.
+            name: The new name of the mod.
+
+        Returns:
+            A valid reference to the given mod after renaming it.
         """
         ...
     @overload
