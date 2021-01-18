@@ -106,7 +106,7 @@ after saving files from your project.
    ``Tasks: Configure task`` or open ``.vscode/tasks.json``) using the following
    snippet (replace the name and directory as needed):
 
-.. code::
+.. code:: javascript
 
     // .vscode/tasks.json
     {
@@ -130,7 +130,7 @@ after saving files from your project.
 
 3. Add the following to your Visual Studio Code settings (``.vscode/settings.json``)
 
-.. code::
+.. code:: javascript
 
     // .vscode/settings.json
     {
