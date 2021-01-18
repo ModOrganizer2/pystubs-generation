@@ -84,6 +84,63 @@ And then add the following to ``settings.json`` (with the correct path):
 2. You can set the ``MYPYPATH`` environment variable to ``$MO2DIR\plugins\data`` (this requires
 restarting VS code).
 
+4. [Optional] Automatically reload plugins during development
+.............................................................
+
+This section is optional and requires you to already have written a "working"
+plugin (a plugin that MO2 can load).
+
+Since MO2 2.4 alpha 6, a new command has been added to ``ModOrganizer.exe`` to
+reload plugins during execution.
+If your plugin is named "My Plugin", you can use the following command to reload
+it while MO2 is running:
+
+.. code::
+
+    $MO2DIR\ModOrganizer.exe reload-plugin "My Plugin"
+
+If you are using Visual Studio Code, you can send this command to MO2 automatically
+after saving files from your project.
+
+1. Create a "reload plugin" task in Visual Studio Code (Ctrl+Shift+P  then
+   ``Tasks: Configure task`` or open ``.vscode/tasks.json``) using the following
+   snippet (replace the name and directory as needed):
+
+.. code::
+
+    // .vscode/tasks.json
+    {
+        // See https://go.microsoft.com/fwlink/?LinkId=733558
+        // for the documentation about the tasks.json format
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "reload plugin",
+                "type": "shell",
+                "command": "$MO2DIR/ModOrganizer.exe",
+                "args": [
+                    "reload-plugin", "My Plugin"
+                ]
+            }
+        ]
+    }
+
+2. Install the `Trigger Task on Save <https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.triggertaskonsave>`_
+   extension from Visual Studio Code marketplace.
+
+3. Add the following to your Visual Studio Code settings (``.vscode/settings.json``)
+
+.. code::
+    // .vscode/settings.json
+    {
+        "triggerTaskOnSave.on": true,
+        "triggerTaskOnSave.tasks": {
+            "reload plugin": [
+                "*.py"
+            ]
+        }
+    }
+
 Testing the setup
 -----------------
 
@@ -128,7 +185,7 @@ If your setup is valid, here is what you should have.
 
 .. image:: images/check-setup-3.png
 
-If everything is as above, you can delete the test file and move on to writting
+If everything is as above, you can delete the test file and move on to writing
 your own plugin!
 
 
