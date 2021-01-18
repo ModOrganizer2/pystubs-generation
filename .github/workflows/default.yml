@@ -19,7 +19,7 @@ jobs:
       env:
         PYTHONPATH: .
       with:
-        pre-build-command: "apt-get update -y && apt-get install -y libgl1-mesa-glx && cp stubs/2.3.2/mobase.pyi docs/mobase.py"
+        pre-build-command: "apt-get update -y && apt-get install -y libgl1-mesa-glx && cp stubs/2.4.0/mobase.pyi docs/mobase.py"
         docs-folder: "docs/"
 
     - name: Install SSH Client 🔑
