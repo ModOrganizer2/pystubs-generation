@@ -13,7 +13,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../../stubs/2.3rc1/"))
+sys.path.insert(0, os.path.abspath("../../stubs/2.4.0/"))
 
 
 # -- Project information -----------------------------------------------------

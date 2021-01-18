@@ -131,6 +131,7 @@ after saving files from your project.
 3. Add the following to your Visual Studio Code settings (``.vscode/settings.json``)
 
 .. code::
+
     // .vscode/settings.json
     {
         "triggerTaskOnSave.on": true,
