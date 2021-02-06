@@ -17,7 +17,7 @@ ignores:
 mobase:
 
   # Version of the stubs.
-  __version__: 2.4.0.alpha3
+  __version__: 2.4.0
 
   getFileVersion:
     __doc__: Retrieve the file version of the given executable.
