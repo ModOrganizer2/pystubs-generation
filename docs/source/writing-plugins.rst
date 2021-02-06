@@ -226,6 +226,8 @@ These plugins are not as well documented as the ones in the repository above.
     plugins and should mostly be investigated if you want to add a game to it.
 - `FNIS Tool <https://github.com/ModOrganizer2/modorganizer-fnistool>`_ [``IPluginTool``]:
     Plugin to integrate FNIS into MO2.
+- `Installer Wizard <https://github.com/ModOrganizer2/modorganizer-installer_wizard>`_ [``IPluginInstaller``]:
+    Installer for BAIN archives containing wizard scripts.
 - `Preview DDS <https://github.com/ModOrganizer2/modorganizer-preview_dds>`_ [``IPluginPreview``]:
     Plugin to preview DDS files. Quite complex due to the use
     of OpenGL for display.
@@ -243,7 +245,7 @@ These plugins are not as well documented as the ones in the repository above.
 Unofficial Plugins
 ..................
 
-These plugins have been created by developpers for MO2 and are usually distributed on Nexus.
+These plugins have been created by developers for MO2 and are usually distributed on Nexus.
 
 - `Merge Plugins Hide <https://github.com/deorder/mo2-plugins>`_ [``IPluginTool``]:
     Hide / unhide plugins that were merged using ``Merge Plugins`` or ``zMerge``.
@@ -255,3 +257,66 @@ These plugins have been created by developpers for MO2 and are usually distribut
     Synchronize mod order from current profile to another while keeping the (enabled/disabled) state intact.
 
 *Feel free to open an issue or a pull-request if you want to add your own plugin to the list.*
+
+Internationalization
+--------------------
+
+If you plan to distribute your plugin, it is often a good idea to provide translations for it.
+
+Adding translation code
+.......................
+
+Mod Organizer uses Qt translation system, so you need to adapt your plugin code to provide
+translation strings.
+To do this, you need two things:
+
+1. In every class containing strings you need to translate, you must add a ``__tr`` function
+   that takes a ``str`` input and call `QApplication.translate` on it (see example below).
+2. You need to wrap all translatable strings in a call to ``self.__str("My String")`` (see
+   example below).
+
+.. code:: python
+
+    from PyQt5.QtWidgets import QApplication
+
+    class MyPlugin(...):
+
+        def localizedName(self) -> str:
+            # Use self.__tr to wrap string you want translatable.
+            return self.__tr("My Plugin Name")
+
+        def __tr(self, txt: str) -> str:
+            # The first argument must EXACTLY match the class name:
+            return QApplication.translate("MyPlugin", txt)
+
+Generating Qt translation files
+...............................
+
+Once your code is updated, you need to generate the Qt translation file ``.ts``.
+You can use ``PyQt5.lupdate_main`` for this:
+
+.. code:: bash
+
+    PyQt5.lupdate_main mysourcefile.py -ts mysourcefile.ts
+
+You should generate a single translation file for your whole plugin even if it contains
+multiple files by passing all Python file and Qt UI (``.ui``) file to the command above.
+
+Translating
+...........
+
+Now that you have the original ``.ts`` file, you need to translate it in order to obtain
+translation files for other languages.
+To do so, you can use online services such as `Transifex <https://www.transifex.com>`_ or
+simply Qt Linguistic tools.
+
+Distributing translations
+.........................
+
+Once you have obtained translation files for another language, e.g. French, you need to
+compile it into a ``.qm`` file and then ship it.
+
+- If you are using a single Python file plugin ``myplugin.py``, the name of the compiled
+  translation must be ``myplugin_fr.qm``.
+- If you are shipping a module ``mymoduleplugin``, the name of the compiled translation
+  must be ``mymoduleplugin``.
