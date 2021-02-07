@@ -642,7 +642,7 @@ mobase:
           The path to copy the entry to. If the path ends with / or \\, the entry will
           be copied in the corresponding directory instead of replacing it. If the
           given path is empty (`""`), the entry is copied directly under this tree.
-        policy: Policy to use to resolve conflicts.
+        insert_policy: Policy to use to resolve conflicts.
       returns: The new entry (copy of the specified entry).
       raises:
         RuntimeError: If the entry could not be copied.
@@ -2947,7 +2947,7 @@ mobase:
     getMissingAssets:
       __doc__: Retrieve missing assets from the save.
       args:
-        filepath: The save to find missing assets for.
+        save: The save to find missing assets for.
       returns: |
         A collection of missing assets and the modules that can supply those assets.
 
@@ -3095,7 +3095,7 @@ mobase:
       args:
         value: String to parse.
         scheme: Scheme to use to parse the string.
-        manual_input: True if the given string should be treated as user input.
+        is_manual: True if the given string should be treated as user input.
 
     scheme:
       returns: The version scheme in effect for this VersionInfo.

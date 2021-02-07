@@ -795,7 +795,7 @@ class IFileTree(FileTreeEntry):
         self,
         entry: "FileTreeEntry",
         path: str = "",
-        policy: "IFileTree.InsertPolicy" = InsertPolicy.FAIL_IF_EXISTS,
+        insert_policy: "IFileTree.InsertPolicy" = InsertPolicy.FAIL_IF_EXISTS,
     ) -> "FileTreeEntry":
         """
         Move the given entry to the given path under this tree.
@@ -816,7 +816,7 @@ class IFileTree(FileTreeEntry):
             path: The path to copy the entry to. If the path ends with / or \\, the entry will
                 be copied in the corresponding directory instead of replacing it. If the
                 given path is empty (`""`), the entry is copied directly under this tree.
-            policy: Policy to use to resolve conflicts.
+            insert_policy: Policy to use to resolve conflicts.
 
         Returns:
             The new entry (copy of the specified entry).
@@ -3900,12 +3900,12 @@ class SaveGameInfo(abc.ABC):
 
     def __init__(self): ...
     @abc.abstractmethod
-    def getMissingAssets(self, filepath: "ISaveGame") -> Dict[str, List[str]]:
+    def getMissingAssets(self, save: "ISaveGame") -> Dict[str, List[str]]:
         """
         Retrieve missing assets from the save.
 
         Args:
-            filepath: The save to find missing assets for.
+            save: The save to find missing assets for.
 
         Returns:
             A collection of missing assets and the modules that can supply those assets.
@@ -4155,7 +4155,7 @@ class VersionInfo:
         self,
         value: str,
         scheme: "VersionScheme" = VersionScheme.DISCOVER,
-        manual_input: bool = False,
+        is_manual: bool = False,
     ):
         """
         Update this VersionInfo by parsing the given string using the given scheme.
@@ -4163,7 +4163,7 @@ class VersionInfo:
         Args:
             value: String to parse.
             scheme: Scheme to use to parse the string.
-            manual_input: True if the given string should be treated as user input.
+            is_manual: True if the given string should be treated as user input.
         """
         ...
     def scheme(self) -> "VersionScheme":

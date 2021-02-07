@@ -339,6 +339,20 @@ class Settings:
 
                         for sarg, marg in zip(fsettings.args, margs):
                             marg.doc = sarg.doc
+                            if (
+                                not marg.name.startswith("arg")
+                                and marg.name != sarg.name
+                            ):
+                                logger.warn(
+                                    "Mismatch argument name for method {}.{}: {} {}, using {}.".format(  # noqa: E501
+                                        cls.canonical_name,
+                                        sname,
+                                        marg.name,
+                                        sarg.name,
+                                        sarg.name,
+                                    )
+                                )
+
                             marg.name = sarg.name
                             if not sarg.type.is_none():
                                 marg.type = sarg.type
