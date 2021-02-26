@@ -46,7 +46,7 @@ setup(
     version=find_version("mobase-stubs", "__init__.pyi"),
     package_data={"mobase-stubs": ["*.pyi"]},
     packages=["mobase-stubs"],
-    install_requires=["PyQt5-stubs==5.14.2"],
+    install_requires=["PyQt5-stubs==5.15.2"],
     python_requires="==3.8.*",
     classifiers=[
         "Intended Audience :: Developers",
