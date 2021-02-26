@@ -15,7 +15,7 @@ This guide assumes that:
   `Python extension <https://marketplace.visualstudio.com/items?itemName=ms-python.python>`_.
 - You have Python installed: https://www.python.org/downloads/.
 
-  - It is recommended but not mandatory to use the Python version that is used by MO2.
+  - You must use the Python version that used by MO2.
     You can check the ``pythonXX.dll`` in the MO2 installation folder to find the Python version used by MO2 (``python38.dll`` means Python 3.8).
 - You obviously need a valid MO2 installation: https://github.com/modorganizer2/modorganizer/releases
 
@@ -28,8 +28,8 @@ Preparation
 -----------
 
 **Note:** This part is optional but highly recommended if you want a proper environment to work with.
-Everything here is written to be as simple as possible but you can of course adapt it to your preferences: use a python virtual
-environment, use workspace settings instead of global ones, etc.
+Everything here is written to be as simple as possible but you can of course adapt it to your preferences:
+use a python virtual environment, use workspace settings instead of global ones, etc.
 
 1. Get the ``mobase`` stubs
 ...........................
@@ -39,11 +39,14 @@ as ``flake8`` or ``mypy``.
 Instead, we provide `stubs <https://stackoverflow.com/questions/59051631/what-is-the-use-of-stub-files-pyi-in-python>`_
 which can be used for auto-completion or type-checking.
 
-The stubs for ``mobase`` are available at https://github.com/ModOrganizer2/pystubs-generation/tree/master/stubs.
-You want to download the ``mobase.pyi`` file in the folder corresponding to your MO2 version and put it under ``$MO2DIR/plugins/data``.
+You can install the stubs for ``mobase`` using ``pip``:
 
-**Note:** It is possible to put the stubs in a different location, but we are going to use ``$MO2DIR/plugins/data`` for PyQt5,
-so we might as well use it for the stubs.
+.. code::
+
+    pip install mobase-stubs
+
+This will install the stubs for ``mobase`` but also for PyQt5, which is heavily used by MO2.
+
 
 2. Configure Visual Studio Code for ``mobase``
 ..............................................
@@ -57,32 +60,28 @@ Open ``settings.json`` (Ctrl+Shift+P, then "Open Settings (JSON)"), and add the 
     "python.linting.enabled": true,
     "python.linting.mypyEnabled": true,
     "python.linting.flake8Enabled": true,
-    "python.autoComplete.extraPaths": [
-        "$MO2DIR\\plugins\\data",
-    ]
 
-3. Configure ``mypy`` to find the ``mobase`` stubs
-..................................................
+3. [Optional] Configure ``black`` to auto-format your source files
+..................................................................
 
-There are multiply way to configure ``mypy``:
+This step is optional for your own plugin but recent MO2 plugins use ``black``
+to get consistent formatting.
 
-1. You can create a ``mypy.ini`` file somewhere containing:
+You can install ``black`` with ``pip``:
 
-.. code-block:: ini
+.. code::
 
-    [mypy]
-    mypy_path = $MO2DIR\plugins\data
+    pip install black flake8-black
 
-And then add the following to ``settings.json`` (with the correct path):
+To configure Visual Studio Code to auto-format your code with ``black`` when saving, open ``settings.json``
+(Ctrl+Shift+P, then "Open Settings (JSON)"), and add the following entries:
 
 .. code-block:: json-object
 
-    "python.linting.mypyArgs": [
-        "--config-file=path-to-mypy.ini",
-    ]
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "python.formatting.provider": "black",
 
-2. You can set the ``MYPYPATH`` environment variable to ``$MO2DIR\plugins\data`` (this requires
-restarting VS code).
 
 4. [Optional] Automatically reload plugins during development
 .............................................................
