@@ -1,8 +1,18 @@
 # -*- encoding: utf-8 -*-
 
 from collections import OrderedDict, defaultdict
-from typing import (TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set,
-                    TextIO, Tuple, Union)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Set,
+    TextIO,
+    Tuple,
+    Union,
+)
 
 import yaml
 

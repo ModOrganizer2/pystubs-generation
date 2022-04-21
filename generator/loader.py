@@ -15,6 +15,7 @@ def load_module(name: str, path: Path):
 
     # Extract the spec:
     spec = importlib.util.spec_from_loader(name, loader)
+    assert spec is not None
 
     # Create the module and execute it?
     module = importlib.util.module_from_spec(spec)
