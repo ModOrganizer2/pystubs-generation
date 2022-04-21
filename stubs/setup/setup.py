@@ -47,7 +47,7 @@ setup(
     version=find_version("mobase-stubs", "__init__.pyi"),
     package_data={"mobase-stubs": ["*.pyi"]},
     packages=["mobase-stubs"],
-    install_requires=["git+https://github.com/TilmanK/PyQt6-stubs.git"],
+    install_requires=[],
     python_requires="==3.10.*",
     classifiers=[
         "Intended Audience :: Developers",
