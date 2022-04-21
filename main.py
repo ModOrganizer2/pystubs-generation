@@ -2,19 +2,17 @@
 
 import argparse
 import logging
-
 from pathlib import Path
 
 import black
 
 from generator import logger
 from generator.loader import load_mobase
-from generator.register import MOBASE_REGISTER
+from generator.mtypes import Class, Function, Type
 from generator.parser import is_enum
-from generator.mtypes import Type, Class, Function
+from generator.register import MOBASE_REGISTER
 from generator.utils import Settings, clean_class
 from generator.writer import Writer
-
 
 parser = argparse.ArgumentParser("Stubs generator for the MO2 python interface")
 parser.add_argument(

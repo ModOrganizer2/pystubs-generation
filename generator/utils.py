@@ -1,23 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 from collections import OrderedDict, defaultdict
-from typing import (
-    Any,
-    Dict,
-    List,
-    NamedTuple,
-    Optional,
-    Set,
-    TextIO,
-    Tuple,
-    Union,
-    TYPE_CHECKING,
-)
-
-from . import logger
-from . import mtypes
+from typing import (TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Set,
+                    TextIO, Tuple, Union)
 
 import yaml
+
+from . import logger, mtypes
 
 if TYPE_CHECKING:
     from .register import MobaseRegister

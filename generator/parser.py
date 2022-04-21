@@ -2,26 +2,13 @@
 
 import inspect
 import re
+from collections import OrderedDict, defaultdict
+from typing import Dict, List, Optional, Tuple, Union
 
-from collections import defaultdict, OrderedDict
-
-from typing import List, Tuple, Optional, Dict, Union
-
-from .register import MobaseRegister
-from .mtypes import (
-    Type,
-    CType,
-    Class,
-    PyClass,
-    Enum,
-    Arg,
-    Ret,
-    Method,
-    Constant,
-    Property,
-    Function,
-)
 from . import logger
+from .mtypes import (Arg, Class, Constant, CType, Enum, Function, Method,
+                     Property, PyClass, Ret, Type)
+from .register import MobaseRegister
 
 
 def magic_split(value: str, sep=",", open="(<", close=")>"):
@@ -320,7 +307,7 @@ def make_enum(fullname: str, e: type) -> Enum:
 
 class Overload:
 
-    """ Small class to avoid mypy issues... """
+    """Small class to avoid mypy issues..."""
 
     rtype: Type
     args: List[Arg]

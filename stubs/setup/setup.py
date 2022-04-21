@@ -11,6 +11,7 @@
 import io
 import os
 import re
+
 from setuptools import setup
 
 
@@ -46,8 +47,8 @@ setup(
     version=find_version("mobase-stubs", "__init__.pyi"),
     package_data={"mobase-stubs": ["*.pyi"]},
     packages=["mobase-stubs"],
-    install_requires=["PyQt5-stubs==5.15.2"],
-    python_requires="==3.8.*",
+    install_requires=["git+https://github.com/TilmanK/PyQt6-stubs.git"],
+    python_requires="==3.10.*",
     classifiers=[
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3.8",

@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 
 from collections import OrderedDict
-from typing import Optional, Dict, Union, List
+from typing import Dict, List, Optional, Union
 
 from . import logger
-from .mtypes import Class, Type, CType, Function
+from .mtypes import Class, CType, Function, Type
 
 
 class MobaseRegister:
@@ -37,7 +37,7 @@ class MobaseRegister:
         Returns:
             A Class object for the given type, or a list of function overloads.
         """
-        from .parser import make_enum, make_class, is_enum, make_functions
+        from .parser import is_enum, make_class, make_enum, make_functions
 
         if e is None:
             e = self.raw_objects[name]

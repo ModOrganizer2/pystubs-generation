@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 
-from typing import TextIO, List, Union, Tuple
+from typing import List, TextIO, Tuple, Union
 
 from . import logger
-from .mtypes import Function, Class, Method, Property, Enum
+from .mtypes import Class, Enum, Function, Method, Property
 from .utils import Settings
 
 

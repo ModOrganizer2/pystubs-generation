@@ -1,9 +1,8 @@
 # -*- encoding: utf-8 -*-
 
-from typing import Optional, List, Any, Dict, Union
+from typing import Any, Dict, List, Optional, Union
 
-from . import logger
-from . import utils
+from . import logger, utils
 
 
 class Type:
@@ -20,7 +19,7 @@ class Type:
 
     def __init__(self, name: Union[str, type]):
         # Import only here since we change the path to find them:
-        from PyQt5 import QtCore, QtGui, QtWidgets
+        from PyQt6 import QtCore, QtGui, QtWidgets
 
         if isinstance(name, type):
             name = name.__name__
@@ -141,7 +140,7 @@ class CType(Type):
 
     def _try_fix(self, name, settings: utils.Settings):
 
-        from .parser import parse_ctype, magic_split, parse_csig
+        from .parser import magic_split, parse_csig, parse_ctype
         from .register import MOBASE_REGISTER
 
         pname = name
