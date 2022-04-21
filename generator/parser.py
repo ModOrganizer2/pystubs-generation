@@ -572,10 +572,10 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
     if e.__name__.endswith("Widget"):
         logger.info(
             "Forcing base {} for class {}.".format(
-                "PyQt5.QtWidgets.QWidget", e.__name__
+                "PyQt6.QtWidgets.QWidget", e.__name__
             )
         )
-        direct_bases.append(PyClass("PyQt5.QtWidgets.QWidget"))
+        direct_bases.append(PyClass("PyQt6.QtWidgets.QWidget"))
 
     return Class(
         e.__name__,

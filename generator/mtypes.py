@@ -119,9 +119,9 @@ class CType(Type):
     REPLACEMENTS = {
         "QString": "str",
         "QStringList": "List[str]",
-        "QWidget *": "PyQt5.QtWidgets.QWidget",
-        "QMainWindow *": "PyQt5.QtWidgets.QMainWindow",
-        "QObject *": "PyQt5.QtCore.QObject",
+        "QWidget *": "PyQt6.QtWidgets.QWidget",
+        "QMainWindow *": "PyQt6.QtWidgets.QMainWindow",
+        "QObject *": "PyQt6.QtCore.QObject",
         "void *": "object",
         "api::object": "object",
     }

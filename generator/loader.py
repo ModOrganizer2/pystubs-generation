@@ -53,7 +53,7 @@ def load_mobase(path: Path, moprivate: bool = False):
         os.add_dll_directory(str(path))  # type: ignore[attr-defined]
         os.add_dll_directory(str(path.joinpath("dlls")))  # type: ignore[attr-defined]
 
-    # We need to add plugins/data to sys.path, mainly for PyQt5
+    # We need to add plugins/data to sys.path, mainly for PyQt6
     sys.path.insert(1, path.joinpath("plugins", "data").as_posix())
 
     mobase = load_module("mobase", path.joinpath("plugins", "data", "pythonrunner.dll"))

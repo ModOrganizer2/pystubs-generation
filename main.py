@@ -134,9 +134,9 @@ with open(args.output, "w") as output:
                     "Type",
                 ],
             ),
-            "PyQt5.QtCore",
-            "PyQt5.QtGui",
-            "PyQt5.QtWidgets",
+            "PyQt6.QtCore",
+            "PyQt6.QtGui",
+            "PyQt6.QtWidgets",
         ]
     )
 

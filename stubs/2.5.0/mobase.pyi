@@ -1,4 +1,4 @@
-__version__ = "2.5.0.dev0"
+__version__ = "2.5.0.dev1"
 
 import abc
 from enum import Enum
@@ -15,9 +15,9 @@ from typing import (
     TypeVar,
     Type,
 )
-import PyQt5.QtCore
-import PyQt5.QtGui
-import PyQt5.QtWidgets
+import PyQt6.QtCore
+import PyQt6.QtGui
+import PyQt6.QtWidgets
 
 MoVariant = Union[None, bool, int, str, List[Any], Dict[str, Any]]
 GameFeatureType = TypeVar("GameFeatureType")
@@ -1663,7 +1663,7 @@ class IModRepositoryBridge(PyQt5.QtCore.QObject):
     trackingToggled: PyQt6.QtCore.pyqtSignal = ...
     requestFailed: PyQt6.QtCore.pyqtSignal = ...
 
-    def _object(self) -> PyQt5.QtCore.QObject:
+    def _object(self) -> PyQt6.QtCore.QObject:
         """
         Returns:
             The underlying `QObject` for the bridge.
@@ -2082,7 +2082,7 @@ class IOrganizer:
         """
         ...
     def onUserInterfaceInitialized(
-        self, callback: Callable[[PyQt5.QtWidgets.QMainWindow], None]
+        self, callback: Callable[[PyQt6.QtWidgets.QMainWindow], None]
     ) -> bool:
         """
         Install a new handler to be called when the UI has been fully initialized.
@@ -2919,7 +2919,7 @@ class IPluginInstaller(IPlugin):
             manager: The installation manager.
         """
         ...
-    def setParentWidget(self, parent: PyQt5.QtWidgets.QWidget):
+    def setParentWidget(self, parent: PyQt6.QtWidgets.QWidget):
         """
         Set the parent widget for this installer.
 
@@ -2946,7 +2946,7 @@ class IPluginInstallerCustom(IPluginInstaller):
             The installation manager.
         """
         ...
-    def _parentWidget(self) -> PyQt5.QtWidgets.QWidget:
+    def _parentWidget(self) -> PyQt6.QtWidgets.QWidget:
         """
         Returns:
             The parent widget.
@@ -3014,7 +3014,7 @@ class IPluginInstallerSimple(IPluginInstaller):
             The installation manager.
         """
         ...
-    def _parentWidget(self) -> PyQt5.QtWidgets.QWidget:
+    def _parentWidget(self) -> PyQt6.QtWidgets.QWidget:
         """
         Returns:
             The parent widget.
@@ -3250,7 +3250,7 @@ class IPluginList:
 
 class IPluginModPage(IPlugin):
     def __init__(self): ...
-    def _parentWidget(self) -> PyQt5.QtWidgets.QWidget:
+    def _parentWidget(self) -> PyQt6.QtWidgets.QWidget:
         """
         Returns:
             The parent widget.
@@ -3296,7 +3296,7 @@ class IPluginModPage(IPlugin):
             The URL to open when the user wants to visit this mod page.
         """
         ...
-    def setParentWidget(self, parent: PyQt5.QtWidgets.QWidget):
+    def setParentWidget(self, parent: PyQt6.QtWidgets.QWidget):
         """
         Set the parent widget for this mod page.
 
@@ -3330,7 +3330,7 @@ class IPluginPreview(IPlugin):
     @abc.abstractmethod
     def genFilePreview(
         self, filename: str, max_size: PyQt6.QtCore.QSize
-    ) -> PyQt5.QtWidgets.QWidget:
+    ) -> PyQt6.QtWidgets.QWidget:
         """
         Generate a preview for the specified file.
 
@@ -3403,7 +3403,7 @@ class IPluginTool(IPlugin):
     """
 
     def __init__(self): ...
-    def _parentWidget(self) -> PyQt5.QtWidgets.QWidget:
+    def _parentWidget(self) -> PyQt6.QtWidgets.QWidget:
         """
         Returns:
             The parent widget.
@@ -3429,7 +3429,7 @@ class IPluginTool(IPlugin):
             The icon for this tool, or a default-constructed QICon().
         """
         ...
-    def setParentWidget(self, parent: PyQt5.QtWidgets.QWidget):
+    def setParentWidget(self, parent: PyQt6.QtWidgets.QWidget):
         """
         Set the parent widget for this tool.
 
@@ -3548,18 +3548,18 @@ class ISaveGame:
         """
         ...
 
-class ISaveGameInfoWidget(PyQt5.QtWidgets.QWidget):
+class ISaveGameInfoWidget(PyQt6.QtWidgets.QWidget):
     """
     Base class for a save game info widget.
     """
 
-    def __init__(self, parent: PyQt5.QtWidgets.QWidget = None):
+    def __init__(self, parent: PyQt6.QtWidgets.QWidget = None):
         """
         Args:
             parent: Parent widget.
         """
         ...
-    def _widget(self) -> PyQt5.QtWidgets.QWidget:
+    def _widget(self) -> PyQt6.QtWidgets.QWidget:
         """
         Returns:
             The underlying `QWidget`.
@@ -3994,7 +3994,7 @@ class SaveGameInfo(abc.ABC):
         ...
     @abc.abstractmethod
     def getSaveGameWidget(
-        self, parent: PyQt5.QtWidgets.QWidget
+        self, parent: PyQt6.QtWidgets.QWidget
     ) -> Optional["ISaveGameInfoWidget"]:
         """
         Retrieve a widget to display over the save game list.
