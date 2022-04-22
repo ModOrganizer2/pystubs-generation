@@ -4,8 +4,8 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [published]
+  push:
+    tags: ["*.dev[0-9]+"]
 
 jobs:
   deploy:
@@ -18,7 +18,7 @@ jobs:
       uses: frabert/replace-string-action@v1.1
       id: version
       with:
-        string: ${{ github.event.release.tag_name }}
+        string: ${{ github.ref_name }}
         pattern: "v?([0-9][.][0-9][.][0-9]).*"
         replace-with: "$1"
     - name: Set up Python
@@ -36,5 +36,6 @@ jobs:
       run: |
         cd stubs/setup
         cp ../${{ steps.version.outputs.replaced }}/mobase.pyi mobase-stubs/__init__.pyi
+        sed -i 's/__version__ = ".*"/__version__ = "${{ github.ref_name }}"/' mobase-stubs/__init__.pyi
         python setup.py sdist bdist_wheel
         twine upload dist/*
