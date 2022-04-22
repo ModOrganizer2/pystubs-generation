@@ -17,7 +17,7 @@ ignores:
 mobase:
 
   # Version of the stubs.
-  __version__: 2.5.0.dev1
+  __version__: 2.5.0.dev2
 
   getFileVersion:
     __doc__: Retrieve the file version of the given executable.
@@ -1814,6 +1814,7 @@ mobase:
       returns: True if the plugin was initialized correctly, False otherwise.
 
     enabledByDefault:
+      abstract: false
       __doc__: Check whether this plugin should be enabled by default.
       returns: True if this plugin should be enabled by default, False otherwise.
 

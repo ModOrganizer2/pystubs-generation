@@ -3,7 +3,7 @@
 import inspect
 import re
 from collections import OrderedDict, defaultdict
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from . import logger
 from .mtypes import (
@@ -202,11 +202,11 @@ def parse_psig(s: str, name: str) -> Tuple[Type, List[Arg]]:
 
         pa = pa[irbrack + 1 :]
         n: str = pa.strip()
-        d: str
+        d: Optional[str] = None
         if pa.find("=") != -1:
-            n, d = pa.split("=")
+            n, ds = pa.split("=")
             n = n.strip()
-            d = d.strip()
+            d = ds.strip()
         elif i > len(args) - c - 1:
             d = Arg.DEFAULT_NONE
         pargs.append(Arg(n, Type(t), d))

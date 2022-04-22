@@ -1,4 +1,4 @@
-__version__ = "2.5.0.dev1"
+__version__ = "2.5.0.dev2"
 
 import abc
 from enum import Enum
@@ -2294,7 +2294,6 @@ class IPlugin(abc.ABC):
             The description for this plugin.
         """
         ...
-    @abc.abstractmethod
     def enabledByDefault(self) -> bool:
         """
         Check whether this plugin should be enabled by default.
