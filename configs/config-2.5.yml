@@ -1,23 +1,13 @@
 ---
-version: 1
+# version of the configuration
+version: 2
 
-# This is the list of type to replace:
-replacements:
-  Organizer::FileInfo: FileInfo
-  IOrganizer::FileInfo: FileInfo
-  IPluginInstaller::EInstallResult: InstallResult
-  GuessedValue< QString>: GuessedString
-
-# List of names to ignores:
-ignores:
-  - toPyQt
+# version of the stubs - this is overridden when publishing
+__version__: "2.5.0"
 
 # This is the root of the mobase module and will contain everything
 # related to functions / classes, including their documentation.
 mobase:
-
-  # Version of the stubs - this is overridden by when publishing.
-  __version__: "2.5.0"
 
   getFileVersion:
     __doc__: Retrieve the file version of the given executable.
@@ -3147,3 +3137,9 @@ mobase:
 
     scheme:
       returns: The version scheme in effect for this VersionInfo.
+
+mobase.widgets:
+
+  TaskDialog: {}
+
+  TaskDialogButton: {}

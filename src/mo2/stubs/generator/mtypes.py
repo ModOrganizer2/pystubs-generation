@@ -30,15 +30,8 @@ class PyType:
 
         self.name = name.strip()
 
-        # remove MOBase:: and mobase.
-        self.name = self.name.replace("mobase.", "")
-
         # replace QFlags[xxx] with xxx
         self.name = re.sub(r"QFlags\[([^]]*)\]", r"\1", self.name)
-
-        # we replace QVariant with MoVariant which is valid python type
-        if self.name == "QVariant":
-            self.name = "MoVariant"
 
         # find PyQt types
         for m in (QtCore, QtGui, QtWidgets):
@@ -51,8 +44,9 @@ class PyType:
             A valid typing representation for this type.
         """
         # IPluginBase -> IPlugin
-        if self.name == "IPluginBase":
+        if self.name == "mobase.IPluginBase":
             return "IPlugin"
+
         return self.name
 
     def is_none(self) -> bool:
@@ -142,10 +136,18 @@ class Argument:
         # pybind11 puts enum in <> so we need to fix
         m = re.match(r"<([^:]+):\s*[0-9]+>", value)
         if m:
-            # we also need to use the upper case version
-            value = m.group(1)
-            parts = value.split(".")
-            value = ".".join(parts[:-1] + [parts[-1].upper()])
+            # if this is a mobase enum, we eed to use the upper case version
+            if self.type.name.startswith("mobase"):
+                value = m.group(1)
+                parts = value.split(".")
+                value = ".".join(parts[:-1] + [parts[-1].upper()])
+
+            # PyQt -> need to fix
+            elif self.type.name.startswith("PyQt"):
+                parts = m.group(1).split(".")
+                value = f"{self.type.name}.{parts[-1]}"
+            else:
+                value = m.group(1)
 
         return value
 
@@ -317,6 +319,7 @@ class Class:
 
     def __init__(
         self,
+        package: str,
         name: str,
         bases: list[Class],
         methods: list[Method],
@@ -325,7 +328,7 @@ class Class:
         inner_classes: list[Class] = [],
         doc: str = "",
     ):
-
+        self.package = package
         self.name = name
         self.bases = bases
         self.methods = methods
@@ -365,6 +368,16 @@ class Class:
         return name
 
     @property
+    def full_name(self):
+        """
+        Returns:
+            The full name of this class, i.e., package.canonical_name.
+        """
+        if self.package:
+            return f"{self.package}.{self.canonical_name}"
+        return self.canonical_name
+
+    @property
     def all_bases(self) -> set[Class]:
         """
         Returns:
@@ -378,9 +391,6 @@ class Class:
     def is_deprecated(self):
         return self.deprecated
 
-    def __str__(self):
-        return self.canonical_name
-
 
 class PyClass(Class):
 
@@ -391,9 +401,10 @@ class PyClass(Class):
 
     def __init__(
         self,
+        package: str,
         name: str,
     ):
-        super().__init__(name, [], [])
+        super().__init__(package, name, [], [])
         self.abstract = False
 
 
@@ -403,12 +414,15 @@ class Enum(Class):
     Class representing an enum.
     """
 
-    def __init__(self, name: str, values: dict[str, int], methods: list[Method]):
+    def __init__(
+        self, package: str, name: str, values: dict[str, int], methods: list[Method]
+    ):
         # Note: Boost.Python.enum inherits int() not enum.Enum() but for the sake
         # of stubs, I think making them inherit enum.Enum is more appropriate:
         super().__init__(
+            package,
             name,
-            [PyClass("Enum")],
+            [PyClass("", "Enum")],
             methods,
             inner_classes=[],
             constants=[Constant(k, None, v) for k, v in values.items()],

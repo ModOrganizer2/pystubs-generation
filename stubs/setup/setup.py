@@ -12,7 +12,7 @@ import io
 import os
 import re
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 
 def read(*names, **kwargs):
@@ -45,8 +45,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     version=find_version("mobase-stubs", "__init__.pyi"),
-    package_data={"mobase-stubs": ["*.pyi"]},
-    packages=["mobase-stubs"],
+    packages=find_packages(),
     install_requires=[],
     python_requires="==3.10.*",
     classifiers=[

@@ -30,8 +30,6 @@ FileWrapper = Union[str, PyQt6.QtCore.QFileInfo, Path]
 DirectoryWrapper = Union[str, PyQt6.QtCore.QDir, Path]
 GameFeatureType = TypeVar("GameFeatureType")
 
-class InterfaceNotImplemented: ...
-
 def getFileVersion(filepath: FileWrapper) -> str:
     """
     Retrieve the file version of the given executable.

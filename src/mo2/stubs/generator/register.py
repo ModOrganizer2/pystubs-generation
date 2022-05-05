@@ -42,9 +42,9 @@ class MobaseRegister:
 
         if name not in self.objects:
             if isinstance(e, type):
-                self.objects[name] = make_class(name, e, self)
+                self.objects[name] = make_class(e, self)
             elif callable(e):
-                self.objects[name] = make_functions(name, e)
+                self.objects[name] = make_functions(e)
 
         return self.objects[name]
 
@@ -60,6 +60,3 @@ class MobaseRegister:
             The object with the given name.
         """
         return self.objects[name]
-
-
-MOBASE_REGISTER = MobaseRegister()

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import OrderedDict, defaultdict
-from typing import TYPE_CHECKING, NamedTuple, TextIO, TypedDict
+from typing import TYPE_CHECKING, Final, NamedTuple, TextIO, TypedDict
 
 import yaml
 
@@ -73,6 +73,8 @@ class Settings:
 
     register: MobaseRegister
 
+    version: Final[str]
+
     # Name to ignore:
     _ignore_names: list[str]
 
@@ -80,35 +82,31 @@ class Settings:
     _replacements: dict[str, str]
 
     # Content of mobase:
-    _mobase: dict[str, dict[str, object]]
+    _module: dict[str, dict[str, object]]
 
-    def __init__(self, register: MobaseRegister, fp: TextIO | None = None):
+    def __init__(
+        self,
+        register: MobaseRegister,
+        fp: TextIO | None = None,
+        module: str | None = None,
+    ):
 
         self.register = register
 
         if fp is None:
             self._ignore_names = []
             self._replacements = {}
-            self._mobase = {}
+            self._version = ""
+            self._module = {}
         else:
             data = yaml.load(fp, yaml.FullLoader)
-            assert data["version"] == 1
+            assert data["version"] == 2, "only settings version 2 are supported"
 
-            self._ignore_names = data.get("ignores", [])
-            self._replacements = data.get("replacements", {})
-            self._mobase = data.get("mobase", {})
+            # retrieve the module version
+            self.version = data["__version__"]
 
-    @property
-    def ignore_names(self) -> list[str]:
-        return self._ignore_names
-
-    @property
-    def replacements(self) -> dict[str, str]:
-        return self._replacements
-
-    @property
-    def mobase(self) -> dict[str, dict[str, object]]:
-        return self._mobase
+            assert module is not None
+            self._module = data.get(module, None) or {}
 
     def _get_class_settings(self, canonical_name: str) -> YamlClassSettings | None:
         """
@@ -122,7 +120,7 @@ class Settings:
             settings where not found.
         """
         parts = canonical_name.split(".")
-        base: dict[str, object] = dict(self._mobase)
+        base: dict[str, object] = dict(self._module)
         for part in parts:
             if part in base:
                 base = base[part]  # type: ignore
@@ -208,9 +206,9 @@ class Settings:
                 setting_name = fn.name
 
             # If the name is in the settings:
-            if setting_name in self._mobase:
+            if setting_name in self._module:
                 function_settings = self._parse_function_settings(
-                    self._mobase[setting_name]  # type: ignore
+                    self._module[setting_name]  # type: ignore
                 )
 
                 # Force raises:
@@ -282,7 +280,10 @@ class Settings:
         if "__bases__" in class_settings:
             for bc in class_settings["__bases__"]:
                 if bc.startswith("PyQt"):
-                    cls.bases.append(PyClass(bc))
+                    parts = bc.split(".")
+                    cls.bases.append(
+                        PyClass(package=".".join(parts[:-1]), name=parts[-1])
+                    )
                 else:
                     cls.bases.append(self.register.get_object(bc))
             del class_settings["__bases__"]
@@ -455,13 +456,12 @@ class Settings:
             )
 
 
-def clean_class(cls: Class, settings: Settings):
+def clean_class(cls: Class):
     """
     Clean the given class object.
 
     Args:
         cls: The class object to clean.
-        settings: The settings.
     """
 
     # Remove duplicate methods (based on name and argument types):
@@ -507,7 +507,8 @@ def clean_class(cls: Class, settings: Settings):
             clean_methods.append(method)
         else:
             arg0_name = method.args[0].type.name
-            if arg0_name in [cls.name, cls.canonical_name, "object"]:
+            # print(arg0_name, [cls.name, cls.canonical_name, cls.full_name, "object"])
+            if arg0_name in [cls.full_name, "object"]:
                 clean_methods.append(method)
             else:
                 LOGGER.info(
@@ -570,4 +571,4 @@ def clean_class(cls: Class, settings: Settings):
 
     # Clean inner classes:
     for ic in cls.inner_classes:
-        clean_class(ic, settings)
+        clean_class(ic)

@@ -12,9 +12,15 @@ class Writer:
     _output: TextIO
     _settings: Settings
 
-    def __init__(self, output: TextIO, settings: Settings):
+    def __init__(self, package: str, output: TextIO, settings: Settings):
+        self._package = package.split(".")
         self._output = output
         self._settings = settings
+
+    def _fix_typing(self, value: str) -> str:
+        for pkg in self._package:
+            value = value.replace(pkg + ".", "")
+        return value
 
     def _print(self, *args, **kwargs):
         kwargs["file"] = self._output
@@ -57,7 +63,7 @@ class Writer:
 
         sig_return_type = ""
         if not fn.ret.type.is_none():
-            sig_return_type = " -> " + fn.ret.type.typing()
+            sig_return_type = " -> " + self._fix_typing(fn.ret.type.typing())
 
         if isinstance(fn, Method):
             if fn.is_static():
@@ -68,7 +74,7 @@ class Writer:
 
         python_args: list[str] = []
         for i, arg in enumerate(fn.args):
-            tmp = "{}: {}".format(arg.name, arg.type.typing())
+            tmp = "{}: {}".format(arg.name, self._fix_typing(arg.type.typing()))
             if arg.has_default_value():
                 tmp += " = {}".format(arg.value)
             python_args.append(tmp)
@@ -106,7 +112,13 @@ class Writer:
         if fn.raises:
             doc += "\nRaises:\n"
             for rai in fn.raises:
-                doc += "    " + rai.type.typing() + ": " + rai.doc.strip() + "\n"
+                doc += (
+                    "    "
+                    + self._fix_typing(rai.type.typing())
+                    + ": "
+                    + rai.doc.strip()
+                    + "\n"
+                )
 
         if doc:
             self._print()
@@ -132,13 +144,15 @@ class Writer:
 
         self._print("{}@property".format(indent))
         self._print(
-            "{}def {}(self) -> {}: ...".format(indent, prop.name, prop.type.typing())
+            "{}def {}(self) -> {}: ...".format(
+                indent, prop.name, self._fix_typing(prop.type.typing())
+            )
         )
         if not prop.is_read_only():
             self._print("{}@{}.setter".format(indent, prop.name))
             self._print(
                 "{}def {}(self, arg0: {}): ...".format(
-                    indent, prop.name, prop.type.typing()
+                    indent, prop.name, self._fix_typing(prop.type.typing())
                 )
             )
         self._print()
@@ -150,7 +164,10 @@ class Writer:
 
         bc = ""
         if cls.bases or cls.is_abstract():
-            bases = [str(bc) for bc in cls.bases]
+            bases = [
+                bc.canonical_name if bc.package.startswith("mobase") else bc.full_name
+                for bc in cls.bases
+            ]
             if cls.is_abstract() and not any(bc.is_abstract() for bc in cls.bases):
                 bases.insert(0, "abc.ABC")
             bc = "(" + ", ".join(bases) + ")"
@@ -186,7 +203,7 @@ class Writer:
 
             typing = ""
             if constant.type is not None:
-                typing = ": {}".format(constant.type.typing())
+                typing = ": {}".format(self._fix_typing(constant.type.typing()))
 
             # Note: We do not print the value, we use ...
             self._print(

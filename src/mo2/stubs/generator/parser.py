@@ -179,7 +179,7 @@ def parse_pybind11_function_docstring(e) -> list[Overload]:
     return overloads
 
 
-def make_functions(name: str, e) -> list[Function]:
+def make_functions(e) -> list[Function]:
     overloads = parse_pybind11_function_docstring(e)
 
     return [
@@ -193,13 +193,11 @@ def make_functions(name: str, e) -> list[Function]:
     ]
 
 
-def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
+def make_class(e: type, register: MobaseRegister) -> Class:
     """
     Constructs a Class object from the given python class.
 
     Args:
-        fullname: Name of the class (might be different from __name__ for inner
-            classes).
         e: The python class (created from boost) to construct an object for.
         class_register:
 
@@ -257,7 +255,7 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
     inner_classes = [ic[1] for ic in all_attrs if isinstance(ic[1], type)]
 
     pinner_classes: list[Class] = [
-        cast(Class, register.make_object(f"{fullname}.{ic.__name__}", ic))
+        cast(Class, register.make_object(f"{e.__qualname__}.{ic.__name__}", ic))
         for ic in inner_classes
     ]
 
@@ -285,7 +283,7 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
                 Overload(
                     return_type=PyType("bool"),
                     arguments=[
-                        Argument("self", PyType(fullname)),
+                        Argument("self", PyType(e.__module__ + "." + e.__qualname__)),
                         Argument("other", PyType("object")),
                     ],
                 )
@@ -353,7 +351,7 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
                 "PyQt6.QtWidgets.QWidget", e.__name__
             )
         )
-        direct_bases.append(PyClass("PyQt6.QtWidgets.QWidget"))
+        direct_bases.append(PyClass("PyQt6.QtWidgets", "QWidget"))
 
     # check if it an enum
     if is_enum(e):
@@ -364,12 +362,14 @@ def make_class(fullname: str, e: type, register: MobaseRegister) -> Class:
         methods = [m for m in methods if m.name != "__init__"]
 
         return Enum(
+            e.__module__,
             e.__name__,
             OrderedDict((name, value) for name, (value, _) in values.items()),
             methods=methods,
         )
 
     return Class(
+        e.__module__,
         e.__name__,
         direct_bases,
         methods,

@@ -35,7 +35,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         cd stubs/setup
-        cp ../${{ steps.version.outputs.replaced }}/mobase.pyi mobase-stubs/__init__.pyi
+        cp -r ../${{ steps.version.outputs.replaced }}/mobase-stubs/* mobase-stubs/
         sed -i 's/__version__ = ".*"/__version__ = "${{ github.ref_name }}"/' mobase-stubs/__init__.pyi
         python setup.py sdist bdist_wheel
         twine upload dist/*

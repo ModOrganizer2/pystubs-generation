@@ -88,16 +88,7 @@ should be done automatically when a new Github tag is pushed.
 
 ## Extras &mdash; Using `mobase` in a Python interpreter
 
-Since MO2 2.5.0, it is possible to start any Python interpreter and import `mobase`.
-To do so, you simply need to:
-
-- add `${MO2_INSTALL_PATH}` and `${MO2_INSTALL_PATH}/dlls` to your`PATH` environment
-  variable,
-- add `${MO2_INSTALL_PATH}/plugins/plugin_python/libs` to your `PYTHONPATH` environment
-  variable.
-
-If you do not want to modify these variable, it is possible to start a (i)python
-interpreter with `mobase` imported by running
+It is possible to start a (i)python interpreter with `mobase` imported by running
 
 ```bash
 python -i -m mo2.stubs.generator.loader ${MO2_INSTALL_PATH}
