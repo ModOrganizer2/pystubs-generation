@@ -19,7 +19,7 @@ from .writer import Writer
 
 def main():
 
-    parser = argparse.ArgumentParser("Stubs generator for the MO2 python interface")
+    parser = argparse.ArgumentParser("stubs generator for the MO2 python interface")
     parser.add_argument(
         "install_dir",
         metavar="INSTALL_DIR",
@@ -31,8 +31,8 @@ def main():
         "-o",
         "--output",
         type=Path,
-        default="stubs/setup/mobase-stubs/__init__.pyi",
-        help="output file (default stubs/setup/mobase-stubs/__init__.pyi)",
+        default=Path("stubs/setup/mobase-stubs"),
+        help="output folder (default stubs/setup/mobase-stubs)",
     )
     parser.add_argument(
         "-v",
@@ -127,8 +127,11 @@ def main():
                 "Cannot generated stubs for {}, unsupported object type.".format(n)
             )
 
-    # Write everything:
-    with open(args.output, "w") as output:
+    # create directory if required
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    # write everything
+    with open(output_path.joinpath("__init__.pyi"), "w") as output:
 
         writer = Writer(output, settings)
 
@@ -188,12 +191,12 @@ def main():
                     writer.print_function(fn)
 
     black.format_file_in_place(
-        output_path,
+        output_path.joinpath("__init__.pyi"),
         fast=False,
         mode=black.Mode(is_pyi=args.output.name.endswith("pyi")),
         write_back=black.WriteBack.YES,
     )
-    isort.api.sort_file(output_path)
+    isort.api.sort_file(output_path.joinpath("__init__.pyi"))
 
 
 if __name__ == "__main__":

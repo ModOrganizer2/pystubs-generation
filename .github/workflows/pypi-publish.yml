@@ -5,7 +5,7 @@ name: Upload Python Package
 
 on:
   push:
-    tags: ["*.dev[0-9]+"]
+    tags: ["*"]
 
 jobs:
   deploy:
