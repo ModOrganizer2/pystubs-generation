@@ -9,10 +9,10 @@ from typing import (
     Any,
     Callable,
     Dict,
-    Iterable,
     Iterator,
     List,
     Optional,
+    Sequence,
     Set,
     Tuple,
     Type,
@@ -297,7 +297,7 @@ class DataArchives(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def archives(self: DataArchives, profile: IProfile) -> Iterable[str]:
+    def archives(self: DataArchives, profile: IProfile) -> Sequence[str]:
         """
         Retrieve the list of archives in the given profile.
 
@@ -319,7 +319,7 @@ class DataArchives(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def vanillaArchives(self: DataArchives) -> Iterable[str]:
+    def vanillaArchives(self: DataArchives) -> Sequence[str]:
         """
         Retrieve the list of vanilla archives.
 
@@ -346,7 +346,7 @@ class ExecutableForcedLoadSetting:
 
 class ExecutableInfo:
     def __init__(self: ExecutableInfo, title: str, binary: FileWrapper): ...
-    def arguments(self: ExecutableInfo) -> Iterable[str]: ...
+    def arguments(self: ExecutableInfo) -> Sequence[str]: ...
     def asCustom(self: ExecutableInfo) -> ExecutableInfo: ...
     def binary(self: ExecutableInfo) -> PyQt6.QtCore.QFileInfo: ...
     def isCustom(self: ExecutableInfo) -> bool: ...
@@ -463,7 +463,7 @@ class FileTreeEntry:
         """
         ...
     @overload
-    def hasSuffix(self: FileTreeEntry, suffixes: Iterable[str]) -> bool:
+    def hasSuffix(self: FileTreeEntry, suffixes: Sequence[str]) -> bool:
         """
         Check if this entry has one of the given suffixes.
 
@@ -564,7 +564,7 @@ class FileTreeEntry:
 class GamePlugins(abc.ABC):
     def __init__(self: GamePlugins): ...
     @abc.abstractmethod
-    def getLoadOrder(self: GamePlugins) -> Iterable[str]: ...
+    def getLoadOrder(self: GamePlugins) -> Sequence[str]: ...
     @abc.abstractmethod
     def lightPluginsAreSupported(self: GamePlugins) -> bool:
         """
@@ -772,7 +772,7 @@ class IDownloadManager:
             An ID identifying the download.
         """
         ...
-    def startDownloadURLs(self: IDownloadManager, urls: Iterable[str]) -> int:
+    def startDownloadURLs(self: IDownloadManager, urls: Sequence[str]) -> int:
         """
         Download a file by url.
 
@@ -1164,7 +1164,7 @@ class IFileTree(FileTreeEntry):
             True if the entry was deleted, False otherwise.
         """
         ...
-    def removeAll(self: IFileTree, names: Iterable[str]) -> int:
+    def removeAll(self: IFileTree, names: Sequence[str]) -> int:
         """
         Delete the entries with the given names from the tree.
 
@@ -1253,7 +1253,7 @@ class IInstallationManager:
         ...
     def extractFiles(
         self: IInstallationManager, entries: List[FileTreeEntry], silent: bool = False
-    ) -> Iterable[str]:
+    ) -> Sequence[str]:
         """
         Extract the specified files from the currently opened archive to a temporary
         location.
@@ -1273,7 +1273,7 @@ class IInstallationManager:
             A list containing absolute paths to the temporary files.
         """
         ...
-    def getSupportedExtensions(self: IInstallationManager) -> Iterable[str]:
+    def getSupportedExtensions(self: IInstallationManager) -> Sequence[str]:
         """
         Returns:
             The extensions of archives supported by this installation manager.
@@ -1323,7 +1323,7 @@ class IModInterface:
             category_id: The Nexus category ID.
         """
         ...
-    def categories(self: IModInterface) -> Iterable[str]:
+    def categories(self: IModInterface) -> Sequence[str]:
         """
         Returns:
             The list of categories this mod belongs to.
@@ -1613,7 +1613,7 @@ class IModList:
     to translate from display name to internal name because the display name might not me un-ambiguous.
     """
 
-    def allMods(self: IModList) -> Iterable[str]:
+    def allMods(self: IModList) -> Sequence[str]:
         """
         Returns:
             A list containing the internal names of all installed mods.
@@ -1621,7 +1621,7 @@ class IModList:
         ...
     def allModsByProfilePriority(
         self: IModList, profile: IProfile = None
-    ) -> Iterable[str]:
+    ) -> Sequence[str]:
         """
         Returns:
             The list of mod (names), sorted according to the current profile priorities.
@@ -1743,7 +1743,7 @@ class IModList:
         """
         ...
     @overload
-    def setActive(self: IModList, names: Iterable[str], active: bool) -> int:
+    def setActive(self: IModList, names: Sequence[str], active: bool) -> int:
         """
         Enable or disable a list of mods.
 
@@ -1948,7 +1948,7 @@ class IOrganizer:
         ...
     def findFileInfos(
         self: IOrganizer, path: DirectoryWrapper, filter: Callable[[FileInfo], bool]
-    ) -> Iterable[FileInfo]:
+    ) -> Sequence[FileInfo]:
         """
         Find files in the virtual directory matching the specified filter.
 
@@ -1963,7 +1963,7 @@ class IOrganizer:
     @overload
     def findFiles(
         self: IOrganizer, path: DirectoryWrapper, filter: Callable[[str], bool]
-    ) -> Iterable[str]:
+    ) -> Sequence[str]:
         """
         Find files in the given folder that matches the given filter.
 
@@ -1977,8 +1977,8 @@ class IOrganizer:
         ...
     @overload
     def findFiles(
-        self: IOrganizer, path: DirectoryWrapper, patterns: Iterable[str]
-    ) -> Iterable[str]:
+        self: IOrganizer, path: DirectoryWrapper, patterns: Sequence[str]
+    ) -> Sequence[str]:
         """
         Find files in the given folder that matches one of the given glob patterns.
 
@@ -1993,7 +1993,7 @@ class IOrganizer:
     @overload
     def findFiles(
         self: IOrganizer, path: DirectoryWrapper, pattern: str
-    ) -> Iterable[str]:
+    ) -> Sequence[str]:
         """
         Find files in the given folder that matches the given glob pattern.
 
@@ -2005,7 +2005,7 @@ class IOrganizer:
             The list of matching files.
         """
         ...
-    def getFileOrigins(self: IOrganizer, filename: str) -> Iterable[str]:
+    def getFileOrigins(self: IOrganizer, filename: str) -> Sequence[str]:
         """
         Retrieve the file origins for the specified file.
 
@@ -2075,7 +2075,7 @@ class IOrganizer:
             True if the plugin is enabled, False otherwise.
         """
         ...
-    def listDirectories(self: IOrganizer, directory: str) -> Iterable[str]:
+    def listDirectories(self: IOrganizer, directory: str) -> Sequence[str]:
         """
         Retrieve the list of (virtual) subdirectories in the given path.
 
@@ -2401,7 +2401,7 @@ class IOrganizer:
     def startApplication(
         self: IOrganizer,
         executable: FileWrapper,
-        args: Iterable[str] = [],
+        args: Sequence[str] = [],
         cwd: DirectoryWrapper = "",
         profile: str = "",
         forcedCustomOverwrite: str = "",
@@ -2557,7 +2557,7 @@ class IPlugin(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def settings(self: IPlugin) -> Iterable[PluginSetting]:
+    def settings(self: IPlugin) -> Sequence[PluginSetting]:
         """
         Returns:
             A list of settings for this plugin.
@@ -2685,14 +2685,14 @@ class IPluginGame(IPlugin):
 
     def __init__(self: IPluginGame): ...
     @abc.abstractmethod
-    def CCPlugins(self: IPluginGame) -> Iterable[str]:
+    def CCPlugins(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
             The current list of active Creation Club plugins.
         """
         ...
     @abc.abstractmethod
-    def DLCPlugins(self: IPluginGame) -> Iterable[str]:
+    def DLCPlugins(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
             The list of esp/esm files that are part of known DLCs.
@@ -2741,14 +2741,14 @@ class IPluginGame(IPlugin):
     @abc.abstractmethod
     def executableForcedLoads(
         self: IPluginGame,
-    ) -> Iterable[ExecutableForcedLoadSetting]:
+    ) -> Sequence[ExecutableForcedLoadSetting]:
         """
         Returns:
             A list of automatically discovered libraries that can be force loaded with executables.
         """
         ...
     @abc.abstractmethod
-    def executables(self: IPluginGame) -> Iterable[ExecutableInfo]:
+    def executables(self: IPluginGame) -> Sequence[ExecutableInfo]:
         """
         Returns:
             A list of automatically discovered executables of the game itself and tools surrounding it.
@@ -2814,7 +2814,7 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def gameVariants(self: IPluginGame) -> Iterable[str]:
+    def gameVariants(self: IPluginGame) -> Sequence[str]:
         """
         Retrieve the list of variants for this game.
 
@@ -2849,7 +2849,7 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def iniFiles(self: IPluginGame) -> Iterable[str]:
+    def iniFiles(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
             The list of INI files this game uses. The first file in the list should be the
@@ -2936,14 +2936,14 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def primaryPlugins(self: IPluginGame) -> Iterable[str]:
+    def primaryPlugins(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
             The list of plugins that are part of the game and not considered optional.
         """
         ...
     @abc.abstractmethod
-    def primarySources(self: IPluginGame) -> Iterable[str]:
+    def primarySources(self: IPluginGame) -> Sequence[str]:
         """
         Retrieve primary alternative 'short' names for this game.
 
@@ -3008,7 +3008,7 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def validShortNames(self: IPluginGame) -> Iterable[str]:
+    def validShortNames(self: IPluginGame) -> Sequence[str]:
         """
         Retrieve the valid 'short' names for this game.
 
@@ -3325,7 +3325,7 @@ class IPluginList:
         if the plugin does not exist.
         """
         ...
-    def masters(self: IPluginList, name: str) -> Iterable[str]:
+    def masters(self: IPluginList, name: str) -> Sequence[str]:
         """
         Retrieve the list of masters required for a plugin.
 
@@ -3388,7 +3388,7 @@ class IPluginList:
             The name of the origin of the plugin, or an empty string if the plugin does not exist.
         """
         ...
-    def pluginNames(self: IPluginList) -> Iterable[str]:
+    def pluginNames(self: IPluginList) -> Sequence[str]:
         """
         Returns:
             The list of all plugin names.
@@ -3407,7 +3407,7 @@ class IPluginList:
             The priority of the given plugin, or -1 if the plugin does not exist.
         """
         ...
-    def setLoadOrder(self: IPluginList, loadorder: Iterable[str]):
+    def setLoadOrder(self: IPluginList, loadorder: Sequence[str]):
         """
         Set the load order.
 
@@ -3712,7 +3712,7 @@ class ISaveGame:
     """
 
     def __init__(self: ISaveGame): ...
-    def allFiles(self: ISaveGame) -> Iterable[str]:
+    def allFiles(self: ISaveGame) -> Sequence[str]:
         """
         Returns:
             The list of all files related to this save.
@@ -4109,7 +4109,7 @@ class PluginRequirementFactory:
         ...
     @overload
     @staticmethod
-    def gameDependency(games: Iterable[str]) -> IPluginRequirement:
+    def gameDependency(games: Sequence[str]) -> IPluginRequirement:
         """
         Create a new game dependency requirement.
 
@@ -4139,7 +4139,7 @@ class PluginRequirementFactory:
         ...
     @overload
     @staticmethod
-    def pluginDependency(plugins: Iterable[str]) -> IPluginRequirement:
+    def pluginDependency(plugins: Sequence[str]) -> IPluginRequirement:
         """
         Create a new plugin dependency requirement.
 
@@ -4206,7 +4206,7 @@ class SaveGameInfo(abc.ABC):
     @abc.abstractmethod
     def getMissingAssets(
         self: SaveGameInfo, save: ISaveGame
-    ) -> Dict[str, Iterable[str]]:
+    ) -> Dict[str, Sequence[str]]:
         """
         Retrieve missing assets from the save.
 
@@ -4310,7 +4310,7 @@ class UnmanagedMods(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def mods(self: UnmanagedMods, official_only: bool) -> Iterable[str]:
+    def mods(self: UnmanagedMods, official_only: bool) -> Sequence[str]:
         """
         Retrieve the list of unmanaged mods for the corresponding game.
 
@@ -4337,7 +4337,7 @@ class UnmanagedMods(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def secondaryFiles(self: UnmanagedMods, mod_name: str) -> Iterable[str]:
+    def secondaryFiles(self: UnmanagedMods, mod_name: str) -> Sequence[str]:
         """
         Retrieve the secondary files for the requested mod.
 

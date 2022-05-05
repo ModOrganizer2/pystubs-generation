@@ -138,7 +138,6 @@ with open(args.output, "w") as output:
                 "typing",
                 [
                     "Dict",
-                    "Iterable",
                     "Iterator",
                     "List",
                     "Tuple",
@@ -147,6 +146,7 @@ with open(args.output, "w") as output:
                     "Optional",
                     "Callable",
                     "overload",
+                    "Sequence",
                     "Set",
                     "TypeVar",
                     "Type",
