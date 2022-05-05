@@ -94,6 +94,22 @@ It is possible to start a (i)python interpreter with `mobase` imported by runnin
 python -i -m mo2.stubs.generator.loader ${MO2_INSTALL_PATH}
 ```
 
+You can also import `mobase` in your code using the following (after installing
+this package):
+
+```python
+from mo2.stubs.generator import load_mobase
+
+mobase = load_mobase(MO2_INSTALL_PATH)
+
+# the above will probably not give you type-completion in your IDE or typing, so
+# you can use the following (if the stubs are installed)
+load_mobase(MO2_INSTALL_PATH)
+import mobase
+import mobase.widgets
+```
+
+
 **Note:** Most classes in `mobase` cannot be instantiated, so this is mostly intended
 for MO2 developers.
 

@@ -2,10 +2,11 @@
 
 import os
 import sys
+from modulefinder import Module
 from pathlib import Path
 
 
-def load_mobase(path: Path):
+def load_mobase(path: os.PathLike) -> Module:
     """
     Load the mobase from the given MO2 installation path and
     returns it.
@@ -15,6 +16,8 @@ def load_mobase(path: Path):
 
     Returns: The mobase module.
     """
+
+    path = Path(path)
 
     # We need absolute path for loading DLL and modules:
     path = path.resolve()
@@ -35,7 +38,7 @@ def load_mobase(path: Path):
 
     import mobase  # type: ignore
 
-    return mobase
+    return mobase  # type: ignore
 
 
 if __name__ == "__main__":
