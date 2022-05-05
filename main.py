@@ -3,12 +3,14 @@
 import argparse
 import logging
 from pathlib import Path
+from typing import cast
 
 import black
+import isort
 
-from generator import logger
+from generator import LOGGER
 from generator.loader import load_mobase
-from generator.mtypes import Class, Function, Type
+from generator.mtypes import Class, Function, PyType
 from generator.parser import is_enum
 from generator.register import MOBASE_REGISTER
 from generator.utils import Settings, clean_class
@@ -42,8 +44,13 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+logging.basicConfig()
+LOGGER.setLevel(logging.WARNING)
+
 if args.verbose:
-    logger.setLevel(logging.INFO)
+    LOGGER.setLevel(logging.INFO)
+
+output_path = cast(Path, args.output)
 
 # Load settings from the configuration:
 settings: Settings = Settings(register=MOBASE_REGISTER)
@@ -65,21 +72,26 @@ for name in dir(mobase):
     if name in settings.ignore_names:
         continue
 
-    # We do not want the real MoVariant.
+    # we do not want the real MoVariant
     if name == "MoVariant":
         continue
 
-    # For now, ignore this since it is a submodule and we
-    # not handle them.
+    # ignore the private module
+    if name == "private":
+        continue
+
+    # for now, ignore this since it is a submodule and we
+    # not handle them
     if name == "widgets":
+        continue
+
+    # IPlugin is not the real object
+    if name == "IPlugin":
         continue
 
     objects.append((name, getattr(mobase, name)))
 
-# Enum first, and then alphabetical. Might cause issue with base classes, so
-# maybe create a kind of dependency...
-# For argument or return types, this should not be an issue since we quote
-# everything from mobase.
+# enum first, and then alphabetical, should be fine with the __future__ import
 objects = sorted(
     objects, key=lambda e: (isinstance(e[1], type), not is_enum(e[1]), e[0])
 )
@@ -105,7 +117,7 @@ for n, o in objects:
         settings.patch_functions(c)
 
     else:
-        logger.critical(
+        LOGGER.critical(
             "Cannot generated stubs for {}, unsupported object type.".format(n)
         )
 
@@ -113,15 +125,20 @@ for n, o in objects:
 with open(args.output, "w") as output:
 
     writer = Writer(output, settings)
+
+    # the __future__ import must be at the beginning
+    writer.print_imports([("__future__", ["annotations"])])
     writer.print_version(settings.mobase["__version__"])  # type: ignore
     writer.print_imports(
         [
             "abc",
             ("enum", ["Enum"]),
+            ("pathlib", ["Path"]),
             (
                 "typing",
                 [
                     "Dict",
+                    "Iterable",
                     "Iterator",
                     "List",
                     "Tuple",
@@ -130,6 +147,7 @@ with open(args.output, "w") as output:
                     "Optional",
                     "Callable",
                     "overload",
+                    "Set",
                     "TypeVar",
                     "Type",
                 ],
@@ -141,7 +159,9 @@ with open(args.output, "w") as output:
     )
 
     # Needs to define the MVariant and GameFeatureType type:
-    writer._print("MoVariant = {}".format(Type.MO_VARIANT))
+    writer._print(f"MoVariant = {PyType.MO_VARIANT}")
+    writer._print(f"FileWrapper = {PyType.FILE_WRAPPER}")
+    writer._print(f"DirectoryWrapper = {PyType.DIRECTORY_WRAPPER}")
     writer._print('GameFeatureType = TypeVar("GameFeatureType")')
     writer._print()
 
@@ -162,8 +182,9 @@ with open(args.output, "w") as output:
                 writer.print_function(fn)
 
 black.format_file_in_place(
-    args.output,
+    output_path,
     fast=False,
     mode=black.Mode(is_pyi=args.output.name.endswith("pyi")),
     write_back=black.WriteBack.YES,
 )
+isort.api.sort_file(output_path)

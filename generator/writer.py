@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
-from typing import List, TextIO, Tuple, Union
+from typing import TextIO
 
-from . import logger
+from . import LOGGER
 from .mtypes import Class, Enum, Function, Method, Property
 from .utils import Settings
 
@@ -36,7 +36,7 @@ class Writer:
         self._print('__version__ = "{}"'.format(version))
         self._print()
 
-    def print_imports(self, imports: List[Union[str, Tuple[str, List[str]]]]):
+    def print_imports(self, imports: list[str | tuple[str, list[str]]]):
         """
         Print the given imports.
         """
@@ -55,12 +55,10 @@ class Writer:
         if fn.has_overloads():
             self._print("{}@overload".format(indent))
 
-        srtype = ""
+        sig_return_type = ""
         if not fn.ret.type.is_none():
-            srtype = " -> " + fn.ret.type.typing(self._settings)
+            sig_return_type = " -> " + fn.ret.type.typing()
 
-        fargs = fn.args
-        largs: List[str] = []
         if isinstance(fn, Method):
             if fn.is_static():
                 self._print("{}@staticmethod".format(indent))
@@ -68,17 +66,19 @@ class Writer:
                 if fn.is_abstract():
                     self._print("{}@abc.abstractmethod".format(indent))
 
-                largs.insert(0, "self")
-                fargs = fargs[1:]
-
-        for i, arg in enumerate(fargs):
-            tmp = "{}: {}".format(arg.name, arg.type.typing(self._settings))
+        python_args: list[str] = []
+        for i, arg in enumerate(fn.args):
+            tmp = "{}: {}".format(arg.name, arg.type.typing())
             if arg.has_default_value():
                 tmp += " = {}".format(arg.value)
-            largs.append(tmp)
-        sargs = ", ".join(largs)
+            python_args.append(tmp)
 
-        self._print("{}def {}({}){}:".format(indent, fn.name, sargs, srtype), end="")
+        self._print(
+            "{}def {}({}){}:".format(
+                indent, fn.name, ", ".join(python_args), sig_return_type
+            ),
+            end="",
+        )
 
         # Add the documentation, if any:
         doc = ""
@@ -93,9 +93,12 @@ class Writer:
         if any(arg.doc for arg in args):
             doc += "\nArgs:\n"
             for arg in args:
-                adocl = arg.doc.strip().split("\n")
-                adoc = "\n".join([adocl[0]] + ["        " + ldoc for ldoc in adocl[1:]])
-                doc += "    " + arg.name + ": " + adoc + "\n"
+                arg_doc_list = arg.doc.strip().split("\n")
+                arg_doc = "\n".join(
+                    [arg_doc_list[0]]
+                    + ["        " + line_doc for line_doc in arg_doc_list[1:]]
+                )
+                doc += "    " + arg.name + ": " + arg_doc + "\n"
 
         if not fn.ret.type.is_none() and fn.ret.doc:
             doc += "\nReturns:\n    " + fn.ret.doc.strip() + "\n"
@@ -103,13 +106,7 @@ class Writer:
         if fn.raises:
             doc += "\nRaises:\n"
             for rai in fn.raises:
-                doc += (
-                    "    "
-                    + rai.type.typing(self._settings)
-                    + ": "
-                    + rai.doc.strip()
-                    + "\n"
-                )
+                doc += "    " + rai.type.typing() + ": " + rai.doc.strip() + "\n"
 
         if doc:
             self._print()
@@ -127,7 +124,7 @@ class Writer:
         """
 
         if prop.type.is_object() or prop.type.is_any():
-            logger.warning(
+            LOGGER.warning(
                 "Property {}.{} does not have a specified type.".format(
                     cls.name, prop.name
                 )
@@ -135,15 +132,13 @@ class Writer:
 
         self._print("{}@property".format(indent))
         self._print(
-            "{}def {}(self) -> {}: ...".format(
-                indent, prop.name, prop.type.typing(self._settings)
-            )
+            "{}def {}(self) -> {}: ...".format(indent, prop.name, prop.type.typing())
         )
         if not prop.is_read_only():
             self._print("{}@{}.setter".format(indent, prop.name))
             self._print(
                 "{}def {}(self, arg0: {}): ...".format(
-                    indent, prop.name, prop.type.typing(self._settings)
+                    indent, prop.name, prop.type.typing()
                 )
             )
         self._print()
@@ -179,8 +174,8 @@ class Writer:
             self._print()
 
         # Inner classes:
-        for iclass in cls.inner_classes:
-            self.print_class(iclass, indent=indent + "    ")
+        for inner_class in cls.inner_classes:
+            self.print_class(inner_class, indent=indent + "    ")
             self._print()
 
         # Constants:
@@ -191,7 +186,7 @@ class Writer:
 
             typing = ""
             if constant.type is not None:
-                typing = ": {}".format(constant.type.typing(self._settings))
+                typing = ": {}".format(constant.type.typing())
 
             # Note: We do not print the value, we use ...
             self._print(
@@ -217,6 +212,7 @@ class Writer:
             cls.methods,
             key=lambda m: (m.name != "__init__", not m.is_special(), m.name),
         )
+
         for method in methods:
             self.print_function(method, indent=indent + "    ")
 

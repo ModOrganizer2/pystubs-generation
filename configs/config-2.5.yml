@@ -16,8 +16,8 @@ ignores:
 # related to functions / classes, including their documentation.
 mobase:
 
-  # Version of the stubs.
-  __version__: 2.5.0.dev2
+  # Version of the stubs - this is overridden by when publishing.
+  __version__: "2.5.0"
 
   getFileVersion:
     __doc__: Retrieve the file version of the given executable.
@@ -329,7 +329,7 @@ mobase:
         __doc__: |
           The parent tree containing this entry, or a `None` if this entry is the root
           or the parent tree is unreachable.
-        type: Optional["IFileTree"]
+        type: Optional[IFileTree]
 
     path:
       __doc__: |
@@ -673,7 +673,7 @@ mobase:
         __doc__: |
           The entry at the given location, or `None` if the entry was not found or
           was not of the correct type.
-        type: Optional[Union["IFileTree", "FileTreeEntry"]]
+        type: Optional[Union[IFileTree, FileTreeEntry]]
 
     insert:
       __doc__: |
@@ -1208,7 +1208,7 @@ mobase:
   IModRepositoryBridge:
 
     __bases__:
-      - PyQt5.QtCore.QObject
+      - PyQt6.QtCore.QObject
 
     signals[]:
       descriptionAvailable:
@@ -1372,7 +1372,7 @@ mobase:
             type: MoVariant
             desc: The data that was included in the request.
           error:
-            type: PyQt5.QtNetwork.QNetworkReply.NetworkError
+            type: PyQt6.QtNetwork.QNetworkReply.NetworkError
             desc: The actual error.
           message:
             type: str
@@ -2034,6 +2034,9 @@ mobase:
         The name of the launcher executable to run (relative to the game folder), or an
         empty string if there is no launcher.
 
+    getSupportURL:
+      returns: An URL for the support page of this game.
+
     iniFiles:
       returns: |
         The list of INI files this game uses. The first file in the list should be the
@@ -2223,13 +2226,6 @@ mobase:
       args:
         parent: The parent widget.
 
-  IPluginInstallerCustom:
-    __doc__: |
-      Custom installer for mods. Custom installers receive the archive name and have to go
-      from there. They have to be able to extract the archive themselves.
-
-      Example of such installers are the external NCC installer or the OMOD installer.
-
     _manager:
       abstract: false
       returns: The installation manager.
@@ -2237,6 +2233,13 @@ mobase:
     _parentWidget:
       abstract: false
       returns: The parent widget.
+
+  IPluginInstallerCustom:
+    __doc__: |
+      Custom installer for mods. Custom installers receive the archive name and have to go
+      from there. They have to be able to extract the archive themselves.
+
+      Example of such installers are the external NCC installer or the OMOD installer.
 
     install:
       __doc__: |
@@ -2277,14 +2280,6 @@ mobase:
       Simple installer for mods. Simple installers only deal with an in-memory structure
       representing the archive and can modify what to install and where by editing this structure.
       Actually extracting the archive is handled by the manager.
-
-    _manager:
-      abstract: false
-      returns: The installation manager.
-
-    _parentWidget:
-      abstract: false
-      returns: The parent widget.
 
     install:
       __doc__: |
@@ -2920,7 +2915,7 @@ mobase:
         type: int
         desc:
       fileTime:
-        type: PyQt5.QtCore.QDateTime
+        type: PyQt6.QtCore.QDateTime
         desc:
       gameName:
         type: str
@@ -3013,7 +3008,7 @@ mobase:
         parent: The parent widget.
       returns:
         __doc__: A SaveGameInfoWidget to display information about save game.
-        type: Optional["ISaveGameInfoWidget"]
+        type: Optional[ISaveGameInfoWidget]
 
   ScriptExtender:
     __doc__:

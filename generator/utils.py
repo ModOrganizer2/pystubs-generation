@@ -1,50 +1,88 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import annotations
+
 from collections import OrderedDict, defaultdict
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    NamedTuple,
-    Optional,
-    Set,
-    TextIO,
-    Tuple,
-    Union,
-)
+from typing import TYPE_CHECKING, NamedTuple, TextIO, TypedDict
 
 import yaml
 
-from . import logger, mtypes
+from . import LOGGER
+from .mtypes import (
+    Argument,
+    Class,
+    Constant,
+    Enum,
+    Exception,
+    Function,
+    Method,
+    Property,
+    PyClass,
+    PyType,
+    Return,
+)
 
 if TYPE_CHECKING:
     from .register import MobaseRegister
 
 
 class Settings:
-    class FunctionSettings(NamedTuple):
+    class YamlFunctionArgument(TypedDict, total=False):
+        __doc__: str
+        type: str
+        desc: str
+
+    class YamlFunctionReturn(TypedDict, total=False):
+        __doc__: str
+        type: str
+
+    class YamlFunctionSettings(TypedDict, total=False):
+        __doc__: str
+        abstract: bool
+        deprecated: bool
+
+        args: dict[str, Settings.YamlFunctionArgument | str | None]
+        returns: str | Settings.YamlFunctionReturn
+
+        raises: dict[str, str]
+
+    class YamlClassProperty(TypedDict):
+        type: str
+        desc: str
+
+    YamlClassSettings = TypedDict(
+        "YamlClassSettings",
+        {
+            "__doc__": str,
+            "__bases__": list[str],
+            "__abstract__": bool,
+            "properties[]": dict[str, YamlClassProperty],
+            "signals[]": dict[str, YamlFunctionSettings],
+        },
+        total=False,
+    )
+
+    class PyFunctionSettings(NamedTuple):
 
         doc: str
-        args: Optional[List["mtypes.Arg"]] = None
-        ret: Optional["mtypes.Ret"] = None
-        raises: List["mtypes.Exc"] = []
-        static: Optional[bool] = None
-        abstract: Optional[bool] = None
+        args: list[Argument] | None = None
+        ret: Return | None = None
+        raises: list[Exception] = []
+        abstract: bool | None = None
         deprecated: bool = False
 
-    register: "MobaseRegister"
+    register: MobaseRegister
 
     # Name to ignore:
-    _ignore_names: List[str]
+    _ignore_names: list[str]
 
     # Extra replacements (with warnings):
-    _replacements: Dict[str, str]
+    _replacements: dict[str, str]
 
     # Content of mobase:
-    _mobase: Dict[str, Dict[str, Any]]
+    _mobase: dict[str, dict[str, object]]
 
-    def __init__(self, register: "MobaseRegister", fp: Optional[TextIO] = None):
+    def __init__(self, register: MobaseRegister, fp: TextIO | None = None):
 
         self.register = register
 
@@ -61,18 +99,18 @@ class Settings:
             self._mobase = data.get("mobase", {})
 
     @property
-    def ignore_names(self) -> List[str]:
+    def ignore_names(self) -> list[str]:
         return self._ignore_names
 
     @property
-    def replacements(self) -> Dict[str, str]:
+    def replacements(self) -> dict[str, str]:
         return self._replacements
 
     @property
-    def mobase(self) -> Dict[str, Dict[str, Any]]:
+    def mobase(self) -> dict[str, dict[str, object]]:
         return self._mobase
 
-    def _get_class_settings(self, canonical_name: str) -> Optional[Dict[str, Any]]:
+    def _get_class_settings(self, canonical_name: str) -> YamlClassSettings | None:
         """
         Retrieve the settings for the given class.
 
@@ -84,17 +122,17 @@ class Settings:
             settings where not found.
         """
         parts = canonical_name.split(".")
-        base: Dict[str, Any] = self._mobase
+        base: dict[str, object] = dict(self._mobase)
         for part in parts:
             if part in base:
-                base = base[part]
+                base = base[part]  # type: ignore
             else:
                 return None
-        return base
+        return base  # type: ignore
 
     def _parse_function_settings(
-        self, settings: Union[str, Dict[str, Any]]
-    ) -> "FunctionSettings":
+        self, settings: str | YamlFunctionSettings
+    ) -> "PyFunctionSettings":
         """
         Parse settings for a function or method.
 
@@ -104,21 +142,19 @@ class Settings:
         Returns:
             The parsed settings for the function.
         """
-        FunctionSettings = Settings.FunctionSettings
-
         if settings is None:
-            return FunctionSettings("")
+            return Settings.PyFunctionSettings("")
 
         if isinstance(settings, str):
-            return FunctionSettings(settings)
+            return Settings.PyFunctionSettings(settings)
 
         doc = settings.get("__doc__", "")
-        static = settings.get("static", None)
+        # static = settings.get("static", None)
         abstract = settings.get("abstract", None)
         deprecated = settings.get("deprecated", False)
 
         # Arguments:
-        args: Optional[List[mtypes.Arg]] = None
+        args: list[Argument] | None = None
 
         # If "args" is in settings, it can either be None (args: ) or
         # a list of args:
@@ -129,85 +165,92 @@ class Settings:
                 # For each argument, we either have a None value (name: ),
                 # or a string (name: Description) or a dictionary that can contain
                 # __doc__ and type.
-                for aname, avalue in settings["args"].items():
-                    t: mtypes.Type = mtypes.Type("None")
+                for name, value in settings["args"].items():
+                    t: PyType = PyType("None")
                     d: str = ""
-                    if avalue is None:
+                    if value is None:
                         pass
-                    elif isinstance(avalue, str):
-                        d = avalue
+                    elif isinstance(value, str):
+                        d = value
                     else:
-                        d = avalue.get("__doc__", "")
-                        t = mtypes.Type(avalue.get("type", "None"))
-                    args.append(mtypes.Arg(aname, t, doc=d))
+                        d = value.get("__doc__", "")
+                        t = PyType(value.get("type", "None"))
+                    args.append(Argument(name, t, doc=d))
 
-        ret: Optional[mtypes.Ret] = None
+        ret: Return | None = None
         if "returns" in settings and settings["returns"] is not None:
             if isinstance(settings["returns"], str):
-                ret = mtypes.Ret(mtypes.Type("None"), settings["returns"])
+                ret = Return(PyType("None"), settings["returns"])
             else:
-                ret = mtypes.Ret(
-                    mtypes.Type(settings["returns"].get("type", "None")),
+                ret = Return(
+                    PyType(settings["returns"].get("type", "None")),
                     settings["returns"].get("__doc__", ""),
                 )
 
-        excs: List[mtypes.Exc] = []
+        exceptions: list[Exception] = []
         if "raises" in settings and settings["raises"] is not None:
             for r, v in settings["raises"].items():
                 if v is None:
                     v = ""
-                excs.append(mtypes.Exc(mtypes.Type(r), v))
+                exceptions.append(Exception(PyType(r), v))
 
-        return FunctionSettings(doc, args, ret, excs, static, abstract, deprecated)
+        return Settings.PyFunctionSettings(
+            doc, args, ret, exceptions, abstract, deprecated
+        )
 
-    def patch_functions(self, fns: List["mtypes.Function"]):
+    def patch_functions(self, fns: list[Function]):
         for i, fn in enumerate(fns):
 
             # Find the name in settings:
             if fn.has_overloads():
-                sname = "{}.{}".format(fn.name, i + 1)
+                setting_name = "{}.{}".format(fn.name, i + 1)
             else:
-                sname = fn.name
+                setting_name = fn.name
 
             # If the name is in the settings:
-            if sname in self._mobase:
-                fsettings = self._parse_function_settings(self._mobase[sname])
+            if setting_name in self._mobase:
+                function_settings = self._parse_function_settings(
+                    self._mobase[setting_name]  # type: ignore
+                )
 
                 # Force raises:
-                fn.raises = fsettings.raises
+                fn.raises = function_settings.raises
 
                 # Check the args:
-                if fsettings.args is not None:
-                    if len(fsettings.args) != len(fn.args):
-                        logger.warn(
-                            f"Mismatch number of arguments for function mobase.{sname}."
+                if function_settings.args is not None:
+                    if len(function_settings.args) != len(fn.args):
+                        LOGGER.warn(
+                            f"Mismatch number of arguments for function "
+                            f"mobase.{setting_name}."
                         )
 
-                    for sarg, marg in zip(fsettings.args, fn.args):
-                        marg.doc = sarg.doc
-                        if not sarg.type.is_none():
-                            marg.type = sarg.type
+                    for setting_arg, method_arg in zip(function_settings.args, fn.args):
+                        method_arg.doc = setting_arg.doc
+                        if not setting_arg.type.is_none():
+                            method_arg.type = setting_arg.type
 
                 # Check the return type:
-                if fsettings.ret is not None:
+                if function_settings.ret is not None:
 
                     # Force the doc anyway:
-                    fn.ret.doc = fsettings.ret.doc
+                    fn.ret.doc = function_settings.ret.doc
 
                     # Update the type if specified:
-                    if not fsettings.ret.type.is_none():
-                        fn.ret.type = fsettings.ret.type
+                    if not function_settings.ret.type.is_none():
+                        fn.ret.type = function_settings.ret.type
 
                 # Force the doc:
-                fn.doc = fsettings.doc
+                fn.doc = function_settings.doc
 
                 # Force depreciation:
-                fn.deprecated = fsettings.deprecated
+                fn.deprecated = function_settings.deprecated
 
             else:
-                logger.warn("Missing settings for function mobase.{}.".format(sname))
+                LOGGER.warn(
+                    "Missing settings for function mobase.{}.".format(setting_name)
+                )
 
-    def patch_class(self, cls: "mtypes.Class"):
+    def patch_class(self, cls: Class):
         """
         Patch the given class using the given overwrites.
 
@@ -218,77 +261,81 @@ class Settings:
             settings: The settings.
         """
 
-        logger.info("Patching class {}.".format(cls.name))
+        LOGGER.info("Patching class {}.".format(cls.name))
+
+        # fix the name
+        if cls.name == "IPluginBase":
+            cls.name = "IPlugin"
 
         # Find the class in mobase:
-        csettings = self._get_class_settings(cls.canonical_name)
+        class_settings = self._get_class_settings(cls.canonical_name)
 
-        if csettings is None:
-            logger.warn("Class {} not found in settings.".format(cls.canonical_name))
+        if class_settings is None:
+            LOGGER.warn("Class {} not found in settings.".format(cls.canonical_name))
             return
 
-        if "__doc__" in csettings and csettings["__doc__"] is not None:
-            cls.doc = csettings["__doc__"]
-        csettings.pop("__doc__", None)
+        if "__doc__" in class_settings and class_settings["__doc__"] is not None:
+            cls.doc = class_settings["__doc__"]
+        class_settings.pop("__doc__", None)
 
         # Check bases:
-        if "__bases__" in csettings:
-            for bc in csettings["__bases__"]:
+        if "__bases__" in class_settings:
+            for bc in class_settings["__bases__"]:
                 if bc.startswith("PyQt"):
-                    cls.bases.append(mtypes.PyClass(bc))
+                    cls.bases.append(PyClass(bc))
                 else:
                     cls.bases.append(self.register.get_object(bc))
-            del csettings["__bases__"]
+            del class_settings["__bases__"]
 
-        if "__abstract__" in csettings and csettings["__abstract__"]:
+        if "__abstract__" in class_settings and class_settings["__abstract__"]:
             cls.abstract = True
-            del csettings["__abstract__"]
+            del class_settings["__abstract__"]
 
         # Patch properties - Everything should be in config since property are poorly
         # documented by boost::python.
-        properties: Dict[str, Any] = csettings.pop("properties[]", {})
+        properties: dict[str, Settings.YamlClassProperty] = class_settings.pop(
+            "properties[]", {}
+        )
         for prop in cls.properties:
             if prop.name in properties:
-                sprop = properties[prop.name]
+                settings_property = properties[prop.name]
 
                 # If we have a type:
-                if "type" in sprop:
-                    prop.type = mtypes.Type(sprop["type"])
+                if "type" in settings_property:
+                    prop.type = PyType(settings_property["type"])
                 else:
-                    logger.warn(
+                    LOGGER.warn(
                         "Missing type for property {}.{}.".format(
                             cls.canonical_name, prop.name
                         )
                     )
 
                 # If we have a description:
-                if "desc" in sprop:
+                if "desc" in settings_property:
 
                     # If desc is None, we do not warn user, because the entry is in
                     # settings, just empty:
-                    if sprop["desc"] is not None:
-                        prop.doc = sprop["desc"]
+                    if settings_property["desc"] is not None:
+                        prop.doc = settings_property["desc"]
 
                 else:
-                    logger.warn(
+                    LOGGER.warn(
                         "Missing description for property {}.{}.".format(
                             cls.canonical_name, prop.name
                         )
                     )
 
-        # Patch signals - Everything should be in config since signals are not really
-        # exposed by boost::python.
-        signals: List[str] = csettings.pop("signals[]", [])
+        # patch signals - Everything should be in config since signals are not really
+        # exposed by pybind11.
+        signals: list[str] = list(class_settings.pop("signals[]", {}))
         for signal in signals:
-            cls.constants.append(
-                mtypes.Constant(signal, mtypes.Type("pyqtSignal"), None)
-            )
+            cls.constants.append(Constant(signal, PyType("pyqtSignal"), None))
 
-        # List of all items in csettings:
-        keys = {k: False for k in csettings}
+        # List of all items in class_settings:
+        keys = {k: False for k in class_settings}
 
         # Group method by name:
-        methods: Dict[str, List[mtypes.Method]] = defaultdict(list)
+        methods: dict[str, list[Method]] = defaultdict(list)
         for m in cls.methods:
             methods[m.name].append(m)
 
@@ -297,111 +344,96 @@ class Settings:
 
                 # Find the name in settings:
                 if m.has_overloads():
-                    sname = "{}.{}".format(m.name, i + 1)
+                    settings_name = "{}.{}".format(m.name, i + 1)
                 else:
-                    sname = m.name
+                    settings_name = m.name
 
-                missing_settings: Set[str] = set()
+                missing_settings: set[str] = set()
 
                 # If the name is in the settings:
-                if sname in csettings:
-                    keys[sname] = True
-                    fsettings = self._parse_function_settings(csettings[sname])
+                if settings_name in class_settings:
+                    keys[settings_name] = True
+                    function_settings = self._parse_function_settings(
+                        class_settings[settings_name]  # type: ignore
+                    )
 
                     # Force raises:
-                    m.raises = fsettings.raises
+                    m.raises = function_settings.raises
 
-                    # Force static:
-                    if fsettings.static is not None:
-                        if m.is_static() != fsettings.static:
-                            logger.warn(
-                                "Forcing method {}.{} to be {}.".format(
-                                    cls.canonical_name,
-                                    sname,
-                                    "static" if fsettings.static else "non static",
-                                )
-                            )
-                        m.static = fsettings.static
-
-                    if fsettings.abstract is not None:
-                        m.abstract = fsettings.abstract
+                    if function_settings.abstract is not None:
+                        m.abstract = function_settings.abstract
 
                     # Check the args:
-                    if fsettings.args is not None:
-                        margs = m.args if m.is_static() else m.args[1:]
-                        if len(fsettings.args) != len(margs):
-                            logger.warn(
+                    if function_settings.args is not None:
+                        method_arguments = m.args if m.is_static() else m.args[1:]
+                        if len(function_settings.args) != len(method_arguments):
+                            LOGGER.warn(
                                 "Mismatch number of arguments for method {}.{}.".format(
-                                    cls.canonical_name, sname
+                                    cls.canonical_name, settings_name
                                 )
                             )
 
-                        for sarg, marg in zip(fsettings.args, margs):
-                            marg.doc = sarg.doc
+                        for settings_arg, method_arg in zip(
+                            function_settings.args, method_arguments
+                        ):
+                            method_arg.doc = settings_arg.doc
                             if (
-                                not marg.name.startswith("arg")
-                                and marg.name != sarg.name
+                                not method_arg.name.startswith("arg")
+                                and method_arg.name != settings_arg.name
                             ):
-                                logger.warn(
-                                    "Mismatch argument name for method {}.{}: {} {}, using {}.".format(  # noqa: E501
+                                LOGGER.warn(
+                                    (
+                                        "Mismatch argument name for method {}.{}: "
+                                        "{} {}, using {}."
+                                    ).format(
                                         cls.canonical_name,
-                                        sname,
-                                        marg.name,
-                                        sarg.name,
-                                        sarg.name,
+                                        settings_name,
+                                        method_arg.name,
+                                        settings_arg.name,
+                                        settings_arg.name,
                                     )
                                 )
 
-                            marg.name = sarg.name
-                            if not sarg.type.is_none():
-                                marg.type = sarg.type
+                            method_arg.name = settings_arg.name
+                            if not settings_arg.type.is_none():
+                                method_arg.type = settings_arg.type
 
                     # Check the return type:
-                    if fsettings.ret is not None:
+                    if function_settings.ret is not None:
 
                         # Force the doc anyway:
-                        m.ret.doc = fsettings.ret.doc
+                        m.ret.doc = function_settings.ret.doc
 
                         # Update the type if specified:
-                        if not fsettings.ret.type.is_none():
-                            m.ret.type = fsettings.ret.type
+                        if not function_settings.ret.type.is_none():
+                            m.ret.type = function_settings.ret.type
 
                     # Force the doc:
-                    m.doc = fsettings.doc
+                    m.doc = function_settings.doc
 
                     # Force deprecated:
-                    m.deprecated = fsettings.deprecated
+                    m.deprecated = function_settings.deprecated
 
                 # Only warn for "normal" methods:
                 elif not m.name.startswith("__"):
-                    missing_settings.add(sname)
+                    missing_settings.add(settings_name)
 
-            # Remove the deprecated methods:
-            noverloads = 0
+            # remove the deprecated methods and count overloads
+            n_overloads = 0
             for m in ms:
-                overriden: bool = False
-                for bc in cls.all_bases:
-                    for bm in bc.methods:
-                        if bm.name == "__init__" or bm.name != m.name:
-                            continue
-                        if len(bm.args) == len(m.args) and all(
-                            ba.type == ma.type
-                            for ba, ma in zip(bm.args[1:], m.args[1:])
-                        ):
-                            overriden = True
-                if m.is_deprecated() or overriden:
+                if m.is_deprecated():
                     cls.methods.remove(m)
                 else:
-                    noverloads += 1
+                    n_overloads += 1
 
             for m in ms:
-                m.overloads = noverloads > 1
+                m.overloads = n_overloads > 1
 
-            if noverloads > 0 and missing_settings:
-                for sname in missing_settings:
-                    logger.warn(
+            if n_overloads > 0 and missing_settings:
+                for settings_name in missing_settings:
+                    LOGGER.warn(
                         "Missing settings for method {}.{}.".format(
-                            cls.canonical_name, sname
+                            cls.canonical_name, settings_name
                         )
                     )
 
@@ -415,15 +447,15 @@ class Settings:
             keys[cc.name] = True
 
         # Print items missing in mobase
-        missings = [k for k, v in keys.items() if not v]
-        if missings:
-            logger.warn(
+        missing_items = [k for k, v in keys.items() if not v]
+        if missing_items:
+            LOGGER.warn(
                 "The following members were found in settings but not in the actual"
-                " class {}: {}.".format(cls.canonical_name, ", ".join(missings))  # noqa
+                " class {}: {}.".format(cls.canonical_name, ", ".join(missing_items))
             )
 
 
-def clean_class(cls: "mtypes.Class", settings: Settings):
+def clean_class(cls: Class, settings: Settings):
     """
     Clean the given class object.
 
@@ -432,12 +464,8 @@ def clean_class(cls: "mtypes.Class", settings: Settings):
         settings: The settings.
     """
 
-    from .register import MOBASE_REGISTER
-
     # Remove duplicate methods (based on name and argument types):
-    methods: Dict[
-        Tuple[str, Tuple[mtypes.Arg, ...]], List[mtypes.Method]
-    ] = OrderedDict()
+    methods: dict[tuple[str, tuple[Argument, ...]], list[Method]] = OrderedDict()
     methods_by_name = defaultdict(list)
     for m in cls.methods:
         k = (m.name, tuple(m.args if m.is_static() else m.args[1:]))
@@ -446,10 +474,10 @@ def clean_class(cls: "mtypes.Class", settings: Settings):
         methods[k].append(m)
         methods_by_name[m.name].append(m)
 
-    clean_methods: List[mtypes.Method] = []
+    clean_methods: list[Method] = []
     for name, args in methods:
         ms = methods[name, args]
-        method: mtypes.Method = ms[0]
+        method: Method = ms[0]
         if len(ms) > 1:
 
             # If we have more than two methods, there is a problem...
@@ -479,35 +507,66 @@ def clean_class(cls: "mtypes.Class", settings: Settings):
             clean_methods.append(method)
         else:
             arg0_name = method.args[0].type.name
-            if arg0_name in MOBASE_REGISTER.cpp2py:
-                arg0_name = MOBASE_REGISTER.cpp2py[arg0_name].name
-            if arg0_name in [cls.name, "object"]:
+            if arg0_name in [cls.name, cls.canonical_name, "object"]:
                 clean_methods.append(method)
             else:
-                logger.info(
+                LOGGER.info(
                     "Removing {}({}) from {} (already in base {}).".format(
                         name,
-                        ", ".join(a.type.typing(settings) for a in args),
+                        ", ".join(a.type.typing() for a in method.args),
                         cls.name,
-                        method.args[0].type.typing(settings),
+                        method.args[0].type.typing(),
                     )
                 )
 
-    # We need to filter-out __eq__(X, object) and __ne__(X, object) because these won't
-    # be filtered since the first arg is not of the right type:
-    for name in ("__eq__", "__ne__"):
-        fns = [m for m in clean_methods if m.name == name]
-        if len(fns) == 1 and fns[0].args[1].type.is_object():
-            clean_methods.remove(fns[0])
+            if method.name != "__init__":
+                # we need to fix the overload from the base class
+                for base_class in cls.all_bases:
+                    for base_method in base_class.methods:
+                        if base_method.name == method.name:
+                            # we need to bring all overloads
+                            base_method = Method(
+                                base_method.name,
+                                ret=base_method.ret,
+                                args=base_method.args,
+                                static=False,
+                                has_overloads=True,
+                                doc=base_method.doc,
+                            )
+                            base_method.cls = cls
+                            clean_methods.insert(-1, base_method)
+
+                            method.overloads = True
 
     cls.methods = clean_methods
 
     # Remove all non-uppercases enum names - This is a temporary fix to avoid breaking
     # old plugins that uses old enum values:
-    if isinstance(cls, mtypes.Enum):
-        newc = [c for c in cls.constants if c.name.isupper()]
-        if newc:
-            cls.constants = newc
+    if isinstance(cls, Enum):
+        new_constants = [c for c in cls.constants if c.name.isupper()]
+        if new_constants:
+            cls.constants = new_constants
+
+        # pybind11 do not properly type arithmetic methods so we fix them here, so we
+        # replace every "object" to the type when possible
+
+        cls_type = PyType(cls.canonical_name)
+        for method in cls.methods:
+            if method.name in ["__eq__", "__ne__"]:
+                continue
+
+            for arg in method.args:
+                if arg.type.is_object():
+                    arg.type = cls_type
+
+            if method.ret.type.is_object():
+                method.ret.type = cls_type
+
+        # add two properties name, value
+        cls.properties = [
+            Property("value", PyType(int), read_only=True),
+            Property("name", PyType(str), read_only=True),
+        ]
 
     # Clean inner classes:
     for ic in cls.inner_classes:

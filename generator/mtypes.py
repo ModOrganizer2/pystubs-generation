@@ -1,24 +1,28 @@
 # -*- encoding: utf-8 -*-
 
-from typing import Any, Dict, List, Optional, Union
+from __future__ import annotations
 
-from . import logger, utils
+import re
 
 
-class Type:
+class PyType:
     """
     Class representing a python type.
     """
 
-    # The `MoVariant` actual type - This should be List["MoVariant"] and
+    # The `MoVariant` actual type - This should be list["MoVariant"] and
     # Dict[str, "MoVariant"], but mypy (and other type checkers) do not
     # handle recursive definition yet:
-    MO_VARIANT = """Union[None, bool, int, str, List[Any], Dict[str, Any]]"""
+    MO_VARIANT = """Union[None, bool, int, str, list[Any], dict[str, Any]]"""
+
+    # File/Directory wrappers
+    FILE_WRAPPER = """Union[str, PyQt6.QtCore.QFileInfo, Path]"""
+    DIRECTORY_WRAPPER = """Union[str, PyQt6.QtCore.QDir, Path]"""
 
     name: str
 
-    def __init__(self, name: Union[str, type]):
-        # Import only here since we change the path to find them:
+    def __init__(self, name: str | type):
+        # import only here since we change the path to find them
         from PyQt6 import QtCore, QtGui, QtWidgets
 
         if isinstance(name, type):
@@ -26,32 +30,29 @@ class Type:
 
         self.name = name.strip()
 
-        # We replace QVariant with MoVariant which is valid python type:
+        # remove MOBase:: and mobase.
+        self.name = self.name.replace("mobase.", "")
+
+        # replace QFlags[xxx] with xxx
+        self.name = re.sub(r"QFlags\[([^]]*)\]", r"\1", self.name)
+
+        # we replace QVariant with MoVariant which is valid python type
         if self.name == "QVariant":
             self.name = "MoVariant"
 
-        # Find PyQt types:
+        # find PyQt types
         for m in (QtCore, QtGui, QtWidgets):
             if self.name in dir(m):
                 self.name = "{}.{}".format(m.__name__, self.name)
 
-    def typing(self, settings: utils.Settings) -> str:
+    def typing(self) -> str:
         """
         Returns:
             A valid typing representation for this type.
         """
-        from .register import MOBASE_REGISTER
-
-        # Check if this is a mobase object, in which case we escape:
-        if self.name in MOBASE_REGISTER.objects:
-            return '"{}"'.format(self.name)
-
-        # Check in existing objects (also inner classes) - This may cause
-        # issue with conflicts, but those should not be present:
-        for k in MOBASE_REGISTER.objects:
-            if k.split(".")[-1] == self.name:
-                return '"{}"'.format(k)
-
+        # IPluginBase -> IPlugin
+        if self.name == "IPluginBase":
+            return "IPlugin"
         return self.name
 
     def is_none(self) -> bool:
@@ -91,317 +92,25 @@ class Type:
         return hash(self.name)
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Type):
+        if not isinstance(other, PyType):
             return NotImplemented
         return self.name == other.name
 
 
-class CType(Type):
-    """
-    Class representing a C++ type from boost::python.
-    """
-
-    # List of smart pointer types - Not including pointer that should not
-    # be exposed (unique_ptr, weak_ptr):
-    SMART_POINTERS = ["std::shared_ptr", "boost::shared_ptr", "QSharedPointer"]
-
-    # Standard conversions (usually, the python signature is sufficient for
-    # those, unless we found them inside a tuple):
-    STANDARD_TYPES = {
-        "short": "int",
-        "int": "int",
-        "long": "int",
-        "float": "float",
-        "double": "float",
-    }
-
-    # Replacements for typing (without warnings):
-    REPLACEMENTS = {
-        "QString": "str",
-        "QStringList": "List[str]",
-        "QWidget *": "PyQt6.QtWidgets.QWidget",
-        "QMainWindow *": "PyQt6.QtWidgets.QMainWindow",
-        "QObject *": "PyQt6.QtCore.QObject",
-        "void *": "object",
-        "api::object": "object",
-    }
-
-    _optional: bool
-
-    def __init__(self, name: str, optional: bool = False):
-        super().__init__(name)
-        self._optional = optional
-
-    def _is_not_valid(self, str):
-        for x in str:
-            if x in "<>():*":
-                return True
-        return False
-
-    def _try_fix(self, name, settings: utils.Settings):
-
-        from .parser import magic_split, parse_csig, parse_ctype
-        from .register import MOBASE_REGISTER
-
-        pname = name
-
-        # Unconverted QFlags are int in python:
-        if name.startswith("QFlags"):
-            name = "int"
-
-        # If pointer, try to fix the corresponding python name:
-        if self.is_pointer():
-
-            newname: Optional[str] = None
-
-            # For display purpose:
-            optstr = ""
-            if self.is_optional():
-                optstr = " [optional]"
-
-            # Check if there is a type registered:
-            if self.name in MOBASE_REGISTER.cpp2py:
-                newtype = MOBASE_REGISTER.cpp2py[self.name]
-
-                if newtype.is_object():
-                    logger.critical(
-                        (
-                            "Found {} pointer but did not found any corresponding "
-                            "python type, the interface is likely missing."
-                        ).format(name)
-                    )
-                    return "InterfaceNotImplemented"
-
-                if self._is_builtin_python_type(newtype):
-                    logger.critical(
-                        "Found {} which is a pointer to a built-in python type.".format(
-                            self.name
-                        )
-                    )
-                    return "InterfaceNotImplemented"
-
-                newname = newtype.name
-
-                # Note: No WARNING here as this is safe:
-                logger.info("Replacing {} with {}{}.".format(name, newname, optstr))
-
-            # "Tricky" fix for pointer raw pointer and smart pointers:
-            elif self.is_raw_pointer():
-                newname = name.strip("*").replace("const", "").strip()
-                logger.warning("Replacing {} with {}{}.".format(name, newname, optstr))
-
-            else:
-                for ptr in self.SMART_POINTERS:
-                    if name.startswith(ptr):
-                        newname = name[len(ptr) :][1:-1].replace("const", "").strip()
-                        logger.warning(
-                            "Replacing {} with {}{}.".format(name, newname, optstr)
-                        )
-
-            if newname is not None:
-                if self.is_optional():
-                    if newname in MOBASE_REGISTER.py2cpp:
-                        newname = '"{}"'.format(newname)
-                    return "Optional[{}]".format(newname)
-                else:
-                    return newname
-
-        # Variant:
-        for c in ("boost::variant", "std::variant"):
-            if name.startswith(c):
-                name = name[len(c) :].strip()[1:-1].strip()
-                args = [parse_ctype(c).typing(settings) for c in magic_split(name)]
-                name = "Union[{}]".format(", ".join(args))
-
-        for c in (
-            "std::vector",
-            "std::set",
-            "std::unordered_set",
-            "std::list",
-            "QList",
-            "QVector",
-            "QSet",
-        ):
-            if name.startswith(c):
-                name = name[len(c) :].strip()[1:-1].strip()
-                arg = parse_ctype(magic_split(name)[0]).typing(settings)
-                name = "List[{}]".format(arg)
-
-        for c in ("std::map", "std::unordered_map", "QMap"):
-            if name.startswith(c):
-                name = name[len(c) :].strip()[1:-1].strip()
-                a1, a2 = [
-                    parse_ctype(x).typing(settings) for x in magic_split(name)[:2]
-                ]
-                name = "Dict[{}, {}]".format(a1, a2)
-
-        for c in ("boost::tuples::tuple", "std::tuple"):
-            if name.startswith(c):
-                name = name[len(c) :].strip()[1:-1].strip()
-                args = [parse_ctype(c).typing(settings) for c in magic_split(name)]
-                args = [a for a in args if a != "boost::tuples::null_type"]
-                name = "Tuple[{}]".format(", ".join(args))
-
-        # Fix for optional:
-        if name.startswith("std::optional"):
-            name = name[13:].strip()[1:-1].strip()
-            name = "Optional[{}]".format(parse_ctype(name).typing(settings))
-
-        # Fix for function:
-        if name.startswith("std::function"):
-            name = name[13:].strip()[1:-1].strip()
-            rtype, vargs = parse_csig(name, "")
-            name = "Callable[[{}], {}]".format(
-                ", ".join(a.type.typing(settings) for a in vargs),
-                rtype.typing(settings),
-            )
-
-        if name.find("::") != -1:
-            parts = name.split("::")
-
-            # We are going to check if there is an exact python match for
-            # this class (replacing :: by .):
-            if parts[0] in MOBASE_REGISTER.py2cpp:
-                cp: List[Class] = [MOBASE_REGISTER.objects[parts[0]]]  # type: ignore
-                for p in parts[1:]:
-                    for ic in cp[-1].inner_classes:
-                        if ic.name == p:
-                            cp.append(ic)
-                            break
-                if len(cp) == len(parts):
-                    name = '"' + ".".join(parts) + '"'
-
-        if pname != name:
-            logger.info("Fixed {} to {}. ".format(pname, name))
-        else:
-            logger.critical(
-                "Failed to fix {}, a custom rule is probably required.".format(name)
-            )
-
-        return name
-
-    def _is_builtin_python_type(self, t: Type) -> bool:
-        """
-        Check if the given type is a 'raw' python type, i.e., a type that cannot
-        be a C++ reference. This is mainly used to report errors when pointers to such
-        type are present in the interface.
-
-        Args:
-            t: The type to check.
-
-        Returns:
-            True if the given type is a raw python type, False otherwise.
-        """
-        return t.name in ["bool", "int", "float", "str", "list", "std", "dict", "bytes"]
-
-    def typing(self, settings: utils.Settings) -> str:
-        """
-        Create a valid typing representation for this type.
-
-        args:
-            settings: The settings to use.
-
-        Returns:
-            A valid typing representing for this type.
-        """
-        from .register import MOBASE_REGISTER
-
-        name = self.name
-
-        if self.is_none():
-            return "None"
-
-        if name in CType.STANDARD_TYPES:
-            name = CType.STANDARD_TYPES[name]
-
-        if name in CType.REPLACEMENTS:
-            name = CType.REPLACEMENTS[name]
-
-        if name in settings.replacements:
-            logger.warning(
-                "Replacing {} with {}.".format(name, settings.replacements[name])
-            )
-            name = settings.replacements[name]
-
-        # If the name contains stuff that should not be there, try some
-        # "magic" conversion:
-        if self._is_not_valid(name):
-            name = self._try_fix(name, settings)
-
-        if name in MOBASE_REGISTER.objects:
-            name = '"{}"'.format(name)
-
-        return name
-
-    def is_raw_pointer(self) -> bool:
-        """
-        Check if this type is a raw pointer type.
-
-        Returns:
-            True if this type is a raw point type, False otherwise.
-        """
-        return self.name.endswith("*")
-
-    def is_smart_pointer(self) -> bool:
-        """
-        Check if this type is a smart pointer type.
-
-        Returns:
-            True if this type is a smart pointer type, False otherwise.
-        """
-
-        for ptr in self.SMART_POINTERS:
-            if self.name.startswith(ptr):
-                return True
-
-        return False
-
-    def is_pointer(self) -> bool:
-        """
-        Check if this type corresponds to a pointer type.
-
-        Returns:
-            True if this type represents a pointer type (raw or smart), False
-            otherwise.
-        """
-        return self.is_raw_pointer() or self.is_smart_pointer()
-
-    def is_optional(self) -> bool:
-        """
-        Check if this type is optional (i.e., can be None in python).
-
-        Returns:
-            True if this type can be optional, False otherwise.
-        """
-        return self._optional
-
-    def is_none(self) -> bool:
-        return self.name.lower() == "void"
-
-    def is_object(self) -> bool:
-        return self.name.lower() == "_object *"
-
-    def __str__(self) -> str:
-        return "CType({})".format(self.name)
-
-    def __repr__(self) -> str:
-        return str(self)
-
-
-class Ret:
+class Return:
     """
     Class representing the return value of a function (type and documentation).
     """
 
-    type: Type
+    type: PyType
     doc: str
 
-    def __init__(self, type: Type, doc: str = ""):
+    def __init__(self, type: PyType, doc: str = ""):
         self.type = type
         self.doc = doc
 
 
-class Arg:
+class Argument:
     """
     Class representing a function argument (type and eventual default value).
     """
@@ -410,12 +119,12 @@ class Arg:
     DEFAULT_NONE = "None"
 
     name: str
-    type: Type
-    _value: Optional[str]
+    type: PyType
+    _value: str | None
     doc: str
 
     def __init__(
-        self, name: str, type: Type, value: Optional[str] = None, doc: str = ""
+        self, name: str, type: PyType, value: str | None = None, doc: str = ""
     ):
         self.name = name
         self.type = type
@@ -423,16 +132,20 @@ class Arg:
         self.doc = doc
 
     @property
-    def value(self) -> Optional[str]:
+    def value(self) -> str | None:
 
         value = self._value
 
         if value is None:
             return None
 
-        # Boost has a tendency to put `mobase.` in front of default values...
-        if value is not None and value.startswith("mobase."):
-            value = value[7:]
+        # pybind11 puts enum in <> so we need to fix
+        m = re.match(r"<([^:]+):\s*[0-9]+>", value)
+        if m:
+            # we also need to use the upper case version
+            value = m.group(1)
+            parts = value.split(".")
+            value = ".".join(parts[:-1] + [parts[-1].upper()])
 
         return value
 
@@ -451,21 +164,21 @@ class Arg:
         return hash(self.type)
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Arg):
+        if not isinstance(other, Argument):
             return NotImplemented
         return self.type == other.type
 
 
-class Exc:
+class Exception:
 
     """
     Small class representing exception that can be raised from functions.
     """
 
-    type: Type
+    type: PyType
     doc: str
 
-    def __init__(self, type: Type, doc: str = ""):
+    def __init__(self, type: PyType, doc: str = ""):
         self.type = type
         self.doc = doc
 
@@ -476,18 +189,18 @@ class Function:
     """
 
     name: str
-    ret: Ret
-    args: List[Arg]
+    ret: Return
+    args: list[Argument]
     overloads: bool
-    raises: List[Exc]
+    raises: list[Exception]
     doc: str
     deprecated: bool
 
     def __init__(
         self,
         name: str,
-        ret: Ret,
-        args: List[Arg],
+        ret: Return,
+        args: list[Argument],
         has_overloads: bool = False,
         doc: str = "",
     ):
@@ -511,15 +224,15 @@ class Method(Function):
     Class representing a method.
     """
 
-    cls: "Class"
-    abstract: Union[str, bool]
+    cls: Class
+    abstract: str | bool
     static: bool
 
     def __init__(
         self,
         name: str,
-        ret: Ret,
-        args: List[Arg],
+        ret: Return,
+        args: list[Argument],
         static: bool,
         has_overloads: bool = False,
         doc: str = "",
@@ -551,12 +264,12 @@ class Constant:
     """
 
     name: str
-    type: Optional[Type]
-    value: Any
-    doc: Optional[str]
+    type: PyType | None
+    value: object
+    doc: str | None
 
     def __init__(
-        self, name: str, type: Optional[Type], value: Any, doc: Optional[str] = None
+        self, name: str, type: PyType | None, value: object, doc: str | None = None
     ):
         self.name = name
         self.type = type
@@ -572,11 +285,11 @@ class Property:
     """
 
     name: str
-    type: Type
+    type: PyType
     doc: str
     read_only: bool
 
-    def __init__(self, name: str, type: Type, read_only: bool, doc: str = ""):
+    def __init__(self, name: str, type: PyType, read_only: bool, doc: str = ""):
         self.name = name
         self.type = type
         self.read_only = read_only
@@ -592,12 +305,12 @@ class Class:
     """
 
     name: str
-    bases: List["Class"]
-    methods: List[Method]
-    constants: List[Constant]
-    properties: List[Property]
-    inner_classes: List["Class"]
-    outer_class: Optional["Class"]
+    bases: list[Class]
+    methods: list[Method]
+    constants: list[Constant]
+    properties: list[Property]
+    inner_classes: list[Class]
+    outer_class: Class | None
     doc: str
     abstract: bool
     deprecated: bool
@@ -605,11 +318,11 @@ class Class:
     def __init__(
         self,
         name: str,
-        bases: List["Class"],
-        methods: List[Method],
-        constants: List[Constant] = [],
-        properties: List[Property] = [],
-        inner_classes: List["Class"] = [],
+        bases: list[Class],
+        methods: list[Method],
+        constants: list[Constant] = [],
+        properties: list[Property] = [],
+        inner_classes: list[Class] = [],
         doc: str = "",
     ):
 
@@ -652,7 +365,7 @@ class Class:
         return name
 
     @property
-    def all_bases(self):
+    def all_bases(self) -> set[Class]:
         """
         Returns:
             All the bases of this class, including bases of bases and so on.
@@ -690,21 +403,13 @@ class Enum(Class):
     Class representing an enum.
     """
 
-    def __init__(self, name: str, values: Dict[str, int]):
+    def __init__(self, name: str, values: dict[str, int], methods: list[Method]):
         # Note: Boost.Python.enum inherits int() not enum.Enum() but for the sake
         # of stubs, I think making them inherit enum.Enum is more appropriate:
         super().__init__(
             name,
             [PyClass("Enum")],
-            [
-                Method(
-                    "__{}__".format(mname),
-                    Ret(Type(bool)),
-                    [Arg("", Type(name)), Arg("other", Type(int))],
-                    static=False,
-                )
-                for mname in ["and", "or", "rand", "ro"]
-            ],
+            methods,
             inner_classes=[],
             constants=[Constant(k, None, v) for k, v in values.items()],
         )
