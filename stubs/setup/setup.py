@@ -11,6 +11,8 @@
 import io
 import os
 import re
+from collections import defaultdict
+from pathlib import Path
 
 from setuptools import find_packages, setup
 
@@ -34,6 +36,14 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
+def find_package_data(path: str):
+    package_data: dict[str, list[str]] = defaultdict(lambda: [])
+    for stubfile in Path(path).glob("**/*.pyi"):
+        package_data[stubfile.parent.as_posix().replace("/", ".")].append(stubfile.name)
+
+    return package_data
+
+
 long_description = read("README.md")
 
 
@@ -41,11 +51,12 @@ setup(
     name="mobase-stubs",
     url="https://github.com/ModOrganizer2/mo2-pystubs-generation",
     author="Holt59",
+    author_email="capelle.mikael@gmail.com",
     description="PEP561 stub files for the mobase python API",
     long_description=long_description,
     long_description_content_type="text/markdown",
     version=find_version("mobase-stubs", "__init__.pyi"),
-    packages=find_packages(),
+    package_data=find_package_data("mobase-stubs"),
     install_requires=[],
     python_requires="==3.10.*",
     classifiers=[
