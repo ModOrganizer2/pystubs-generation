@@ -14,7 +14,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 
 def read(*names, **kwargs):
@@ -40,12 +40,12 @@ def find_package_data(path: str):
     package_data: dict[str, list[str]] = defaultdict(lambda: [])
     for stubfile in Path(path).glob("**/*.pyi"):
         package_data[stubfile.parent.as_posix().replace("/", ".")].append(stubfile.name)
-
-    return package_data
+    return dict(package_data)
 
 
 long_description = read("README.md")
 
+package_data = find_package_data("mobase-stubs")
 
 setup(
     name="mobase-stubs",
@@ -56,7 +56,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     version=find_version("mobase-stubs", "__init__.pyi"),
-    package_data=find_package_data("mobase-stubs"),
+    packages=list(package_data.keys()),
+    package_data=package_data,
     install_requires=[],
     python_requires="==3.10.*",
     classifiers=[
