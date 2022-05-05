@@ -33,7 +33,7 @@ def load_mobase(path: Path):
     # We need to add plugins/data to sys.path, mainly for PyQt6
     sys.path.insert(1, path.joinpath("plugins", "plugin_python", "libs").as_posix())
 
-    import mobase
+    import mobase  # type: ignore
 
     return mobase
 
