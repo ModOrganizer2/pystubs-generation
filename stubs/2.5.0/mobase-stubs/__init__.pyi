@@ -3,8 +3,8 @@ from __future__ import annotations
 __version__ = "2.5.0"
 
 import abc
+import pathlib
 from enum import Enum
-from pathlib import Path
 from typing import (
     Any,
     Callable,
@@ -25,10 +25,10 @@ import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 
-MoVariant = Union[None, bool, int, str, list[Any], dict[str, Any]]
-FileWrapper = Union[str, PyQt6.QtCore.QFileInfo, Path]
-DirectoryWrapper = Union[str, PyQt6.QtCore.QDir, Path]
+DirectoryWrapper = str | PyQt6.QtCore.QDir | pathlib.Path
+FileWrapper = str | PyQt6.QtCore.QFileInfo | pathlib.Path
 GameFeatureType = TypeVar("GameFeatureType")
+MoVariant = None | bool | int | str | list[object] | dict[str, object]
 
 def getFileVersion(filepath: FileWrapper) -> str:
     """

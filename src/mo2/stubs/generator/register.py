@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
-from .mtypes import Class, Function
+from .mtypes import Class, Function, PyTyping
 
 
 class MobaseRegister:
@@ -45,6 +45,10 @@ class MobaseRegister:
                 self.objects[name] = make_class(e, self)
             elif callable(e):
                 self.objects[name] = make_functions(e)
+
+            # typing stuff
+            elif type(e).__module__ == "types" or type(e).__module__ == "typing":
+                self.objects[name] = PyTyping(name, e)
 
         return self.objects[name]
 

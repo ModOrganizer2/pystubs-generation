@@ -1,10 +1,14 @@
 # -*- encoding: utf-8 -*-
 
-from typing import TextIO
+from typing import TextIO, TypeGuard
 
 from . import LOGGER
-from .mtypes import Class, Enum, Function, Method, Property
+from .mtypes import Class, Enum, Function, Method, Property, PyTyping
 from .utils import Settings
+
+
+def is_list_of_functions(e: object) -> TypeGuard[list[Function]]:
+    return isinstance(e, list) and all(isinstance(x, Function) for x in e)
 
 
 class Writer:
@@ -240,3 +244,18 @@ class Writer:
             if isinstance(cls, Enum):
                 self._print()
             self._print()
+
+    def print_typing(self, typ: PyTyping):
+        self._print(f"{typ.name} = {typ.typing}")
+
+    def print_object(self, e: object):
+
+        if isinstance(e, Class):
+            self.print_class(e)
+
+        elif is_list_of_functions(e):
+            for fn in e:
+                self.print_function(fn)
+
+        elif isinstance(e, PyTyping):
+            self.print_typing(e)

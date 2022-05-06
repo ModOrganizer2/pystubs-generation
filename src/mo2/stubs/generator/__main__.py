@@ -3,24 +3,28 @@
 import argparse
 import inspect
 import logging
+import types
 from pathlib import Path
-from typing import Callable, TextIO, cast
+from typing import Callable
 
 import black
 import isort
 
 from . import LOGGER
 from .loader import load_mobase
-from .mtypes import Class, Function, PyType
+from .mtypes import Class, PyTyping
 from .parser import is_enum
 from .register import MobaseRegister
 from .utils import Settings, clean_class
-from .writer import Writer
+from .writer import Writer, is_list_of_functions
 
 
 def extract_objects(module: object, skips: list[str] = []) -> list[tuple[str, object]]:
 
     objects: list[tuple[str, object]] = []
+
+    assert hasattr(module, "__name__")
+    module_name: str = module.__name__  # type: ignore
 
     for name in dir(module):
         if name.startswith("__") or name in skips:
@@ -32,6 +36,11 @@ def extract_objects(module: object, skips: list[str] = []) -> list[tuple[str, ob
         if inspect.ismodule(obj):
             continue
 
+        # skip imports - type object have wrong __module__?
+        if hasattr(obj, "__module__") and obj.__module__ != module_name:
+            if obj.__module__ != types.__name__ or hasattr(types, name):
+                continue
+
         objects.append((name, obj))
 
     return objects
@@ -42,7 +51,7 @@ def add_mobase_header(writer: Writer):
         [
             "abc",
             ("enum", ["Enum"]),
-            ("pathlib", ["Path"]),
+            "pathlib",
             (
                 "typing",
                 [
@@ -66,13 +75,6 @@ def add_mobase_header(writer: Writer):
             "PyQt6.QtWidgets",
         ]
     )
-
-    # Needs to define the MVariant and GameFeatureType type:
-    writer._print(f"MoVariant = {PyType.MO_VARIANT}")
-    writer._print(f"FileWrapper = {PyType.FILE_WRAPPER}")
-    writer._print(f"DirectoryWrapper = {PyType.DIRECTORY_WRAPPER}")
-    writer._print('GameFeatureType = TypeVar("GameFeatureType")')
-    writer._print()
 
 
 def add_mobase_widgets_header(writer: Writer):
@@ -148,8 +150,6 @@ def main():
         "mobase": extract_objects(
             mobase,
             [
-                # we do not want the real MoVariant
-                "MoVariant",
                 # the "real" IPlugin is IPluginBase
                 "IPlugin",
             ],
@@ -187,7 +187,10 @@ def main():
                 # Path the class using the configuration:
                 settings.patch_class(c)
 
-            elif isinstance(c, list) and isinstance(c[0], Function):
+            elif isinstance(c, PyTyping):
+                ...
+
+            elif is_list_of_functions(c):
                 settings.patch_functions(c)
 
             else:
@@ -220,12 +223,7 @@ def main():
                 # Get the corresponding object:
                 c = register.get_object(n)
 
-                if isinstance(c, Class):
-                    writer.print_class(c)
-
-                elif isinstance(c, list) and isinstance(c[0], Function):
-                    for fn in c:
-                        writer.print_function(fn)
+                writer.print_object(c)
 
         black.format_file_in_place(
             output_folder.joinpath("__init__.pyi"),

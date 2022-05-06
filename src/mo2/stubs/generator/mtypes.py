@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from typing import Final, TypeVar
 
 
 class PyType:
@@ -430,3 +431,26 @@ class Enum(Class):
 
     def is_abstract(self):
         return False
+
+
+class PyTyping:
+    """
+    Class representing a typing object, e.g., MoVariant.
+    """
+
+    name: Final[str]
+    typing: Final[str]
+
+    def __init__(self, name: str, obj: object):
+        self.name = name
+
+        _typing: str
+        if obj.__module__ == "types":
+            _typing = str(obj)
+        # type-var have a weird name, e.g., ~Name
+        elif type(obj) is TypeVar:
+            _typing = f'TypeVar("{name}")'
+        else:
+            _typing = str(obj)
+
+        self.typing = _typing
