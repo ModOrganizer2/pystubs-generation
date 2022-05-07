@@ -3004,11 +3004,11 @@ mobase:
     __doc__:
     __abstract__: true
 
-    BinaryName:
+    binaryName:
       __doc__:
       returns: The name of the script extender binary.
 
-    PluginPath:
+    pluginPath:
       __doc__:
       returns: The script extender plugin path, relative to the data folder.
 

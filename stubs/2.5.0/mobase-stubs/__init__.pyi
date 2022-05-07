@@ -3,7 +3,7 @@ from __future__ import annotations
 __version__ = "2.5.0"
 
 import abc
-import pathlib
+import os
 from enum import Enum
 from typing import (
     Any,
@@ -25,12 +25,10 @@ import PyQt6.QtCore
 import PyQt6.QtGui
 import PyQt6.QtWidgets
 
-DirectoryWrapper = str | PyQt6.QtCore.QDir | pathlib.Path
-FileWrapper = str | PyQt6.QtCore.QFileInfo | pathlib.Path
 GameFeatureType = TypeVar("GameFeatureType")
 MoVariant = None | bool | int | str | list[object] | dict[str, object]
 
-def getFileVersion(filepath: FileWrapper) -> str:
+def getFileVersion(filepath: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]) -> str:
     """
     Retrieve the file version of the given executable.
 
@@ -42,7 +40,9 @@ def getFileVersion(filepath: FileWrapper) -> str:
     """
     ...
 
-def getIconForExecutable(executable: FileWrapper) -> PyQt6.QtGui.QIcon:
+def getIconForExecutable(
+    executable: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]
+) -> PyQt6.QtGui.QIcon:
     """
     Retrieve the icon of an executable. Currently this always extracts the biggest icon.
 
@@ -54,7 +54,9 @@ def getIconForExecutable(executable: FileWrapper) -> PyQt6.QtGui.QIcon:
     """
     ...
 
-def getProductVersion(executable: FileWrapper) -> str:
+def getProductVersion(
+    executable: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]
+) -> str:
     """
     Retrieve the product version of the given executable.
 
@@ -343,7 +345,11 @@ class ExecutableForcedLoadSetting:
     ) -> ExecutableForcedLoadSetting: ...
 
 class ExecutableInfo:
-    def __init__(self: ExecutableInfo, title: str, binary: FileWrapper): ...
+    def __init__(
+        self: ExecutableInfo,
+        title: str,
+        binary: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo],
+    ): ...
     def arguments(self: ExecutableInfo) -> Sequence[str]: ...
     def asCustom(self: ExecutableInfo) -> ExecutableInfo: ...
     def binary(self: ExecutableInfo) -> PyQt6.QtCore.QFileInfo: ...
@@ -354,7 +360,7 @@ class ExecutableInfo:
     def withArgument(self: ExecutableInfo, argument: str) -> ExecutableInfo: ...
     def withSteamAppId(self: ExecutableInfo, app_id: str) -> ExecutableInfo: ...
     def withWorkingDirectory(
-        self: ExecutableInfo, directory: DirectoryWrapper
+        self: ExecutableInfo, directory: Union[str, os.PathLike, PyQt6.QtCore.QDir]
     ) -> ExecutableInfo: ...
     def workingDirectory(self: ExecutableInfo) -> PyQt6.QtCore.QDir: ...
 
@@ -1280,7 +1286,7 @@ class IInstallationManager:
     def installArchive(
         self: IInstallationManager,
         mod_name: GuessedString,
-        archive: FileWrapper,
+        archive: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo],
         mod_id: int = 0,
     ) -> Tuple[InstallResult, str, int]:
         """
@@ -1945,7 +1951,9 @@ class IOrganizer:
         """
         ...
     def findFileInfos(
-        self: IOrganizer, path: DirectoryWrapper, filter: Callable[[FileInfo], bool]
+        self: IOrganizer,
+        path: Union[str, os.PathLike, PyQt6.QtCore.QDir],
+        filter: Callable[[FileInfo], bool],
     ) -> Sequence[FileInfo]:
         """
         Find files in the virtual directory matching the specified filter.
@@ -1960,7 +1968,9 @@ class IOrganizer:
         ...
     @overload
     def findFiles(
-        self: IOrganizer, path: DirectoryWrapper, filter: Callable[[str], bool]
+        self: IOrganizer,
+        path: Union[str, os.PathLike, PyQt6.QtCore.QDir],
+        filter: Callable[[str], bool],
     ) -> Sequence[str]:
         """
         Find files in the given folder that matches the given filter.
@@ -1975,7 +1985,9 @@ class IOrganizer:
         ...
     @overload
     def findFiles(
-        self: IOrganizer, path: DirectoryWrapper, patterns: Sequence[str]
+        self: IOrganizer,
+        path: Union[str, os.PathLike, PyQt6.QtCore.QDir],
+        patterns: Sequence[str],
     ) -> Sequence[str]:
         """
         Find files in the given folder that matches one of the given glob patterns.
@@ -1990,7 +2002,7 @@ class IOrganizer:
         ...
     @overload
     def findFiles(
-        self: IOrganizer, path: DirectoryWrapper, pattern: str
+        self: IOrganizer, path: Union[str, os.PathLike, PyQt6.QtCore.QDir], pattern: str
     ) -> Sequence[str]:
         """
         Find files in the given folder that matches the given glob pattern.
@@ -2036,7 +2048,9 @@ class IOrganizer:
         """
         ...
     def installMod(
-        self: IOrganizer, filename: FileWrapper, name_suggestion: str = ""
+        self: IOrganizer,
+        filename: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo],
+        name_suggestion: str = "",
     ) -> IModInterface:
         """
         Install a mod archive at the specified location.
@@ -2350,7 +2364,9 @@ class IOrganizer:
             save_changes: If True, the relevant profile information is saved first (enabled mods and order of mods).
         """
         ...
-    def resolvePath(self: IOrganizer, filename: FileWrapper) -> str:
+    def resolvePath(
+        self: IOrganizer, filename: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]
+    ) -> str:
         """
         Resolves a path relative to the virtual data directory to its absolute real path.
 
@@ -2398,9 +2414,9 @@ class IOrganizer:
         ...
     def startApplication(
         self: IOrganizer,
-        executable: FileWrapper,
+        executable: Union[str, os.PathLike, PyQt6.QtCore.QFileInfo],
         args: Sequence[str] = [],
-        cwd: DirectoryWrapper = "",
+        cwd: Union[str, os.PathLike, PyQt6.QtCore.QDir] = "",
         profile: str = "",
         forcedCustomOverwrite: str = "",
         ignoreCustomOverwrite: bool = False,
@@ -3710,7 +3726,9 @@ class ISaveGame:
     """
 
     def __init__(self: ISaveGame): ...
-    def allFiles(self: ISaveGame) -> Sequence[str]:
+    def allFiles(
+        self: ISaveGame,
+    ) -> Sequence[Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]]:
         """
         Returns:
             The list of all files related to this save.
@@ -3727,7 +3745,7 @@ class ISaveGame:
             The creation time of the save.
         """
         ...
-    def getFilepath(self: ISaveGame) -> str:
+    def getFilepath(self: ISaveGame) -> Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]:
         """
         Returns:
             The path name to the (main) file or folder for the save.
@@ -4235,17 +4253,10 @@ class SaveGameInfo(abc.ABC):
 class ScriptExtender(abc.ABC):
     def __init__(self: ScriptExtender): ...
     @abc.abstractmethod
-    def BinaryName(self: ScriptExtender) -> str:
+    def binaryName(self: ScriptExtender) -> str:
         """
         Returns:
             The name of the script extender binary.
-        """
-        ...
-    @abc.abstractmethod
-    def PluginPath(self: ScriptExtender) -> str:
-        """
-        Returns:
-            The script extender plugin path, relative to the data folder.
         """
         ...
     @abc.abstractmethod
@@ -4277,10 +4288,19 @@ class ScriptExtender(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def loaderPath(self: ScriptExtender) -> str:
+    def loaderPath(
+        self: ScriptExtender,
+    ) -> Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]:
         """
         Returns:
             The full path to the script extender loader.
+        """
+        ...
+    @abc.abstractmethod
+    def pluginPath(self: ScriptExtender) -> Union[str, os.PathLike, PyQt6.QtCore.QDir]:
+        """
+        Returns:
+            The script extender plugin path, relative to the data folder.
         """
         ...
     @abc.abstractmethod
@@ -4320,7 +4340,9 @@ class UnmanagedMods(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def referenceFile(self: UnmanagedMods, mod_name: str) -> PyQt6.QtCore.QFileInfo:
+    def referenceFile(
+        self: UnmanagedMods, mod_name: str
+    ) -> Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]:
         """
         Retrieve the reference file for the requested mod.
 
@@ -4335,7 +4357,9 @@ class UnmanagedMods(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def secondaryFiles(self: UnmanagedMods, mod_name: str) -> Sequence[str]:
+    def secondaryFiles(
+        self: UnmanagedMods, mod_name: str
+    ) -> Sequence[Union[str, os.PathLike, PyQt6.QtCore.QFileInfo]]:
         """
         Retrieve the secondary files for the requested mod.
 
