@@ -55,7 +55,6 @@ def add_mobase_header(writer: Writer):
             (
                 "typing",
                 [
-                    "Any",
                     "Callable",
                     "Dict",
                     "Iterator",

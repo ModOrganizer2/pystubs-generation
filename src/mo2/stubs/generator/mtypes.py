@@ -11,15 +11,6 @@ class PyType:
     Class representing a python type.
     """
 
-    # The `MoVariant` actual type - This should be list["MoVariant"] and
-    # Dict[str, "MoVariant"], but mypy (and other type checkers) do not
-    # handle recursive definition yet:
-    MO_VARIANT = """Union[None, bool, int, str, list[Any], dict[str, Any]]"""
-
-    # File/Directory wrappers
-    FILE_WRAPPER = """Union[str, PyQt6.QtCore.QFileInfo, Path]"""
-    DIRECTORY_WRAPPER = """Union[str, PyQt6.QtCore.QDir, Path]"""
-
     name: str
 
     def __init__(self, name: str | type):
@@ -47,6 +38,9 @@ class PyType:
         # IPluginBase -> IPlugin
         if self.name == "mobase.IPluginBase":
             return "IPlugin"
+
+        # PathLike should be [] in the stubs
+        self.name = self.name.replace("os.PathLike", "os.PathLike[str]")
 
         return self.name
 
