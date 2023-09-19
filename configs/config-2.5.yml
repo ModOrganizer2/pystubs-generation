@@ -356,6 +356,8 @@ mobase:
       returns:
     lightPluginsAreSupported:
       returns: True if light plugins are supported, False otherwise.
+    overridePluginsAreSupported:
+      returns: True if override plugins are supported, False otherwise.
     readPluginLists:
       __doc__:
       args:
@@ -2091,6 +2093,14 @@ mobase:
 
     savesDirectory:
       returns: The directory where save games are stored.
+
+    secondaryDataDirectories:
+      __doc__: |
+        Retrieve the list of secondary data directories. Each directories should be
+        assigned a unique name that differs from "data" which is the name of the main
+        data directory returned by dataDirectory().
+
+      returns: A mapping from unique name to secondary data directories.
 
     setGamePath:
       __doc__: |

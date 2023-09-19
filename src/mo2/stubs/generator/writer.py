@@ -1,18 +1,19 @@
-# -*- encoding: utf-8 -*-
+import logging
+from typing import Any, Iterable, TextIO, TypeGuard
 
-from typing import TextIO, TypeGuard
-
-from . import LOGGER
 from .mtypes import Class, Enum, Function, Method, Property, PyTyping
 from .utils import Settings
 
+LOGGER = logging.getLogger(__package__)
 
-def is_list_of_functions(e: object) -> TypeGuard[list[Function]]:
-    return isinstance(e, list) and all(isinstance(x, Function) for x in e)
+
+def is_list_of_functions(e: Any | Iterable[Any]) -> TypeGuard[list[Function]]:
+    if not isinstance(e, list):
+        return False
+    return all(isinstance(x, Function) for x in e)
 
 
 class Writer:
-
     _output: TextIO
     _settings: Settings
 
@@ -26,9 +27,14 @@ class Writer:
             value = value.replace(pkg + ".", "")
         return value
 
-    def _print(self, *args, **kwargs):
-        kwargs["file"] = self._output
-        print(*args, **kwargs)
+    def _print(
+        self,
+        *values: object,
+        sep: str | None = " ",
+        end: str | None = "\n",
+        flush: bool = False,
+    ) -> None:
+        print(*values, sep=sep, end=end, flush=flush, file=self._output)
 
     def _print_doc(self, doc: str, indent: str):
         """
@@ -77,7 +83,7 @@ class Writer:
                     self._print("{}@abc.abstractmethod".format(indent))
 
         python_args: list[str] = []
-        for i, arg in enumerate(fn.args):
+        for arg in fn.args:
             tmp = "{}: {}".format(arg.name, self._fix_typing(arg.type.typing()))
             if arg.has_default_value():
                 tmp += " = {}".format(arg.value)
@@ -168,7 +174,7 @@ class Writer:
 
         bc = ""
         if cls.bases or cls.is_abstract():
-            bases = [
+            bases: list[str] = [
                 bc.canonical_name if bc.package.startswith("mobase") else bc.full_name
                 for bc in cls.bases
             ]
@@ -249,7 +255,6 @@ class Writer:
         self._print(f"{typ.name} = {typ.typing}")
 
     def print_object(self, e: object):
-
         if isinstance(e, Class):
             self.print_class(e)
 

@@ -1,12 +1,11 @@
-# -*- encoding: utf-8 -*-
-
 import os
 import sys
 from modulefinder import Module
 from pathlib import Path
+from typing import Any
 
 
-def load_mobase(path: os.PathLike) -> Module:
+def load_mobase(path: os.PathLike[Any]) -> Module:
     """
     Load the mobase from the given MO2 installation path and
     returns it.
@@ -42,7 +41,6 @@ def load_mobase(path: os.PathLike) -> Module:
 
 
 if __name__ == "__main__":
-
     import argparse
 
     parser = argparse.ArgumentParser(

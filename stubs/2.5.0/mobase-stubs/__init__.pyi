@@ -124,6 +124,7 @@ class InstallResult(Enum):
     def __ne__(self: InstallResult, other: object) -> bool: ...
 
 class LoadOrderMechanism(Enum):
+    NONE = ...
     FILE_TIME = ...
     PLUGINS_TXT = ...
 
@@ -575,6 +576,13 @@ class GamePlugins(abc.ABC):
         """
         Returns:
             True if light plugins are supported, False otherwise.
+        """
+        ...
+    @abc.abstractmethod
+    def overridePluginsAreSupported(self: GamePlugins) -> bool:
+        """
+        Returns:
+            True if override plugins are supported, False otherwise.
         """
         ...
     @abc.abstractmethod
@@ -2979,6 +2987,17 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
+    def secondaryDataDirectories(self: IPluginGame) -> Dict[str, PyQt6.QtCore.QDir]:
+        """
+        Retrieve the list of secondary data directories. Each directories should be
+        assigned a unique name that differs from "data" which is the name of the main
+        data directory returned by dataDirectory().
+
+        Returns:
+            A mapping from unique name to secondary data directories.
+        """
+        ...
+    @abc.abstractmethod
     def setGamePath(self: IPluginGame, path: str):
         """
         Set the path to the managed game.
@@ -3470,7 +3489,7 @@ class IPluginList:
         """
         ...
 
-class IPluginModPage:
+class IPluginModPage(IPlugin):
     def __init__(self: IPluginModPage): ...
     def _parentWidget(self: IPluginModPage) -> PyQt6.QtWidgets.QWidget:
         """
@@ -3478,12 +3497,14 @@ class IPluginModPage:
             The parent widget.
         """
         ...
+    @abc.abstractmethod
     def displayName(self: IPluginModPage) -> str:
         """
         Returns:
             The name of the page as displayed in the UI.
         """
         ...
+    @abc.abstractmethod
     def handlesDownload(
         self: IPluginModPage,
         page_url: PyQt6.QtCore.QUrl,
@@ -3502,12 +3523,14 @@ class IPluginModPage:
             True if this plugin wants to handle the specified download, False otherwise.
         """
         ...
+    @abc.abstractmethod
     def icon(self: IPluginModPage) -> PyQt6.QtGui.QIcon:
         """
         Returns:
             The icon to display with the page.
         """
         ...
+    @abc.abstractmethod
     def pageURL(self: IPluginModPage) -> PyQt6.QtCore.QUrl:
         """
         Returns:
@@ -3525,6 +3548,7 @@ class IPluginModPage:
             parent: The parent widget.
         """
         ...
+    @abc.abstractmethod
     def useIntegratedBrowser(self: IPluginModPage) -> bool:
         """
         Indicates if the page should be displayed in the integrated browser.

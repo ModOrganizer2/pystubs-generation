@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 from __future__ import annotations
 
 import re
@@ -122,7 +120,6 @@ class Argument:
 
     @property
     def value(self) -> str | None:
-
         value = self._value
 
         if value is None:
@@ -341,7 +338,7 @@ class Class:
         for ic in self.inner_classes:
             ic.outer_class = self
 
-    def is_abstract(self):
+    def is_abstract(self) -> bool:
         """
         Returns:
             True if this class is abstract, False otherwise.
@@ -349,7 +346,7 @@ class Class:
         return self.abstract or any(bc.is_abstract() for bc in self.bases)
 
     @property
-    def canonical_name(self):
+    def canonical_name(self) -> str:
         """
         Returns:
             The canonical name of this class.
@@ -357,13 +354,13 @@ class Class:
         name = self.name
         oc = self.outer_class
         while oc is not None:
-            name = "{}.{}".format(oc.name, name)
+            name = f"{oc.name}.{name}"
             oc = oc.outer_class
 
         return name
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         """
         Returns:
             The full name of this class, i.e., package.canonical_name.

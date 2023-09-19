@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 import argparse
 import inspect
 import logging
@@ -10,7 +8,6 @@ from typing import Callable
 import black
 import isort
 
-from . import LOGGER
 from .loader import load_mobase
 from .mtypes import Class, PyTyping
 from .parser import is_enum
@@ -18,10 +15,11 @@ from .register import MobaseRegister
 from .utils import Settings, clean_class
 from .writer import Writer, is_list_of_functions
 
+LOGGER = logging.getLogger(__package__)
 
-def extract_objects(module: object, skips: list[str] = []) -> list[tuple[str, object]]:
 
-    objects: list[tuple[str, object]] = []
+def extract_objects(module: object, skips: list[str] = []) -> list[tuple[str, type]]:
+    objects: list[tuple[str, type]] = []
 
     assert hasattr(module, "__name__")
     module_name: str = module.__name__  # type: ignore
@@ -91,7 +89,6 @@ def add_mobase_widgets_header(writer: Writer):
 
 
 def main():
-
     parser = argparse.ArgumentParser("stubs generator for the MO2 python interface")
     parser.add_argument(
         "install_dir",
@@ -145,7 +142,7 @@ def main():
     }
 
     # list of objects directly in mobase
-    module_objects: dict[str, list[tuple[str, object]]] = {
+    module_objects: dict[str, list[tuple[str, type]]] = {
         "mobase": extract_objects(
             mobase,
             [
@@ -153,11 +150,10 @@ def main():
                 "IPlugin",
             ],
         ),
-        "mobase.widgets": extract_objects(mobase.widgets),
+        "mobase.widgets": extract_objects(getattr(mobase, "widgets")),
     }
 
     for name, objects in module_objects.items():
-
         # load settings from the configuration
         settings: Settings = Settings(register)
         if config_path is not None:
@@ -174,12 +170,10 @@ def main():
 
         # Process everything:
         for n, o in objects:
-
             # Create the corresponding object:
             c = register.make_object(n, o)
 
             if isinstance(c, Class):
-
                 # Clean the class (e.g., remove duplicates methods due to wrappers):
                 clean_class(c)
 
@@ -208,7 +202,6 @@ def main():
 
         # write everything
         with open(output_folder.joinpath("__init__.pyi"), "w") as output:
-
             writer = Writer(package=name, output=output, settings=settings)
 
             # the __future__ import must be at the beginning
@@ -218,7 +211,6 @@ def main():
             module_headers[name](writer)
 
             for n, o in objects:
-
                 # Get the corresponding object:
                 c = register.get_object(n)
 

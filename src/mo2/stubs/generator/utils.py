@@ -1,13 +1,11 @@
-# -*- encoding: utf-8 -*-
-
 from __future__ import annotations
 
+import logging
 from collections import OrderedDict, defaultdict
-from typing import TYPE_CHECKING, Final, NamedTuple, TextIO, TypedDict
+from typing import TYPE_CHECKING, Final, NamedTuple, TextIO, TypedDict, cast
 
 import yaml
 
-from . import LOGGER
 from .mtypes import (
     Argument,
     Class,
@@ -25,6 +23,8 @@ from .mtypes import (
 if TYPE_CHECKING:
     from .register import MobaseRegister
 
+LOGGER = logging.getLogger(__package__)
+
 
 class Settings:
     class YamlFunctionArgument(TypedDict, total=False):
@@ -41,19 +41,21 @@ class Settings:
         abstract: bool
         deprecated: bool
 
-        args: dict[str, Settings.YamlFunctionArgument | str | None]
-        returns: str | Settings.YamlFunctionReturn
+        args: dict[str, Settings.YamlFunctionArgument | str | None] | None
+        returns: str | Settings.YamlFunctionReturn | None
 
-        raises: dict[str, str]
+        raises: dict[str, str | None] | None
 
     class YamlClassProperty(TypedDict):
         type: str
-        desc: str
+        desc: str | None
 
+    # need to use a functional-styled TypeDict due to the invalid Python
+    # attribute names
     YamlClassSettings = TypedDict(
         "YamlClassSettings",
         {
-            "__doc__": str,
+            "__doc__": str | None,
             "__bases__": list[str],
             "__abstract__": bool,
             "properties[]": dict[str, YamlClassProperty],
@@ -63,7 +65,6 @@ class Settings:
     )
 
     class PyFunctionSettings(NamedTuple):
-
         doc: str
         args: list[Argument] | None = None
         ret: Return | None = None
@@ -90,7 +91,6 @@ class Settings:
         fp: TextIO | None = None,
         module: str | None = None,
     ):
-
         self.register = register
 
         if fp is None:
@@ -129,8 +129,8 @@ class Settings:
         return base  # type: ignore
 
     def _parse_function_settings(
-        self, settings: str | YamlFunctionSettings
-    ) -> "PyFunctionSettings":
+        self, settings: str | YamlFunctionSettings | None
+    ) -> PyFunctionSettings:
         """
         Parse settings for a function or method.
 
@@ -159,7 +159,6 @@ class Settings:
         if "args" in settings:
             args = []
             if settings["args"] is not None:
-
                 # For each argument, we either have a None value (name: ),
                 # or a string (name: Description) or a dictionary that can contain
                 # __doc__ and type.
@@ -198,7 +197,6 @@ class Settings:
 
     def patch_functions(self, fns: list[Function]):
         for i, fn in enumerate(fns):
-
             # Find the name in settings:
             if fn.has_overloads():
                 setting_name = "{}.{}".format(fn.name, i + 1)
@@ -229,7 +227,6 @@ class Settings:
 
                 # Check the return type:
                 if function_settings.ret is not None:
-
                     # Force the doc anyway:
                     fn.ret.doc = function_settings.ret.doc
 
@@ -285,7 +282,9 @@ class Settings:
                         PyClass(package=".".join(parts[:-1]), name=parts[-1])
                     )
                 else:
-                    cls.bases.append(self.register.get_object(bc))
+                    class_ = self.register.get_object(bc)
+                    assert isinstance(class_, Class)
+                    cls.bases.append(class_)
             del class_settings["__bases__"]
 
         if "__abstract__" in class_settings and class_settings["__abstract__"]:
@@ -295,7 +294,7 @@ class Settings:
         # Patch properties - Everything should be in config since property are poorly
         # documented by boost::python.
         properties: dict[str, Settings.YamlClassProperty] = class_settings.pop(
-            "properties[]", {}
+            "properties[]", cast(dict[str, Settings.YamlClassProperty], {})
         )
         for prop in cls.properties:
             if prop.name in properties:
@@ -313,7 +312,6 @@ class Settings:
 
                 # If we have a description:
                 if "desc" in settings_property:
-
                     # If desc is None, we do not warn user, because the entry is in
                     # settings, just empty:
                     if settings_property["desc"] is not None:
@@ -328,7 +326,7 @@ class Settings:
 
         # patch signals - Everything should be in config since signals are not really
         # exposed by pybind11.
-        signals: list[str] = list(class_settings.pop("signals[]", {}))
+        signals: list[str] = list(class_settings.pop("signals[]", cast(list[str], [])))
         for signal in signals:
             cls.constants.append(Constant(signal, PyType("pyqtSignal"), None))
 
@@ -340,16 +338,14 @@ class Settings:
         for m in cls.methods:
             methods[m.name].append(m)
 
-        for k, ms in methods.items():
+        for ms in methods.values():
+            missing_settings: set[str] = set()
             for i, m in enumerate(ms):
-
                 # Find the name in settings:
                 if m.has_overloads():
                     settings_name = "{}.{}".format(m.name, i + 1)
                 else:
                     settings_name = m.name
-
-                missing_settings: set[str] = set()
 
                 # If the name is in the settings:
                 if settings_name in class_settings:
@@ -401,7 +397,6 @@ class Settings:
 
                     # Check the return type:
                     if function_settings.ret is not None:
-
                         # Force the doc anyway:
                         m.ret.doc = function_settings.ret.doc
 
@@ -466,7 +461,7 @@ def clean_class(cls: Class):
 
     # Remove duplicate methods (based on name and argument types):
     methods: dict[tuple[str, tuple[Argument, ...]], list[Method]] = OrderedDict()
-    methods_by_name = defaultdict(list)
+    methods_by_name: dict[str, list[Method]] = defaultdict(list)
     for m in cls.methods:
         k = (m.name, tuple(m.args if m.is_static() else m.args[1:]))
         if k not in methods:
@@ -479,7 +474,6 @@ def clean_class(cls: Class):
         ms = methods[name, args]
         method: Method = ms[0]
         if len(ms) > 1:
-
             # If we have more than two methods, there is a problem...
             assert len(methods[name, args]) == 2
             assert (

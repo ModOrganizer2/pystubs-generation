@@ -1,13 +1,11 @@
-# -*- encoding: utf-8 -*-
-
 import inspect
+import logging
 import re
 import types
 from collections import OrderedDict, defaultdict
 from itertools import chain
-from typing import Iterable, cast
+from typing import Any, Iterable, cast
 
-from . import LOGGER
 from .mtypes import (
     Argument,
     Class,
@@ -22,8 +20,12 @@ from .mtypes import (
 )
 from .register import MobaseRegister
 
+LOGGER = logging.getLogger(__package__)
 
-def magic_split(value: str, sep=",", open="(<[", close=")>]"):
+
+def magic_split(
+    value: str, sep: str = ",", open: str = "(<[", close: str = ")>]"
+) -> list[str]:
     """
     Split the value according to the given separator, but keeps together elements
     within the given separator. Useful to split C++ signature function since type names
@@ -42,8 +44,8 @@ def magic_split(value: str, sep=",", open="(<[", close=")>]"):
     Returns: The list of split parts from value.
     """
     i, j = 0, 0
-    s: list[str] = []
-    r = []
+    s: list[int] = []
+    r: list[str] = []
     while i < len(value):
         j = i + 1
         while j < len(value):
@@ -96,8 +98,8 @@ def parse_python_signature(s: str, name: str) -> tuple[PyType, list[Argument]]:
     args = magic_split(m.group(1).strip(), ",", open="[", close="]")
     return_type = m.group(2)
 
-    arguments = []
-    for i, pa in enumerate(args):
+    arguments: list[Argument] = []
+    for pa in args:
         m = re.search(
             r"(?P<name>[^:]+)\s*:\s*(?P<type>[^=]+)\s*(=\s*(?P<value>[^,]+))?",
             pa.strip(),
@@ -140,7 +142,7 @@ class Overload:
         self.arguments = arguments
 
 
-def parse_pybind11_function_docstring(e) -> list[Overload]:
+def parse_pybind11_function_docstring(e: type) -> list[Overload]:
     """
     Parse the docstring of the given element.
 
@@ -150,7 +152,7 @@ def parse_pybind11_function_docstring(e) -> list[Overload]:
     Returns:
         A list of overloads for the given function.
     """
-    lines = e.__doc__.strip().split("\n")
+    lines = (e.__doc__ or "").strip().split("\n")
 
     signatures: list[str]
     if len(lines) == 1:
@@ -166,7 +168,6 @@ def parse_pybind11_function_docstring(e) -> list[Overload]:
     # them...
     overloads: list[Overload] = []
     for signature in signatures:
-
         # fix MOBase:: in some places to get proper Python types
         signature = signature.replace("MOBase::", "mobase.").replace("::", ".")
 
@@ -179,7 +180,7 @@ def parse_pybind11_function_docstring(e) -> list[Overload]:
     return overloads
 
 
-def make_functions(e) -> list[Function]:
+def make_functions(e: type) -> list[Function]:
     overloads = parse_pybind11_function_docstring(e)
 
     return [
@@ -310,7 +311,9 @@ def make_class(e: type, register: MobaseRegister) -> Class:
                     for base_class in base_classes:
                         for biclass in base_class.inner_classes:
                             if isinstance(biclass, Enum) and biclass.name == base_name:
-                                arg._value = base_class.name + "." + value
+                                arg._value = (  # pyright: ignore[reportPrivateUsage]
+                                    base_class.name + "." + value
+                                )
 
             methods.append(
                 Method(
@@ -323,8 +326,8 @@ def make_class(e: type, register: MobaseRegister) -> Class:
             )
 
     # Retrieve the attributes:
-    constants = []
-    properties = []
+    constants: list[Constant] = []
+    properties: list[Property] = []
     for name, attr in all_attrs:
         if callable(attr) or isinstance(attr, type):
             continue
@@ -341,7 +344,9 @@ def make_class(e: type, register: MobaseRegister) -> Class:
     direct_bases: list[Class] = []
     for c in e.__bases__:
         if c.__module__ != "pybind11_builtins":
-            direct_bases.append(register.get_object(c.__name__))
+            b = register.get_object(c.__name__)
+            assert isinstance(b, Class)
+            direct_bases.append(b)
 
     # Forcing QWidget base for XWidget classes since these do not show up
     # and we use a trick:
@@ -356,7 +361,7 @@ def make_class(e: type, register: MobaseRegister) -> Class:
     # check if it an enum
     if is_enum(e):
         # all pybind11 enums have a .__entries attribute
-        values = e.__entries  # type: ignore
+        values = cast(dict[str, tuple[int, Any]], e.__entries)  # type: ignore
 
         # drop the __init__
         methods = [m for m in methods if m.name != "__init__"]

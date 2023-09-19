@@ -12,16 +12,18 @@ class MobaseRegister:
     Class that register classes.
     """
 
-    objects: dict[str, Class | list[Function]]
+    objects: dict[str, Class | list[Function] | PyTyping]
 
     def __init__(self):
         self.raw_objects: dict[str, type] = OrderedDict()
         self.objects = {}
 
-    def add_object(self, name, object):
+    def add_object(self, name: str, object: type) -> None:
         self.raw_objects[name] = object
 
-    def make_object(self, name: str, e: type | None = None) -> Class | list[Function]:
+    def make_object(
+        self, name: str, e: type | None = None
+    ) -> Class | list[Function] | PyTyping:
         """
         Construct a Function, Class or Enum for the given object.
 
@@ -52,7 +54,7 @@ class MobaseRegister:
 
         return self.objects[name]
 
-    def get_object(self, name: str):
+    def get_object(self, name: str) -> Class | list[Function] | PyTyping:
         """
         Retrieve the object if the given name. Fails if no object with this
         name exists (if `make_object(name, ...)` has never been called).

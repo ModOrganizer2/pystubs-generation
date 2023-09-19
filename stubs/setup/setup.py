@@ -59,10 +59,10 @@ setup(
     packages=list(package_data.keys()),
     package_data=package_data,
     install_requires=[],
-    python_requires="==3.10.*",
+    python_requires="==3.11.*",
     classifiers=[
         "Intended Audience :: Developers",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.11",
         "License :: OSI Approved :: MIT License",
         "Topic :: Software Development",
     ],

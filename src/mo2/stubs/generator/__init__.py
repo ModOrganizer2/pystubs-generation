@@ -1,7 +1,7 @@
-# -*- encoding: utf-8 -*-
-
 import logging
+
+from .loader import load_mobase
 
 LOGGER = logging.getLogger(__name__)
 
-from .loader import load_mobase  # noqa: F401
+__all__ = ["load_mobase", "LOGGER"]

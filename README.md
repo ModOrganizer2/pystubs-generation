@@ -16,7 +16,7 @@ MO2.
 You can install stubs for a specific version of MO2:
 
 ```bash
-pip install mobase-stubs==2.3.2.*
+pip install mobase-stubs==2.5.*
 ```
 
 Some words of warning:
@@ -38,8 +38,8 @@ have a `python310.dll` in your MO2 installation path, then you need **Python 3.1
 To generate the stubs, you can run:
 
 ```bash
-# install the package (-e if you want editable mode)
-pip install [-e] .
+# install the package
+poetry install
 
 # change the output folder to whatever you want
 mo2-stubs-generator -c configs/config-2.4.yml -o mobase-stubs ${MO2_INSTALL_PATH}
