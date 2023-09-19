@@ -88,7 +88,7 @@ def add_mobase_widgets_header(writer: Writer):
     )
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser("stubs generator for the MO2 python interface")
     parser.add_argument(
         "install_dir",

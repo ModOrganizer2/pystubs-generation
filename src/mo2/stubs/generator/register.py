@@ -14,7 +14,7 @@ class MobaseRegister:
 
     objects: dict[str, Class | list[Function] | PyTyping]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.raw_objects: dict[str, type] = OrderedDict()
         self.objects = {}
 
