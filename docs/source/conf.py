@@ -10,20 +10,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath("../../stubs/2.4.0/"))
-
 
 # -- Project information -----------------------------------------------------
 
 project = "MO2 Python Plugin API"
-copyright = "2020, Holt59"
+copyright = "2023, Holt59"
 author = "Holt59"
-
-# The full version, including alpha/beta/rc tags
-release = "2.3rc1"
 
 
 # -- General configuration ---------------------------------------------------
@@ -69,5 +61,5 @@ html_favicon = "mo2.ico"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 html_extra_path = [".nojekyll"]

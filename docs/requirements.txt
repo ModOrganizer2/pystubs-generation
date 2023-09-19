@@ -1,4 +1,4 @@
 sphinx-rtd-theme
 sphinx-autodoc-typehints
 sphinx-automodapi
-PyQt5
+PyQt6

@@ -16,23 +16,12 @@ MO2.
 You can install stubs for a specific version of MO2:
 
 ```bash
-pip install mobase-stubs==2.3.2.*
-```
-
-If you want development stubs, you can install them this way:
-```bash
-# Clone this repository:
-git clone https://github.com/ModOrganizer2/pystubs-generation.git
-
-# Install the stubs:
-cd pystubs-generation/stubs/setup
-pip install .
+pip install mobase-stubs==2.5.*
 ```
 
 Some words of warning:
+
 - The stubs are as correct as possible, but some errors are expected.
-- If you see a `InterfaceNotImplemented` class anywhere in the stubs, it means that
-  a proper interface is currently not available.
 - Some classes are said (in the stubs) to inherit `QWidget` or `QObject`. This is true
   on the C++ side but NOT on the python side. The inheritance is only added to help with
   auto-completion since these classes also override `__getattr__` to dispatch to the
@@ -44,35 +33,39 @@ Some words of warning:
 
 The stubs are generated using python by parsing the `mobase` module.
 You need the version of python that matches your current MO2 installation: e.g., if you
-have a `python38.dll` in your MO2 installation path, then you need **Python 3.8**.
+have a `python310.dll` in your MO2 installation path, then you need **Python 3.10**.
 
 To generate the stubs, you can run:
 
+```bash
+# install the package
+poetry install
+
+# change the output folder to whatever you want
+mo2-stubs-generator -c configs/config-2.4.yml -o mobase-stubs ${MO2_INSTALL_PATH}
 ```
-# Change the output folder to whatever you want:
-python main.py -c configs\config-2.4.yml ${MO2_INSTALL_PATH}
-```
 
-Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one containing `ModOrganizer.exe`).
+Where `${MO2_INSTALL_PATH}` is the path to your MO2 installation (the one
+containing `ModOrganizer.exe`).
 
-The stubs are generated under `stubs/setup/mobase-stubs/__init__.pyi`, you
-can change the output file by using the `-o` option
-The latest stubs are kept under `stubs/setup/mobase-stubs/__init__.pyi`,
-and when a new version is released, the stubs are backed-up under
-`stubs/x.y.z/mobase.pyi`.
+The stubs are generated under `stubs/setup/mobase-stubs` by default, you
+can change the output file by using the `-o` option.
+The stubs under `stubs/setup/mobase-stubs` should not be committed as these are
+generated from the version stubs under `stubs/${VERSION}/mobase-stubs`.
 
-A few options are available for `main.py`:
+A few options are available for `mo2-stubs-generator`:
 
-```
-usage: Stubs generator for the MO2 python interface [-h] [-o OUTPUT] [-v] [-c CONFIG] INSTALL_DIR
+```bash
+$ mo2-stubs-generator --help
+usage: stubs generator for the MO2 python interface [-h] [-o OUTPUT] [-v] [-c CONFIG] INSTALL_DIR
 
 positional arguments:
   INSTALL_DIR           installation directory of Mod Organizer 2
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -o OUTPUT, --output OUTPUT
-                        output file (default stubs/setup/mobase-stubs/__init__.pyi)
+                        output folder (default stubs/setup/mobase-stubs)
   -v, --verbose         verbose mode (all logs go to stderr)
   -c CONFIG, --config CONFIG
                         configuration file
@@ -81,19 +74,7 @@ optional arguments:
 The stubs generator will try hard to find a valid stubs for all classes
 and methods of `mobase`.
 A lot of information is available through the `-v` options. Without it,
-only conversions or fixes
-considered "strange" will be shown.
-For instance, here is the output with the current `config-2.4.yml` file:
-
-```
-WARNING: Replacing IOrganizer::FileInfo with FileInfo.
-WARNING: Replacing IOrganizer::FileInfo with FileInfo.
-WARNING: Replacing IPluginInstaller::EInstallResult with InstallResult.
-WARNING: Replacing IPluginInstaller::EInstallResult with InstallResult.
-```
-
-As you can see, only a few types were manually fixed (specified in
-`config-2.4.yml`).
+only conversions or fixes considered "strange" will be shown.
 
 ## Configuration file
 
@@ -102,20 +83,37 @@ deduced by `main` (or are too complex to deduce), and the documentation for ever
 
 ## Uploading the stubs to pypi
 
-The upload of the stubs to https://pypi.org/project/mobase-stubs/ should be
-done automatically when a new Github release is made.
+The upload of the stubs to [https://pypi.org/project/mobase-stubs/](https://pypi.org/project/mobase-stubs/)
+should be done automatically when a new Github tag is pushed.
 
-## Extras &mdash; Starts a python interpreter with `mobase`
+## Extras &mdash; Using `mobase` in a Python interpreter
 
-It is possible to start a (i)python interpret with `mobase` imported by running:
+It is possible to start a (i)python interpreter with `mobase` imported by running
 
+```bash
+python -i -m mo2.stubs.generator.loader ${MO2_INSTALL_PATH}
 ```
-python -im generator.loader ${MO2_INSTALL_PATH}
+
+You can also import `mobase` in your code using the following (after installing
+this package):
+
+```python
+from mo2.stubs.generator import load_mobase
+
+mobase = load_mobase(MO2_INSTALL_PATH)
+
+# the above will probably not give you type-completion in your IDE or typing, so
+# you can use the following (if the stubs are installed)
+load_mobase(MO2_INSTALL_PATH)
+import mobase
+import mobase.widgets
 ```
 
-This has no real usage except for MO2 developers since most classes from the `mobase` module cannot be instantiated.
 
-# License
+**Note:** Most classes in `mobase` cannot be instantiated, so this is mostly intended
+for MO2 developers.
+
+## License
 
 The MIT License (MIT)
 
