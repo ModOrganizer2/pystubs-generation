@@ -28,18 +28,11 @@ jobs:
         run: poetry run sphinx-build -b html docs/source docs/build
         env:
           PYTHONPATH: docs
-
-      - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        name: Install SSH Client 🔑
-        uses: webfactory/ssh-agent@v0.4.1
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-
       - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         name: Deploy Documentation
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          SSH: true
-          REPOSITORY_NAME: ModOrganizer2/python-plugins-doc
-          BRANCH: master
-          FOLDER: docs/build
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+          repository-name: ModOrganizer2/python-plugins-doc
+          branch: master
+          folder: docs/build
