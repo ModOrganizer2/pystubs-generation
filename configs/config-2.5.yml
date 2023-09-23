@@ -255,7 +255,7 @@ mobase:
         type: str
         desc: Full path to the file.
       origins:
-        type: List[str]
+        type: list[str]
         desc: |
           List of origins containing providing this file. The first origin in the list
           is the highest priority one (actually providing the file).
@@ -319,7 +319,7 @@ mobase:
         __doc__: |
           The parent tree containing this entry, or a `None` if this entry is the root
           or the parent tree is unreachable.
-        type: Optional[IFileTree]
+        type: IFileTree | None
 
     path:
       __doc__: |
@@ -665,7 +665,7 @@ mobase:
         __doc__: |
           The entry at the given location, or `None` if the entry was not found or
           was not of the correct type.
-        type: Optional[Union[IFileTree, FileTreeEntry]]
+        type: IFileTree | FileTreeEntry | None
 
     insert:
       __doc__: |
@@ -1228,7 +1228,7 @@ mobase:
             type: MoVariant
             desc: The data that was included in the request.
           result_data:
-            type: Dict[str, MoVariant]
+            type: dict[str, MoVariant]
             desc: The data included in the response.
 
       filesAvailable:
@@ -1244,7 +1244,7 @@ mobase:
             type: MoVariant
             desc: The data that was included in the request.
           result_data:
-            type: List[ModRepositoryFileInfo]
+            type: list[ModRepositoryFileInfo]
             desc: List of file information objects.
 
       fileInfoAvailable:
@@ -1271,7 +1271,7 @@ mobase:
             type: MoVariant
             desc: The data that was included in the request.
           result_data:
-            type: Dict[str, MoVariant]
+            type: dict[str, MoVariant]
             desc: The data included in the response.
 
       downloadURLsAvailable:
@@ -1293,7 +1293,7 @@ mobase:
             type: MoVariant
             desc: The data that was included in the request.
           result_data:
-            type: Dict[str, MoVariant]
+            type: dict[str, MoVariant]
             desc: The data included in the response.
 
       endorsementsAvailable:
@@ -1992,7 +1992,7 @@ mobase:
       abstract: false
       returns:
         __doc__: A mapping from feature type to actual game features.
-        type: Dict[Type[GameFeatureType], GameFeatureType]
+        type: dict[Type[GameFeatureType], GameFeatureType]
 
     gameDirectory:
       returns: The directory containing the game installation.
@@ -2798,7 +2798,7 @@ mobase:
         filetree: The tree to try to fix. Can be modified during the process.
       returns:
         __doc__: The fixed tree, or a null pointer if the tree could not be fixed.
-        type: Optional["IFileTree"]
+        type: IFileTree | None
 
   ModDataContent:
     __doc__: |
@@ -3008,7 +3008,7 @@ mobase:
         parent: The parent widget.
       returns:
         __doc__: A SaveGameInfoWidget to display information about save game.
-        type: Optional[ISaveGameInfoWidget]
+        type: ISaveGameInfoWidget | None
 
   ScriptExtender:
     __doc__:
@@ -3185,7 +3185,7 @@ mobase.widgets:
         Display this dialog and wait for user-interaction to return. This is a blocking
         function.
 
-      returns:
+      returns: |
         The button clicked by the user. Without custom buttons, this return Ok,
         otherwise it returns the button set in the TaskDialogButton.
 

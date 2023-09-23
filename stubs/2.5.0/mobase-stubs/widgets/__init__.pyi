@@ -23,7 +23,7 @@ class TaskDialog:
         icon: PyQt6.QtWidgets.QMessageBox.Icon = PyQt6.QtWidgets.QMessageBox.Icon.NoIcon,
         buttons: List[TaskDialogButton] = [],
         remember: Union[str, Tuple[str, str]] = "",
-    ):
+    ) -> None:
         """
         Construct a new TaskDialog.
 
@@ -46,7 +46,7 @@ class TaskDialog:
             button: Button to add to the dialog.
         """
         ...
-    def addContent(self: TaskDialog, widget: PyQt6.QtWidgets.QWidget):
+    def addContent(self: TaskDialog, widget: PyQt6.QtWidgets.QWidget) -> None:
         """
         Add a custom widget content to this TaskDialog. Widget content are put between
         content and buttons (above buttons).
@@ -61,7 +61,8 @@ class TaskDialog:
         function.
 
         Returns:
-            The button clicked by the user. Without custom buttons, this return Ok, otherwise it returns the button set in the TaskDialogButton.
+            The button clicked by the user. Without custom buttons, this return Ok,
+        otherwise it returns the button set in the TaskDialogButton.
         """
         ...
     def setContent(self: TaskDialog, content: str) -> TaskDialog:
@@ -113,7 +114,7 @@ class TaskDialog:
             title: Title of the dialog.
         """
         ...
-    def setWidth(self: TaskDialog, width: int):
+    def setWidth(self: TaskDialog, width: int) -> None:
         """
         Set the width of the dialog.
 
@@ -145,7 +146,7 @@ class TaskDialogButton:
         text: str,
         description: str,
         button: PyQt6.QtWidgets.QMessageBox.StandardButton,
-    ):
+    ) -> None:
         """
         Create a TaskDialogButton.
 
@@ -160,7 +161,7 @@ class TaskDialogButton:
         self: TaskDialogButton,
         text: str,
         button: PyQt6.QtWidgets.QMessageBox.StandardButton,
-    ):
+    ) -> None:
         """
         Create a TaskDialogButton without description.
 

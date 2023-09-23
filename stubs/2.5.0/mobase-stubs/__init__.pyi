@@ -276,18 +276,20 @@ class VersionScheme(Enum):
     def __ne__(self: VersionScheme, other: object) -> bool: ...
 
 class BSAInvalidation(abc.ABC):
-    def __init__(self: BSAInvalidation): ...
+    def __init__(self: BSAInvalidation) -> None: ...
     @abc.abstractmethod
-    def activate(self: BSAInvalidation, profile: IProfile): ...
+    def activate(self: BSAInvalidation, profile: IProfile) -> None: ...
     @abc.abstractmethod
-    def deactivate(self: BSAInvalidation, profile: IProfile): ...
+    def deactivate(self: BSAInvalidation, profile: IProfile) -> None: ...
     @abc.abstractmethod
     def isInvalidationBSA(self: BSAInvalidation, name: str) -> bool: ...
 
 class DataArchives(abc.ABC):
-    def __init__(self: DataArchives): ...
+    def __init__(self: DataArchives) -> None: ...
     @abc.abstractmethod
-    def addArchive(self: DataArchives, profile: IProfile, index: int, name: str):
+    def addArchive(
+        self: DataArchives, profile: IProfile, index: int, name: str
+    ) -> None:
         """
         Add an archive to the archive list.
 
@@ -311,7 +313,7 @@ class DataArchives(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def removeArchive(self: DataArchives, profile: IProfile, name: str):
+    def removeArchive(self: DataArchives, profile: IProfile, name: str) -> None:
         """
         Remove the given archive from the given profile.
 
@@ -334,7 +336,9 @@ class DataArchives(abc.ABC):
         ...
 
 class ExecutableForcedLoadSetting:
-    def __init__(self: ExecutableForcedLoadSetting, process: str, library: str): ...
+    def __init__(
+        self: ExecutableForcedLoadSetting, process: str, library: str
+    ) -> None: ...
     def enabled(self: ExecutableForcedLoadSetting) -> bool: ...
     def forced(self: ExecutableForcedLoadSetting) -> bool: ...
     def library(self: ExecutableForcedLoadSetting) -> str: ...
@@ -351,7 +355,7 @@ class ExecutableInfo:
         self: ExecutableInfo,
         title: str,
         binary: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
-    ): ...
+    ) -> None: ...
     def arguments(self: ExecutableInfo) -> Sequence[str]: ...
     def asCustom(self: ExecutableInfo) -> ExecutableInfo: ...
     def binary(self: ExecutableInfo) -> PyQt6.QtCore.QFileInfo: ...
@@ -380,10 +384,10 @@ class FileInfo:
     @filePath.setter
     def filePath(self, arg0: str): ...
     @property
-    def origins(self) -> List[str]: ...
+    def origins(self) -> list[str]: ...
     @origins.setter
-    def origins(self, arg0: List[str]): ...
-    def __init__(self: FileInfo):
+    def origins(self, arg0: list[str]): ...
+    def __init__(self: FileInfo) -> None:
         """
         Creates an uninitialized FileInfo.
         """
@@ -521,7 +525,7 @@ class FileTreeEntry:
             The name of this entry.
         """
         ...
-    def parent(self: FileTreeEntry) -> Optional[IFileTree]:
+    def parent(self: FileTreeEntry) -> IFileTree | None:
         """
         Returns:
             The parent tree containing this entry, or a `None` if this entry is the root
@@ -568,7 +572,7 @@ class FileTreeEntry:
         ...
 
 class GamePlugins(abc.ABC):
-    def __init__(self: GamePlugins): ...
+    def __init__(self: GamePlugins) -> None: ...
     @abc.abstractmethod
     def getLoadOrder(self: GamePlugins) -> Sequence[str]: ...
     @abc.abstractmethod
@@ -586,9 +590,9 @@ class GamePlugins(abc.ABC):
         """
         ...
     @abc.abstractmethod
-    def readPluginLists(self: GamePlugins, plugin_list: IPluginList): ...
+    def readPluginLists(self: GamePlugins, plugin_list: IPluginList) -> None: ...
     @abc.abstractmethod
-    def writePluginLists(self: GamePlugins, plugin_list: IPluginList): ...
+    def writePluginLists(self: GamePlugins, plugin_list: IPluginList) -> None: ...
 
 class GuessedString:
     """
@@ -599,7 +603,7 @@ class GuessedString:
     """
 
     @overload
-    def __init__(self: GuessedString):
+    def __init__(self: GuessedString) -> None:
         """
         Creates a GuessedString with no associated value.
         """
@@ -607,7 +611,7 @@ class GuessedString:
     @overload
     def __init__(
         self: GuessedString, value: str, quality: GuessQuality = GuessQuality.USER
-    ):
+    ) -> None:
         """
         Creates a GuessedString with the given value and quality.
 
@@ -653,7 +657,9 @@ class GuessedString:
             This GuessedString object.
         """
         ...
-    def setFilter(self: GuessedString, filter: Callable[[str], Union[str, bool]]):
+    def setFilter(
+        self: GuessedString, filter: Callable[[str], Union[str, bool]]
+    ) -> None:
         """
         Set the filter for this GuessedString.
 
@@ -1022,7 +1028,7 @@ class IFileTree(FileTreeEntry):
         self: IFileTree,
         path: str,
         type: FileTreeEntry.FileTypes = FileTreeEntry.FileTypes.FILE_OR_DIRECTORY,
-    ) -> Optional[Union[IFileTree, FileTreeEntry]]:
+    ) -> IFileTree | FileTreeEntry | None:
         """
         Retrieve the given entry.
 
@@ -1209,7 +1215,7 @@ class IFileTree(FileTreeEntry):
         self: IFileTree,
         callback: Callable[[str, FileTreeEntry], IFileTree.WalkReturn],
         sep: str = "\\",
-    ):
+    ) -> None:
         """
         Walk this tree, calling the given function for each entry in it.
 
@@ -1318,7 +1324,7 @@ class IModInterface:
             Absolute path to the mod to be used in file system operations.
         """
         ...
-    def addCategory(self: IModInterface, name: str):
+    def addCategory(self: IModInterface, name: str) -> None:
         """
         Assign a category to the mod. If the named category does not exist it is created.
 
@@ -1326,7 +1332,7 @@ class IModInterface:
             name: Name of the new category to assign.
         """
         ...
-    def addNexusCategory(self: IModInterface, category_id: int):
+    def addNexusCategory(self: IModInterface, category_id: int) -> None:
         """
         Set the category id from a nexus category id. Conversion to MO ID happens internally.
 
@@ -1520,7 +1526,7 @@ class IModInterface:
             The name of the repository from which this mod was installed.
         """
         ...
-    def setGameName(self: IModInterface, name: str):
+    def setGameName(self: IModInterface, name: str) -> None:
         """
         Set the source game of this mod.
 
@@ -1528,7 +1534,7 @@ class IModInterface:
             name: The new source game short name of this mod.
         """
         ...
-    def setIsEndorsed(self: IModInterface, endorsed: bool):
+    def setIsEndorsed(self: IModInterface, endorsed: bool) -> None:
         """
         Set endorsement state of the mod.
 
@@ -1536,7 +1542,7 @@ class IModInterface:
             endorsed: New endorsement state of this mod.
         """
         ...
-    def setNewestVersion(self: IModInterface, version: VersionInfo):
+    def setNewestVersion(self: IModInterface, version: VersionInfo) -> None:
         """
         Set the latest known version of this mod.
 
@@ -1544,7 +1550,7 @@ class IModInterface:
             version: The latest known version of this mod.
         """
         ...
-    def setNexusID(self: IModInterface, nexus_id: int):
+    def setNexusID(self: IModInterface, nexus_id: int) -> None:
         """
         Set the Nexus ID of this mod.
 
@@ -1568,7 +1574,7 @@ class IModInterface:
             True if the setting was set correctly, False otherwise.
         """
         ...
-    def setUrl(self: IModInterface, url: str):
+    def setUrl(self: IModInterface, url: str) -> None:
         """
         Set the URL of this mod.
 
@@ -1576,7 +1582,7 @@ class IModInterface:
             url: The URL of this mod.
         """
         ...
-    def setVersion(self: IModInterface, version: VersionInfo):
+    def setVersion(self: IModInterface, version: VersionInfo) -> None:
         """
         Set the version of this mod.
 
@@ -1834,7 +1840,7 @@ class IModRepositoryBridge(PyQt6.QtCore.QObject):
         ...
     def requestDescription(
         self: IModRepositoryBridge, game_name: str, mod_id: int, user_data: MoVariant
-    ):
+    ) -> None:
         """
         Request description of a mod.
 
@@ -1850,7 +1856,7 @@ class IModRepositoryBridge(PyQt6.QtCore.QObject):
         mod_id: int,
         file_id: int,
         user_data: MoVariant,
-    ):
+    ) -> None:
         """
         Request download URL for mod file.0
 
@@ -1867,7 +1873,7 @@ class IModRepositoryBridge(PyQt6.QtCore.QObject):
         mod_id: int,
         file_id: int,
         user_data: MoVariant,
-    ):
+    ) -> None:
         """
         Args:
             game_name: Name of the game containing the mod.
@@ -1878,7 +1884,7 @@ class IModRepositoryBridge(PyQt6.QtCore.QObject):
         ...
     def requestFiles(
         self: IModRepositoryBridge, game_name: str, mod_id: int, user_data: MoVariant
-    ):
+    ) -> None:
         """
         Request the list of files belonging to a mod.
 
@@ -1895,7 +1901,7 @@ class IModRepositoryBridge(PyQt6.QtCore.QObject):
         mod_version: str,
         endorse: bool,
         user_data: MoVariant,
-    ):
+    ) -> None:
         """
         Args:
             game_name: Name of the game containing the mod.
@@ -2115,7 +2121,7 @@ class IOrganizer:
             The plugin corresponding to the current game.
         """
         ...
-    def modDataChanged(self: IOrganizer, mod: IModInterface):
+    def modDataChanged(self: IOrganizer, mod: IModInterface) -> None:
         """
         Notify the organizer that the given mod has changed.
 
@@ -2163,7 +2169,7 @@ class IOrganizer:
         """
         ...
     @overload
-    def onPluginDisabled(self: IOrganizer, callback: Callable[[IPlugin], None]):
+    def onPluginDisabled(self: IOrganizer, callback: Callable[[IPlugin], None]) -> None:
         """
         Install a new handler to be called when a plugin is disabled.
 
@@ -2172,7 +2178,9 @@ class IOrganizer:
         """
         ...
     @overload
-    def onPluginDisabled(self: IOrganizer, name: str, callback: Callable[[], None]):
+    def onPluginDisabled(
+        self: IOrganizer, name: str, callback: Callable[[], None]
+    ) -> None:
         """
         Install a new handler to be called when the given plugin is disabled.
 
@@ -2182,7 +2190,7 @@ class IOrganizer:
         """
         ...
     @overload
-    def onPluginEnabled(self: IOrganizer, callback: Callable[[IPlugin], None]):
+    def onPluginEnabled(self: IOrganizer, callback: Callable[[IPlugin], None]) -> None:
         """
         Install a new handler to be called when a plugin is enabled.
 
@@ -2191,7 +2199,9 @@ class IOrganizer:
         """
         ...
     @overload
-    def onPluginEnabled(self: IOrganizer, name: str, callback: Callable[[], None]):
+    def onPluginEnabled(
+        self: IOrganizer, name: str, callback: Callable[[], None]
+    ) -> None:
         """
         Install a new handler to be called when the given plugin is enabled.
 
@@ -2363,7 +2373,7 @@ class IOrganizer:
             The absolute path to the active profile or an empty string if no profile has been loaded (yet).
         """
         ...
-    def refresh(self: IOrganizer, save_changes: bool = True):
+    def refresh(self: IOrganizer, save_changes: bool = True) -> None:
         """
         Refresh the internal mods file structure from disk. This includes the mod list, the plugin
         list, data tab and other smaller things like problems button (same as pressing F5).
@@ -2394,7 +2404,7 @@ class IOrganizer:
         key: str,
         value: MoVariant,
         sync: bool = True,
-    ):
+    ) -> None:
         """
         Set the specified persistent value for a plugin.
 
@@ -2410,7 +2420,7 @@ class IOrganizer:
         ...
     def setPluginSetting(
         self: IOrganizer, plugin_name: str, key: str, value: MoVariant
-    ):
+    ) -> None:
         """
         Set the specified setting for a plugin.
 
@@ -2484,7 +2494,7 @@ class IPlugin(abc.ABC):
     Base class for all plugins.
     """
 
-    def __init__(self: IPlugin): ...
+    def __init__(self: IPlugin) -> None: ...
     @abc.abstractmethod
     def author(self: IPlugin) -> str:
         """
@@ -2604,8 +2614,8 @@ class IPluginDiagnose(IPlugin):
     interfaces) or as a stand-alone diagnosis tool.
     """
 
-    def __init__(self: IPluginDiagnose): ...
-    def _invalidate(self: IPluginDiagnose):
+    def __init__(self: IPluginDiagnose) -> None: ...
+    def _invalidate(self: IPluginDiagnose) -> None:
         """
         Invalidate the problems corresponding to this plugin.
         """
@@ -2668,7 +2678,7 @@ class IPluginDiagnose(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def startGuidedFix(self: IPluginDiagnose, key: int):
+    def startGuidedFix(self: IPluginDiagnose, key: int) -> None:
         """
         Starts a guided fix for the problem corresponding to the given key.
 
@@ -2689,7 +2699,7 @@ class IPluginFileMapper(IPlugin):
     Plugins that adds virtual file links.
     """
 
-    def __init__(self: IPluginFileMapper): ...
+    def __init__(self: IPluginFileMapper) -> None: ...
     @abc.abstractmethod
     def mappings(self: IPluginFileMapper) -> List[Mapping]:
         """
@@ -2708,7 +2718,7 @@ class IPluginGame(IPlugin):
     plugin: https://github.com/ModOrganizer2/modorganizer-basic_games
     """
 
-    def __init__(self: IPluginGame): ...
+    def __init__(self: IPluginGame) -> None: ...
     @abc.abstractmethod
     def CCPlugins(self: IPluginGame) -> Sequence[str]:
         """
@@ -2738,7 +2748,7 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def detectGame(self: IPluginGame):
+    def detectGame(self: IPluginGame) -> None:
         """
         Detect the game.
 
@@ -2793,7 +2803,7 @@ class IPluginGame(IPlugin):
         not implemented.
         """
         ...
-    def featureList(self: IPluginGame) -> Dict[Type[GameFeatureType], GameFeatureType]:
+    def featureList(self: IPluginGame) -> dict[Type[GameFeatureType], GameFeatureType]:
         """
         Retrieve the list of game features implemented for this plugin.
 
@@ -2884,7 +2894,7 @@ class IPluginGame(IPlugin):
     @abc.abstractmethod
     def initializeProfile(
         self: IPluginGame, directory: PyQt6.QtCore.QDir, settings: ProfileSetting
-    ):
+    ) -> None:
         """
         Initialize a profile for this game.
 
@@ -2998,7 +3008,7 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def setGamePath(self: IPluginGame, path: str):
+    def setGamePath(self: IPluginGame, path: str) -> None:
         """
         Set the path to the managed game.
 
@@ -3011,7 +3021,7 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def setGameVariant(self: IPluginGame, variant: str):
+    def setGameVariant(self: IPluginGame, variant: str) -> None:
         """
         Set the game variant.
 
@@ -3106,7 +3116,7 @@ class IPluginInstaller(IPlugin):
         ...
     def onInstallationEnd(
         self: IPluginInstaller, result: InstallResult, new_mod: IModInterface
-    ):
+    ) -> None:
         """
         Method calls at the end of the installation process. This method is only called once
         per installation process, even for recursive installations (e.g. with the bundle installer).
@@ -3122,7 +3132,7 @@ class IPluginInstaller(IPlugin):
         archive: str,
         reinstallation: bool,
         current_mod: IModInterface,
-    ):
+    ) -> None:
         """
         Method calls at the start of the installation process, before any other methods.
         This method is only called once per installation process, even for recursive
@@ -3153,7 +3163,9 @@ class IPluginInstaller(IPlugin):
             The priority of this installer.
         """
         ...
-    def setInstallationManager(self: IPluginInstaller, manager: IInstallationManager):
+    def setInstallationManager(
+        self: IPluginInstaller, manager: IInstallationManager
+    ) -> None:
         """
         Set the installation manager for this installer.
 
@@ -3164,7 +3176,9 @@ class IPluginInstaller(IPlugin):
             manager: The installation manager.
         """
         ...
-    def setParentWidget(self: IPluginInstaller, parent: PyQt6.QtWidgets.QWidget):
+    def setParentWidget(
+        self: IPluginInstaller, parent: PyQt6.QtWidgets.QWidget
+    ) -> None:
         """
         Set the parent widget for this installer.
 
@@ -3184,7 +3198,7 @@ class IPluginInstallerCustom(IPluginInstaller):
     Example of such installers are the external NCC installer or the OMOD installer.
     """
 
-    def __init__(self: IPluginInstallerCustom): ...
+    def __init__(self: IPluginInstallerCustom) -> None: ...
     @abc.abstractmethod
     def install(
         self: IPluginInstallerCustom,
@@ -3254,7 +3268,7 @@ class IPluginInstallerSimple(IPluginInstaller):
     Actually extracting the archive is handled by the manager.
     """
 
-    def __init__(self: IPluginInstallerSimple): ...
+    def __init__(self: IPluginInstallerSimple) -> None: ...
     @abc.abstractmethod
     def install(
         self: IPluginInstallerSimple,
@@ -3443,7 +3457,7 @@ class IPluginList:
             The priority of the given plugin, or -1 if the plugin does not exist.
         """
         ...
-    def setLoadOrder(self: IPluginList, loadorder: Sequence[str]):
+    def setLoadOrder(self: IPluginList, loadorder: Sequence[str]) -> None:
         """
         Set the load order.
 
@@ -3468,7 +3482,7 @@ class IPluginList:
         at the specified priority (e.g. when trying to move a non-master plugin before a master one).
         """
         ...
-    def setState(self: IPluginList, name: str, state: PluginState):
+    def setState(self: IPluginList, name: str, state: PluginState) -> None:
         """
         Set the state of a plugin.
 
@@ -3490,7 +3504,7 @@ class IPluginList:
         ...
 
 class IPluginModPage(IPlugin):
-    def __init__(self: IPluginModPage): ...
+    def __init__(self: IPluginModPage) -> None: ...
     def _parentWidget(self: IPluginModPage) -> PyQt6.QtWidgets.QWidget:
         """
         Returns:
@@ -3537,7 +3551,7 @@ class IPluginModPage(IPlugin):
             The URL to open when the user wants to visit this mod page.
         """
         ...
-    def setParentWidget(self: IPluginModPage, parent: PyQt6.QtWidgets.QWidget):
+    def setParentWidget(self: IPluginModPage, parent: PyQt6.QtWidgets.QWidget) -> None:
         """
         Set the parent widget for this mod page.
 
@@ -3567,7 +3581,7 @@ class IPluginPreview(IPlugin):
     by qt are implemented (including dds) but no audio files and no 3d mesh formats.
     """
 
-    def __init__(self: IPluginPreview): ...
+    def __init__(self: IPluginPreview) -> None: ...
     @abc.abstractmethod
     def genFilePreview(
         self: IPluginPreview, filename: str, max_size: PyQt6.QtCore.QSize
@@ -3605,7 +3619,7 @@ class IPluginRequirement:
             self: IPluginRequirement.Problem,
             short_description: str,
             long_description: str = "",
-        ):
+        ) -> None:
             """
             Args:
                 short_description: Short description of the problem.
@@ -3648,7 +3662,7 @@ class IPluginTool(IPlugin):
     application itself.
     """
 
-    def __init__(self: IPluginTool): ...
+    def __init__(self: IPluginTool) -> None: ...
     def _parentWidget(self: IPluginTool) -> PyQt6.QtWidgets.QWidget:
         """
         Returns:
@@ -3656,7 +3670,7 @@ class IPluginTool(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def display(self: IPluginTool):
+    def display(self: IPluginTool) -> None:
         """
         Called when the user starts the tool.
         """
@@ -3675,7 +3689,7 @@ class IPluginTool(IPlugin):
             The icon for this tool, or a default-constructed QICon().
         """
         ...
-    def setParentWidget(self: IPluginTool, parent: PyQt6.QtWidgets.QWidget):
+    def setParentWidget(self: IPluginTool, parent: PyQt6.QtWidgets.QWidget) -> None:
         """
         Set the parent widget for this tool.
 
@@ -3752,7 +3766,7 @@ class ISaveGame:
     Base class for information about what is in a save game.
     """
 
-    def __init__(self: ISaveGame): ...
+    def __init__(self: ISaveGame) -> None: ...
     def allFiles(
         self: ISaveGame,
     ) -> Sequence[Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]]:
@@ -3803,7 +3817,9 @@ class ISaveGameInfoWidget(PyQt6.QtWidgets.QWidget):
     Base class for a save game info widget.
     """
 
-    def __init__(self: ISaveGameInfoWidget, parent: PyQt6.QtWidgets.QWidget = None):
+    def __init__(
+        self: ISaveGameInfoWidget, parent: PyQt6.QtWidgets.QWidget = None
+    ) -> None:
         """
         Args:
             parent: Parent widget.
@@ -3817,7 +3833,7 @@ class ISaveGameInfoWidget(PyQt6.QtWidgets.QWidget):
         """
         ...
     @abc.abstractmethod
-    def setSave(self: ISaveGameInfoWidget, save: ISaveGame):
+    def setSave(self: ISaveGameInfoWidget, save: ISaveGame) -> None:
         """
         Set the save file to display in this widget.
 
@@ -3827,7 +3843,7 @@ class ISaveGameInfoWidget(PyQt6.QtWidgets.QWidget):
         ...
 
 class LocalSavegames(abc.ABC):
-    def __init__(self: LocalSavegames): ...
+    def __init__(self: LocalSavegames) -> None: ...
     @abc.abstractmethod
     def mappings(
         self: LocalSavegames, profile_save_dir: PyQt6.QtCore.QDir
@@ -3853,7 +3869,7 @@ class Mapping:
     @source.setter
     def source(self, arg0: str): ...
     @overload
-    def __init__(self: Mapping):
+    def __init__(self: Mapping) -> None:
         """
         Creates an empty Mapping.
         """
@@ -3865,7 +3881,7 @@ class Mapping:
         destination: str,
         is_directory: bool,
         create_target: bool = False,
-    ):
+    ) -> None:
         """
         Creates a Mapping with the given parameters.
 
@@ -3900,7 +3916,7 @@ class ModDataChecker(abc.ABC):
     INVALID: CheckReturn = ...
     VALID: CheckReturn = ...
 
-    def __init__(self: ModDataChecker): ...
+    def __init__(self: ModDataChecker) -> None: ...
     @abc.abstractmethod
     def dataLooksValid(
         self: ModDataChecker, filetree: IFileTree
@@ -3927,7 +3943,7 @@ class ModDataChecker(abc.ABC):
             Whether the tree is invalid, fixable or valid.
         """
         ...
-    def fix(self: ModDataChecker, filetree: IFileTree) -> Optional["IFileTree"]:
+    def fix(self: ModDataChecker, filetree: IFileTree) -> IFileTree | None:
         """
         Try to fix the given tree.
 
@@ -4002,7 +4018,7 @@ class ModDataContent(abc.ABC):
             name: str,
             icon: str,
             filter_only: bool = False,
-        ):
+        ) -> None:
             """
             Args:
                 id: ID of this content.
@@ -4020,7 +4036,7 @@ class ModDataContent(abc.ABC):
                 True if this content is only meant to be used as a filter criteria.
             """
             ...
-    def __init__(self: ModDataContent): ...
+    def __init__(self: ModDataContent) -> None: ...
     @abc.abstractmethod
     def getAllContents(self: ModDataContent) -> List[ModDataContent.Content]:
         """
@@ -4107,14 +4123,14 @@ class ModRepositoryFileInfo:
     @version.setter
     def version(self, arg0: VersionInfo): ...
     @overload
-    def __init__(self: ModRepositoryFileInfo, other: ModRepositoryFileInfo): ...
+    def __init__(self: ModRepositoryFileInfo, other: ModRepositoryFileInfo) -> None: ...
     @overload
     def __init__(
         self: ModRepositoryFileInfo,
         game_name: str = "",
         mod_id: int = 0,
         file_id: int = 0,
-    ): ...
+    ) -> None: ...
     def __str__(self: ModRepositoryFileInfo) -> str: ...
     @staticmethod
     def createFromJson(data: str) -> ModRepositoryFileInfo: ...
@@ -4233,7 +4249,7 @@ class PluginSetting:
     def key(self, arg0: str): ...
     def __init__(
         self: PluginSetting, key: str, description: str, default_value: MoVariant
-    ):
+    ) -> None:
         """
         Args:
             key: Name of the setting.
@@ -4247,7 +4263,7 @@ class SaveGameInfo(abc.ABC):
     Feature to get hold of stuff to do with save games.
     """
 
-    def __init__(self: SaveGameInfo): ...
+    def __init__(self: SaveGameInfo) -> None: ...
     @abc.abstractmethod
     def getMissingAssets(
         self: SaveGameInfo, save: ISaveGame
@@ -4265,7 +4281,7 @@ class SaveGameInfo(abc.ABC):
     @abc.abstractmethod
     def getSaveGameWidget(
         self: SaveGameInfo, parent: PyQt6.QtWidgets.QWidget
-    ) -> Optional[ISaveGameInfoWidget]:
+    ) -> ISaveGameInfoWidget | None:
         """
         Retrieve a widget to display over the save game list.
 
@@ -4280,7 +4296,7 @@ class SaveGameInfo(abc.ABC):
         ...
 
 class ScriptExtender(abc.ABC):
-    def __init__(self: ScriptExtender): ...
+    def __init__(self: ScriptExtender) -> None: ...
     @abc.abstractmethod
     def binaryName(self: ScriptExtender) -> str:
         """
@@ -4345,7 +4361,7 @@ class ScriptExtender(abc.ABC):
         ...
 
 class UnmanagedMods(abc.ABC):
-    def __init__(self: UnmanagedMods): ...
+    def __init__(self: UnmanagedMods) -> None: ...
     @abc.abstractmethod
     def displayName(self: UnmanagedMods, mod_name: str) -> str:
         """
@@ -4411,7 +4427,7 @@ class VersionInfo:
     """
 
     @overload
-    def __init__(self: VersionInfo):
+    def __init__(self: VersionInfo) -> None:
         """
         Construct an invalid VersionInfo.
         """
@@ -4419,7 +4435,7 @@ class VersionInfo:
     @overload
     def __init__(
         self: VersionInfo, value: str, scheme: VersionScheme = VersionScheme.DISCOVER
-    ):
+    ) -> None:
         """
         Construct a VersionInfo by parsing the given string according to the given scheme.
 
@@ -4436,7 +4452,7 @@ class VersionInfo:
         subminor: int,
         subsubminor: int,
         release_type: ReleaseType = ReleaseType.FINAL,
-    ):
+    ) -> None:
         """
         Construct a VersionInfo using the given elements.
 
@@ -4455,7 +4471,7 @@ class VersionInfo:
         minor: int,
         subminor: int,
         release_type: ReleaseType = ReleaseType.FINAL,
-    ):
+    ) -> None:
         """
         Construct a VersionInfo using the given elements.
 
@@ -4484,7 +4500,7 @@ class VersionInfo:
             A canonical string representing this version, that can be stored and then parsed using the parse() method.
         """
         ...
-    def clear(self: VersionInfo):
+    def clear(self: VersionInfo) -> None:
         """
         Resets this VersionInfo to an invalid version.
         """
@@ -4511,7 +4527,7 @@ class VersionInfo:
         value: str,
         scheme: VersionScheme = VersionScheme.DISCOVER,
         is_manual: bool = False,
-    ):
+    ) -> None:
         """
         Update this VersionInfo by parsing the given string using the given scheme.
 

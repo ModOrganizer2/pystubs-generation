@@ -74,6 +74,8 @@ class Writer:
         sig_return_type = ""
         if not fn.ret.type.is_none():
             sig_return_type = " -> " + self._fix_typing(fn.ret.type.typing())
+        else:
+            sig_return_type = " -> None"
 
         if isinstance(fn, Method):
             if fn.is_static():
