@@ -15,7 +15,7 @@ class TaskDialog:
 
     def __init__(
         self: TaskDialog,
-        parent: PyQt6.QtWidgets.QWidget = None,
+        parent: PyQt6.QtWidgets.QWidget | None = None,
         title: str = "",
         main: str = "",
         content: str = "",

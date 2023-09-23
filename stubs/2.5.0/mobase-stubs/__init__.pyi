@@ -1639,7 +1639,7 @@ class IModList:
         """
         ...
     def allModsByProfilePriority(
-        self: IModList, profile: IProfile = None
+        self: IModList, profile: IProfile | None = None
     ) -> Sequence[str]:
         """
         Returns:
@@ -3818,7 +3818,7 @@ class ISaveGameInfoWidget(PyQt6.QtWidgets.QWidget):
     """
 
     def __init__(
-        self: ISaveGameInfoWidget, parent: PyQt6.QtWidgets.QWidget = None
+        self: ISaveGameInfoWidget, parent: PyQt6.QtWidgets.QWidget | None = None
     ) -> None:
         """
         Args:

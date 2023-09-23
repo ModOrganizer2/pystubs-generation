@@ -108,9 +108,12 @@ def parse_python_signature(s: str, name: str) -> tuple[PyType, list[Argument]]:
             raise ValueError(f"invalid argument: {pa}, {s}")
 
         matches = m.groupdict()
-        arguments.append(
-            Argument(matches["name"], PyType(matches["type"]), matches["value"])
-        )
+        type_ = matches["type"]
+        if matches["value"] == "None":
+            if "None" not in type_ and "MoVariant" not in type_:
+                type_ = type_ + " | None"
+
+        arguments.append(Argument(matches["name"], PyType(type_), matches["value"]))
 
     return PyType(return_type), arguments
 
