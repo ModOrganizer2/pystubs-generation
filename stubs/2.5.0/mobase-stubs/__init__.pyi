@@ -2141,19 +2141,43 @@ class IOrganizer:
             The (absolute) path to the mods directory.
         """
         ...
+    @overload
+    def onAboutToRun(
+        self: IOrganizer, callback: Callable[[str, PyQt6.QtCore.QDir, str], bool]
+    ) -> bool:
+        """
+        Install a new handler to be called when an application is about to run.
+
+        Multiple handlers can be installed. If any of the handler returns `False`, the
+        application will not run.
+
+        Args:
+            callback: The function to call when an application is about to run. The function
+                receives the absolute path to the application to run, the working directory
+                for the run and a string containing the arguments passed to the executable.
+                The function can return False to prevent the application from running.
+
+        Returns:
+            True if the handler was installed properly (there are currently no
+        reasons for this to fail).
+        """
+        ...
+    @overload
     def onAboutToRun(self: IOrganizer, callback: Callable[[str], bool]) -> bool:
         """
         Install a new handler to be called when an application is about to run.
 
-        Multiple handlers can be installed. If any of the handler returns `False`, the application will
-        not run.
+        Multiple handlers can be installed. If any of the handler returns `False`, the
+        application will not run.
 
         Args:
-            callback: The function to call when an application is about to run. The parameter is the absolute path
-                to the application to run. The function can return False to prevent the application from running.
+            callback: The function to call when an application is about to run. The parameter
+                is the absolute path to the application to run. The function can return False
+                to prevent the application from running.
 
         Returns:
-            True if the handler was installed properly (there are currently no reasons for this to fail).
+            True if the handler was installed properly (there are currently no reasons for
+        this to fail).
         """
         ...
     def onFinishedRun(self: IOrganizer, callback: Callable[[str, int], None]) -> bool:
@@ -2165,7 +2189,25 @@ class IOrganizer:
                 path to the application, and the second parameter is the exit code of the application.
 
         Returns:
-            True if the handler was installed properly (there are currently no reasons for this to fail).
+            True if the handler was installed properly (there are currently no reasons for
+        this to fail).
+        """
+        ...
+    def onNextRefresh(
+        self: IOrganizer,
+        callback: Callable[[], None],
+        immediate_if_possible: bool = True,
+    ) -> bool:
+        """
+        Install a new handler to be called on the next refresh or immediately.
+
+        Args:
+            callback: Function to call on the next refresh (or immediately).
+            immediate_if_possible: If True, immediately run the callback if no refresh is currently running.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for
+        this to fail).
         """
         ...
     @overload
@@ -2719,14 +2761,12 @@ class IPluginGame(IPlugin):
     """
 
     def __init__(self: IPluginGame) -> None: ...
-    @abc.abstractmethod
     def CCPlugins(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
             The current list of active Creation Club plugins.
         """
         ...
-    @abc.abstractmethod
     def DLCPlugins(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
@@ -2773,6 +2813,12 @@ class IPluginGame(IPlugin):
             The directory of the documents folder where configuration files and such for this game reside.
         """
         ...
+    def enabledPlugins(self: IPluginGame) -> Sequence[str]:
+        """
+        Returns:
+            A list of plugins enabled by the game but not in a strict load order.
+        """
+        ...
     @abc.abstractmethod
     def executableForcedLoads(
         self: IPluginGame,
@@ -2782,7 +2828,6 @@ class IPluginGame(IPlugin):
             A list of automatically discovered libraries that can be force loaded with executables.
         """
         ...
-    @abc.abstractmethod
     def executables(self: IPluginGame) -> Sequence[ExecutableInfo]:
         """
         Returns:
@@ -2834,7 +2879,6 @@ class IPluginGame(IPlugin):
             The name of the game (as displayed to the user).
         """
         ...
-    @abc.abstractmethod
     def gameNexusName(self: IPluginGame) -> str:
         """
         Returns:
@@ -2848,7 +2892,6 @@ class IPluginGame(IPlugin):
             The short name of the game.
         """
         ...
-    @abc.abstractmethod
     def gameVariants(self: IPluginGame) -> Sequence[str]:
         """
         Retrieve the list of variants for this game.
@@ -2883,7 +2926,6 @@ class IPluginGame(IPlugin):
             An URL for the support page of this game.
         """
         ...
-    @abc.abstractmethod
     def iniFiles(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
@@ -2928,7 +2970,6 @@ class IPluginGame(IPlugin):
             The list of game saves in the given folder.
         """
         ...
-    @abc.abstractmethod
     def loadOrderMechanism(self: IPluginGame) -> LoadOrderMechanism:
         """
         Returns:
@@ -2958,7 +2999,6 @@ class IPluginGame(IPlugin):
             The Nexus game ID for this game.
         """
         ...
-    @abc.abstractmethod
     def nexusModOrganizerID(self: IPluginGame) -> int:
         """
         Retrieve the Nexus mod ID of Mod Organizer for this game.
@@ -2970,14 +3010,12 @@ class IPluginGame(IPlugin):
             The Nexus mod ID of Mod Organizer for this game.
         """
         ...
-    @abc.abstractmethod
     def primaryPlugins(self: IPluginGame) -> Sequence[str]:
         """
         Returns:
             The list of plugins that are part of the game and not considered optional.
         """
         ...
-    @abc.abstractmethod
     def primarySources(self: IPluginGame) -> Sequence[str]:
         """
         Retrieve primary alternative 'short' names for this game.
@@ -2996,7 +3034,6 @@ class IPluginGame(IPlugin):
             The directory where save games are stored.
         """
         ...
-    @abc.abstractmethod
     def secondaryDataDirectories(self: IPluginGame) -> Dict[str, PyQt6.QtCore.QDir]:
         """
         Retrieve the list of secondary data directories. Each directories should be
@@ -3032,14 +3069,12 @@ class IPluginGame(IPlugin):
             variant: The game variant selected by the user.
         """
         ...
-    @abc.abstractmethod
     def sortMechanism(self: IPluginGame) -> SortMechanism:
         """
         Returns:
             The sort mechanism for this game.
         """
         ...
-    @abc.abstractmethod
     def steamAPPId(self: IPluginGame) -> str:
         """
         Retrieve the Steam app ID for this game.

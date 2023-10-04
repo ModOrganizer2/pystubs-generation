@@ -1531,17 +1531,36 @@ mobase:
     modsPath:
       returns: The (absolute) path to the mods directory.
 
-    onAboutToRun:
+    onAboutToRun.1:
       __doc__: |
         Install a new handler to be called when an application is about to run.
 
-        Multiple handlers can be installed. If any of the handler returns `False`, the application will
-        not run.
+        Multiple handlers can be installed. If any of the handler returns `False`, the
+        application will not run.
       args:
         callback: |
-          The function to call when an application is about to run. The parameter is the absolute path
-          to the application to run. The function can return False to prevent the application from running.
-      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+          The function to call when an application is about to run. The function
+          receives the absolute path to the application to run, the working directory
+          for the run and a string containing the arguments passed to the executable.
+          The function can return False to prevent the application from running.
+      returns: |
+        True if the handler was installed properly (there are currently no
+        reasons for this to fail).
+
+    onAboutToRun.2:
+      __doc__: |
+        Install a new handler to be called when an application is about to run.
+
+        Multiple handlers can be installed. If any of the handler returns `False`, the
+        application will not run.
+      args:
+        callback: |
+          The function to call when an application is about to run. The parameter
+          is the absolute path to the application to run. The function can return False
+          to prevent the application from running.
+      returns: |
+        True if the handler was installed properly (there are currently no reasons for
+        this to fail).
 
     onFinishedRun:
       __doc__: Install a new handler to be called when an application has finished running.
@@ -1549,7 +1568,19 @@ mobase:
         callback: |
           The function to call when an application has finished running. The first parameter is the absolute
           path to the application, and the second parameter is the exit code of the application.
-      returns: True if the handler was installed properly (there are currently no reasons for this to fail).
+      returns: |
+        True if the handler was installed properly (there are currently no reasons for
+        this to fail).
+
+    onNextRefresh:
+      __doc__: Install a new handler to be called on the next refresh or immediately.
+      args:
+        callback: Function to call on the next refresh (or immediately).
+        immediate_if_possible: |
+          If True, immediately run the callback if no refresh is currently running.
+      returns: |
+        True if the handler was installed properly (there are currently no reasons for
+        this to fail).
 
     onPluginDisabled.1:
       __doc__: Install a new handler to be called when a plugin is disabled.
@@ -1951,9 +1982,11 @@ mobase:
         See `IPlugin.init()` for more.
 
     CCPlugins:
+      abstract: false
       returns: The current list of active Creation Club plugins.
 
     DLCPlugins:
+      abstract: false
       returns: The list of esp/esm files that are part of known DLCs.
 
     binaryName:
@@ -1965,10 +1998,15 @@ mobase:
     documentsDirectory:
       returns: The directory of the documents folder where configuration files and such for this game reside.
 
+    enabledPlugins:
+      abstract: false
+      returns: A list of plugins enabled by the game but not in a strict load order.
+
     executableForcedLoads:
       returns: A list of automatically discovered libraries that can be force loaded with executables.
 
     executables:
+      abstract: false
       returns: A list of automatically discovered executables of the game itself and tools surrounding it.
 
     feature:
@@ -2004,12 +2042,14 @@ mobase:
       returns: The name of the game (as displayed to the user).
 
     gameNexusName:
+      abstract: false
       returns: The name of the game identifier for Nexus.
 
     gameShortName:
       returns: The short name of the game.
 
     gameVariants:
+      abstract: false
       __doc__: |
         Retrieve the list of variants for this game.
 
@@ -2030,6 +2070,7 @@ mobase:
       returns: An URL for the support page of this game.
 
     iniFiles:
+      abstract: false
       returns: |
         The list of INI files this game uses. The first file in the list should be the
         'main' INI file.
@@ -2057,6 +2098,7 @@ mobase:
       returns: The list of game saves in the given folder.
 
     loadOrderMechanism:
+      abstract: false
       returns: The load order mechanism used by this game.
 
     looksValid:
@@ -2073,6 +2115,7 @@ mobase:
       returns: The Nexus game ID for this game.
 
     nexusModOrganizerID:
+      abstract: false
       __doc__: |
         Retrieve the Nexus mod ID of Mod Organizer for this game.
 
@@ -2081,9 +2124,11 @@ mobase:
       returns: The Nexus mod ID of Mod Organizer for this game.
 
     primaryPlugins:
+      abstract: false
       returns: The list of plugins that are part of the game and not considered optional.
 
     primarySources:
+      abstract: false
       __doc__: |
         Retrieve primary alternative 'short' names for this game.
 
@@ -2095,11 +2140,11 @@ mobase:
       returns: The directory where save games are stored.
 
     secondaryDataDirectories:
+      abstract: false
       __doc__: |
         Retrieve the list of secondary data directories. Each directories should be
         assigned a unique name that differs from "data" which is the name of the main
         data directory returned by dataDirectory().
-
       returns: A mapping from unique name to secondary data directories.
 
     setGamePath:
@@ -2122,9 +2167,11 @@ mobase:
         variant: The game variant selected by the user.
 
     sortMechanism:
+      abstract: false
       returns: The sort mechanism for this game.
 
     steamAPPId:
+      abstract: false
       __doc__: |
         Retrieve the Steam app ID for this game.
 
