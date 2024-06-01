@@ -220,7 +220,9 @@ class Settings:
                             f"mobase.{setting_name}."
                         )
 
-                    for setting_arg, method_arg in zip(function_settings.args, fn.args):
+                    for setting_arg, method_arg in zip(
+                        function_settings.args, fn.args, strict=True
+                    ):
                         method_arg.doc = setting_arg.doc
                         if not setting_arg.type.is_none():
                             method_arg.type = setting_arg.type
@@ -371,7 +373,7 @@ class Settings:
                             )
 
                         for settings_arg, method_arg in zip(
-                            function_settings.args, method_arguments
+                            function_settings.args, method_arguments, strict=True
                         ):
                             method_arg.doc = settings_arg.doc
                             if (

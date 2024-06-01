@@ -1,12 +1,11 @@
 import argparse
 import inspect
 import logging
+import subprocess
 import types
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Callable
-
-import black
-import isort
 
 from .loader import load_mobase
 from .mtypes import Class, PyTyping
@@ -18,7 +17,9 @@ from .writer import Writer, is_list_of_functions
 LOGGER = logging.getLogger(__package__)
 
 
-def extract_objects(module: object, skips: list[str] = []) -> list[tuple[str, type]]:
+def extract_objects(
+    module: object, skips: Sequence[str] = []
+) -> list[tuple[str, type]]:
     objects: list[tuple[str, type]] = []
 
     assert hasattr(module, "__name__")
@@ -150,7 +151,7 @@ def main() -> None:
                 "IPlugin",
             ],
         ),
-        "mobase.widgets": extract_objects(getattr(mobase, "widgets")),
+        "mobase.widgets": extract_objects(mobase.widgets),  # type: ignore
     }
 
     for name, objects in module_objects.items():
@@ -210,19 +211,25 @@ def main() -> None:
 
             module_headers[name](writer)
 
-            for n, o in objects:
+            for n, _o in objects:
                 # Get the corresponding object:
                 c = register.get_object(n)
 
                 writer.print_object(c)
 
-        black.format_file_in_place(
-            output_folder.joinpath("__init__.pyi"),
-            fast=False,
-            mode=black.Mode(is_pyi=True),
-            write_back=black.WriteBack.YES,
+        subprocess.run(
+            ["ruff", "format", output_folder.joinpath("__init__.pyi").as_posix()]
         )
-        isort.api.sort_file(output_folder.joinpath("__init__.pyi"))
+        subprocess.run(
+            [
+                "ruff",
+                "check",
+                "--select",
+                "I",
+                "--fix",
+                output_folder.joinpath("__init__.pyi").as_posix(),
+            ]
+        )
 
 
 if __name__ == "__main__":

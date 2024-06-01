@@ -134,7 +134,6 @@ def is_enum(e: type) -> bool:
 
 
 class Overload:
-
     """Small class to avoid mypy issues..."""
 
     return_type: PyType
@@ -176,8 +175,8 @@ def parse_pybind11_function_docstring(e: type) -> list[Overload]:
 
         try:
             return_type, arguments = parse_python_signature(signature, e.__name__)
-        except ValueError:
-            raise ValueError(f"invalid signature: {e.__name__}, {e.__doc__}")
+        except ValueError as err:
+            raise ValueError(f"invalid signature: {e.__name__}, {e.__doc__}") from err
         overloads.append(Overload(return_type=return_type, arguments=arguments))
 
     return overloads
@@ -221,7 +220,8 @@ def make_class(e: type, register: MobaseRegister) -> Class:
 
     # This contains ALL the parent classes, not the direct ones:
     base_classes: list[Class] = [
-        register.make_object(name) for name in base_classes_s  # type: ignore
+        register.make_object(name)
+        for name in base_classes_s  # type: ignore
     ]
 
     # retrieve all the attributes that are not in a base class

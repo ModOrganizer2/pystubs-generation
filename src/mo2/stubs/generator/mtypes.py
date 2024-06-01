@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from typing import Final, TypeVar
 
 
@@ -164,7 +165,6 @@ class Argument:
 
 
 class Exception:
-
     """
     Small class representing exception that can be raised from functions.
     """
@@ -313,20 +313,20 @@ class Class:
         self,
         package: str,
         name: str,
-        bases: list[Class],
-        methods: list[Method],
-        constants: list[Constant] = [],
-        properties: list[Property] = [],
-        inner_classes: list[Class] = [],
+        bases: Sequence[Class],
+        methods: Sequence[Method],
+        constants: Sequence[Constant] = [],
+        properties: Sequence[Property] = [],
+        inner_classes: Sequence[Class] = [],
         doc: str = "",
     ):
         self.package = package
         self.name = name
-        self.bases = bases
-        self.methods = methods
-        self.properties = properties
-        self.constants = constants
-        self.inner_classes = inner_classes
+        self.bases = list(bases)
+        self.methods = list(methods)
+        self.properties = list(properties)
+        self.constants = list(constants)
+        self.inner_classes = list(inner_classes)
         self.doc = ""
         self.abstract = False
         self.outer_class = None
@@ -385,7 +385,6 @@ class Class:
 
 
 class PyClass(Class):
-
     """
     Class use to wrap Python class to be used as parent class for some classes
     in mobase.
@@ -401,7 +400,6 @@ class PyClass(Class):
 
 
 class Enum(Class):
-
     """
     Class representing an enum.
     """
