@@ -57,12 +57,9 @@ def add_mobase_header(writer: Writer):
                     "Callable",
                     "Dict",
                     "Iterator",
-                    "List",
                     "Optional",
                     "overload",
                     "Sequence",
-                    "Set",
-                    "Tuple",
                     "Type",
                     "TypeVar",
                     "Union",
@@ -218,11 +215,17 @@ def main() -> None:
                 writer.print_object(c)
 
         subprocess.run(
-            ["ruff", "format", output_folder.joinpath("__init__.pyi").as_posix()]
+            [
+                "ruff",
+                "--silent",
+                "format",
+                output_folder.joinpath("__init__.pyi").as_posix(),
+            ]
         )
         subprocess.run(
             [
                 "ruff",
+                "--silent",
                 "check",
                 "--select",
                 "I",

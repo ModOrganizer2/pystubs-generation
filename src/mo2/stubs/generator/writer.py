@@ -163,7 +163,7 @@ class Writer:
         if not prop.is_read_only():
             self._print("{}@{}.setter".format(indent, prop.name))
             self._print(
-                "{}def {}(self, arg0: {}): ...".format(
+                "{}def {}(self, arg0: {}) -> None: ...".format(
                     indent, prop.name, self._fix_typing(prop.type.typing())
                 )
             )

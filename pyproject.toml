@@ -41,20 +41,11 @@ lint-pyright = "pyright src"
 lint.sequence = ["lint-ruff", "lint-ruff-format", "lint-pyright"]
 lint.ignore_fail = "return_non_zero"
 
-[tool.flake8]
-max-line-length = 88
-# See https://github.com/PyCQA/pycodestyle/issues/373
-extend-ignore = ['E203', 'E231']
-per-file-ignores = ['*.pyi:E301,E302,E305,E501,E701']
-
 [tool.ruff]
 target-version = "py310"
 
 [tool.ruff.lint]
 extend-select = ["B", "Q", "I"]
-
-[tool.ruff.lint.flake8-bugbear]
-extend-immutable-calls = ["astropy.units.Quantity"]
 
 [tool.pyright]
 typeCheckingMode = "strict"

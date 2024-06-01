@@ -114,6 +114,12 @@ mobase:
     DATE:
     LITERAL:
 
+  GameFeature:
+    __doc__: |
+      Base class for all game features, cannot be inherited, used only for typing
+      purpose in Python.
+    __abstract__: true
+
   # TODO:
   BSAInvalidation:
     __doc__:
@@ -348,6 +354,141 @@ mobase:
       returns: |
         The last extension of this entry, or an empty string if the file has no extension
         or is directory.
+
+  IGameFeatures:
+    __doc__: |
+      Interface for the game features, accessible through IOrganizer.gameFeatures().
+
+    gameFeature:
+      __doc__: Retrieve the given game feature, if one exists.
+      abstract: false
+      args:
+        feature_type:
+          __doc__: The class of feature to retrieve.
+          type: Type[GameFeatureType]
+      returns:
+        __doc__: |
+          The game feature corresponding to the given type, or `None` if the feature is
+          not available.
+        type: GameFeatureType
+
+    registerFeature.1:
+      __doc__: |
+        Register game feature for the specified game.
+
+        This method register a game feature to combine or replace with other features
+        of the same kind. Some features are merged (e.g., ModDataContent,
+        ModDataChecker), while other override previous features (e.g., SaveGameInfo).
+
+        For features that can be combined, the priority argument indicates the order of
+        priority (e.g., the order of the checks for ModDataChecker). For other features,
+        the feature with the highest priority will be used. The features provided by the
+        game plugin itself always have lowest priority.
+
+        The feature is associated to the plugin that registers it, if the plugin is
+        disabled, the feature will not be available.
+
+        This function will return True if the feature was registered, even if the
+        feature is not used du to its low priority.
+
+      args:
+        games: Names of the game to enable the feature for.
+        feature: Game feature to register.
+        priority: |
+          Priority of the game feature. If the plugin registering the feature
+          is a game plugin, this parameter is ignored.
+        replace: |
+          If True, remove features of the same kind registered by the current plugin,
+          otherwise add the feature alongside existing ones.
+
+      returns: True if the game feature was properly registered, False otherwise.
+
+    registerFeature.2:
+      __doc__: |
+        Register game feature for the specified game.
+
+        This method register a game feature to combine or replace with other features
+        of the same kind. Some features are merged (e.g., ModDataContent,
+        ModDataChecker), while other override previous features (e.g., SaveGameInfo).
+
+        For features that can be combined, the priority argument indicates the order of
+        priority (e.g., the order of the checks for ModDataChecker). For other features,
+        the feature with the highest priority will be used. The features provided by the
+        game plugin itself always have lowest priority.
+
+        The feature is associated to the plugin that registers it, if the plugin is
+        disabled, the feature will not be available.
+
+        This function will return True if the feature was registered, even if the
+        feature is not used du to its low priority.
+
+      args:
+        game: Game to enable the feature for.
+        feature: Game feature to register.
+        priority: |
+          Priority of the game feature. If the plugin registering the feature
+          is a game plugin, this parameter is ignored.
+        replace: |
+          If True, remove features of the same kind registered by the current plugin,
+          otherwise add the feature alongside existing ones.
+
+      returns: True if the game feature was properly registered, False otherwise.
+
+    registerFeature.3:
+      __doc__: |
+        Register game feature for all games.
+
+        This method register a game feature to combine or replace with other features
+        of the same kind. Some features are merged (e.g., ModDataContent,
+        ModDataChecker), while other override previous features (e.g., SaveGameInfo).
+
+        For features that can be combined, the priority argument indicates the order of
+        priority (e.g., the order of the checks for ModDataChecker). For other features,
+        the feature with the highest priority will be used. The features provided by the
+        game plugin itself always have lowest priority.
+
+        The feature is associated to the plugin that registers it, if the plugin is
+        disabled, the feature will not be available.
+
+        This function will return True if the feature was registered, even if the
+        feature is not used du to its low priority.
+
+      args:
+        feature: Game feature to register.
+        priority: |
+          Priority of the game feature. If the plugin registering the feature
+          is a game plugin, this parameter is ignored.
+        replace: |
+          If True, remove features of the same kind registered by the current plugin,
+          otherwise add the feature alongside existing ones.
+
+      returns: True if the game feature was properly registered, False otherwise.
+
+    unregisterFeature:
+      __doc__: |
+        Unregister the given game feature.
+
+        This function is safe to use even if the given feature was never registered.
+      args:
+        feature: Feature to unregister.
+      returns: True if the feature was successfully unregistered, False otherwise.
+
+    unregisterFeatures:
+      __doc__: |
+        Unregister all features of the given type registered by the calling plugin.
+
+        This function is safe to use even if the plugin has no feature of the given type
+        register.
+
+      args:
+        feature_type:
+          __doc__: The class of feature to unregister.
+          type: Type[GameFeatureType]
+
+      returns: The number of unregistered features.
+
+
+
 
   GamePlugins:
     __abstract__: true
@@ -1476,6 +1617,9 @@ mobase:
         pattern: The glob pattern to use to filter files.
       returns: The list of matching files.
 
+    gameFeatures:
+      returns: The interface to the game features.
+
     getFileOrigins:
       __doc__: |
         Retrieve the file origins for the specified file.
@@ -1995,6 +2139,10 @@ mobase:
     dataDirectory:
       returns: The path to the directory containing data (absolute path).
 
+    displayGameName:
+      abstract: False
+      returns: The name of the game to user for display, default to gameName().
+
     documentsDirectory:
       returns: The directory of the documents folder where configuration files and such for this game reside.
 
@@ -2009,29 +2157,6 @@ mobase:
       abstract: false
       returns: A list of automatically discovered executables of the game itself and tools surrounding it.
 
-    feature:
-      __doc__: Retrieve a specified game feature from this plugin.
-      abstract: false
-      args:
-        feature_type:
-          __doc__: The class of feature to retrieve.
-          type: Type[GameFeatureType]
-      returns:
-        __doc__: |
-          The game feature corresponding to the given type, or `None` if the feature is
-          not implemented.
-        type: GameFeatureType
-
-    featureList:
-      __doc__: |
-        Retrieve the list of game features implemented for this plugin.
-
-        Python plugin should not implement this method but `_featureList()`.
-      abstract: false
-      returns:
-        __doc__: A mapping from feature type to actual game features.
-        type: dict[Type[GameFeatureType], GameFeatureType]
-
     gameDirectory:
       returns: The directory containing the game installation.
 
@@ -2039,7 +2164,7 @@ mobase:
       returns: The icon representing the game.
 
     gameName:
-      returns: The name of the game (as displayed to the user).
+      returns: The name of the game (for internal usage).
 
     gameNexusName:
       abstract: false
@@ -2106,6 +2231,11 @@ mobase:
       args:
         directory: Directory to check.
       returns: True if the directory looks like a valid installation of this game, False otherwise.
+
+    lootGameName:
+      abstract: False
+      returns: |
+        The game name to use when calling LOOT from MO2, default to gameShortName().
 
     nexusGameID:
       __doc__: |
@@ -2387,6 +2517,16 @@ mobase:
       returns: |
         True if the given file has a .esm extension, False otherwise or if the
         file does not exist.
+
+    hasNoRecords:
+      __doc__: |
+        Determine if a plugin has no records.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: |
+        True if the given file plugin contains no records, False if it does OR if the
+        file does not exist.
+
 
     isLightFlagged:
       __doc__: |

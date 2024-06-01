@@ -17,8 +17,4 @@ jobs:
           poetry install
       - name: Lint
         run: |
-          poetry run black src --check --diff
-          poetry run isort -c src
-          poetry run mypy src
-          poetry run ruff src
-          poetry run pyright src
+          poetry run poe lint

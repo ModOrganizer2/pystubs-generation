@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mobase-stubs"
-version = "v2.5.0.dev12"
+version = "v2.5.0.dev16"
 description = "PEP561 stub files for the mobase Python API."
 authors = ["Holt59 <capelle.mikael@gmail.com>"]
 license = "MIT"
