@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mobase-stubs"
-version = "v2.5.0.dev16"
+version = "v2.5.0.dev17"
 description = "PEP561 stub files for the mobase Python API."
 authors = ["Holt59 <capelle.mikael@gmail.com>"]
 license = "MIT"
@@ -11,7 +11,7 @@ documentation = "https://www.modorganizer.org/python-plugins-doc/"
 repository = "https://github.com/ModOrganizer2/mo2-pystubs-generation"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 
 [build-system]
 requires = ["poetry-core"]
