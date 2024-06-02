@@ -3,7 +3,7 @@
 version: 2
 
 # version of the stubs - this is overridden when publishing
-__version__: "2.5.0"
+__version__: "2.5.1"
 
 # This is the root of the mobase module and will contain everything
 # related to functions / classes, including their documentation.
