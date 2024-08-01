@@ -1,13 +1,15 @@
 import logging
-from typing import Any, Iterable, TextIO, TypeGuard
+from typing import Any, Iterable, TextIO
 
-from .mtypes import Class, Enum, Function, Method, Property, PyTyping
+from typing_extensions import TypeIs
+
+from .mtypes import Class, Constant, Enum, Function, Method, Property, PyTyping
 from .utils import Settings
 
 LOGGER = logging.getLogger(__package__)
 
 
-def is_list_of_functions(e: Any | Iterable[Any]) -> TypeGuard[list[Function]]:
+def is_list_of_functions(e: Any | Iterable[Any]) -> TypeIs[list[Function]]:
     if not isinstance(e, list):
         return False
     return all(isinstance(x, Function) for x in e)
@@ -256,7 +258,15 @@ class Writer:
     def print_typing(self, typ: PyTyping):
         self._print(f"{typ.name} = {typ.typing}")
 
-    def print_object(self, e: object):
+    def print_constent(self, constant: Constant):
+        assert constant.type is not None
+        self._print(
+            "{}: {} = ...".format(
+                constant.name, self._fix_typing(constant.type.typing())
+            )
+        )
+
+    def print_object(self, e: Class | Constant | list[Function] | PyTyping):
         if isinstance(e, Class):
             self.print_class(e)
 
@@ -266,3 +276,6 @@ class Writer:
 
         elif isinstance(e, PyTyping):
             self.print_typing(e)
+
+        else:
+            self.print_constent(e)

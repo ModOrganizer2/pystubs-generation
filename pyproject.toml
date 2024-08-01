@@ -12,19 +12,21 @@ mo2-stubs-generator = "mo2.stubs.generator.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-pyqt6 = "^6.7.0"
+pyqt6 = "6.7.1"
 pyyaml = "^6.0.1"
+sphinx = "<8"
+typing-extensions = "^4.12.2"
 
 [tool.poetry.group.dev.dependencies]
-pyright = "^1.1.365"
-ruff = "^0.4.7"
-types-pyyaml = "^6.0.12.20240311"
-poethepoet = "^0.26.1"
+pyright = "^1.1.374"
+ruff = "^0.5.5"
+types-pyyaml = "^6.0.12.20240724"
+poethepoet = "^0.27.0"
 
 [tool.poetry.group.doc.dependencies]
 sphinx-rtd-theme = "^2.0.0"
-sphinx-autodoc-typehints = "^2.1.0"
-sphinx-automodapi = "^0.16.0"
+sphinx-autodoc-typehints = "^2.2.3"
+sphinx-automodapi = "^0.17.0"
 sphinx = "^7.3.7"
 
 [build-system]

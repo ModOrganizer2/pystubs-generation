@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import OrderedDict
 
-from .mtypes import Class, Function, PyTyping
+from .mtypes import Class, Constant, Function, PyType, PyTyping
 
 
 class MobaseRegister:
@@ -12,7 +12,7 @@ class MobaseRegister:
     Class that register classes.
     """
 
-    objects: dict[str, Class | list[Function] | PyTyping]
+    objects: dict[str, Class | Constant | list[Function] | PyTyping]
 
     def __init__(self) -> None:
         self.raw_objects: dict[str, type] = OrderedDict()
@@ -23,9 +23,9 @@ class MobaseRegister:
 
     def make_object(
         self, name: str, e: type | None = None
-    ) -> Class | list[Function] | PyTyping:
+    ) -> Class | list[Function] | Constant | PyTyping:
         """
-        Construct a Function, Class or Enum for the given object.
+        Construct a Function, Class, Constant or Enum for the given object.
 
         Args:
             name: The name of the object to inspect.
@@ -47,14 +47,14 @@ class MobaseRegister:
                 self.objects[name] = make_class(e, self)
             elif callable(e):
                 self.objects[name] = make_functions(e)
-
-            # typing stuff
             elif type(e).__module__ == "types" or type(e).__module__ == "typing":
                 self.objects[name] = PyTyping(name, e)
+            else:
+                self.objects[name] = Constant(name, type=PyType(type(e)), value=e)
 
         return self.objects[name]
 
-    def get_object(self, name: str) -> Class | list[Function] | PyTyping:
+    def get_object(self, name: str) -> Class | Constant | list[Function] | PyTyping:
         """
         Retrieve the object if the given name. Fails if no object with this
         name exists (if `make_object(name, ...)` has never been called).

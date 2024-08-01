@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Callable
 
 from .loader import load_mobase
-from .mtypes import Class, PyTyping
+from .mtypes import Class, Constant, PyTyping
 from .parser import is_enum
 from .register import MobaseRegister
 from .utils import Settings, clean_class
@@ -178,7 +178,7 @@ def main() -> None:
                 # Path the class using the configuration:
                 settings.patch_class(c)
 
-            elif isinstance(c, PyTyping):
+            elif isinstance(c, (PyTyping, Constant)):
                 ...
 
             elif is_list_of_functions(c):
