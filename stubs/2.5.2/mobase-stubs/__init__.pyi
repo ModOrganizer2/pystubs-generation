@@ -22,9 +22,12 @@ import PyQt6.QtGui
 import PyQt6.QtWidgets
 
 GameFeatureType = TypeVar("GameFeatureType")
-INVALID_HANDLE_VALUE: int = ...
 MoVariant = None | bool | int | str | list[object] | dict[str, object]
-def getFileVersion(filepath: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]) -> str:
+INVALID_HANDLE_VALUE: int = ...
+
+def getFileVersion(
+    filepath: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
+) -> str:
     """
     Retrieve the file version of the given executable.
 
@@ -36,7 +39,9 @@ def getFileVersion(filepath: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo
     """
     ...
 
-def getIconForExecutable(executable: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]) -> PyQt6.QtGui.QIcon:
+def getIconForExecutable(
+    executable: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
+) -> PyQt6.QtGui.QIcon:
     """
     Retrieve the icon of an executable. Currently this always extracts the biggest icon.
 
@@ -48,7 +53,9 @@ def getIconForExecutable(executable: Union[str, os.PathLike[str], PyQt6.QtCore.Q
     """
     ...
 
-def getProductVersion(executable: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]) -> str:
+def getProductVersion(
+    executable: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
+) -> str:
     """
     Retrieve the product version of the given executable.
 
@@ -68,10 +75,8 @@ class EndorsedState(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: EndorsedState, other: object) -> bool: ...
     def __ge__(self: EndorsedState, other: EndorsedState) -> bool: ...
     def __gt__(self: EndorsedState, other: EndorsedState) -> bool: ...
@@ -80,8 +85,6 @@ class EndorsedState(Enum):
     def __lt__(self: EndorsedState, other: EndorsedState) -> bool: ...
     def __ne__(self: EndorsedState, other: object) -> bool: ...
     def __str__(self: EndorsedState) -> str: ...
-
-
 
 class GuessQuality(Enum):
     """
@@ -98,16 +101,12 @@ class GuessQuality(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: GuessQuality, other: object) -> bool: ...
     def __int__(self: GuessQuality) -> int: ...
     def __ne__(self: GuessQuality, other: object) -> bool: ...
     def __str__(self: GuessQuality) -> str: ...
-
-
 
 class InstallResult(Enum):
     SUCCESS = ...
@@ -118,16 +117,12 @@ class InstallResult(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: InstallResult, other: object) -> bool: ...
     def __int__(self: InstallResult) -> int: ...
     def __ne__(self: InstallResult, other: object) -> bool: ...
     def __str__(self: InstallResult) -> str: ...
-
-
 
 class LoadOrderMechanism(Enum):
     NONE = ...
@@ -136,16 +131,12 @@ class LoadOrderMechanism(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: LoadOrderMechanism, other: object) -> bool: ...
     def __int__(self: LoadOrderMechanism) -> int: ...
     def __ne__(self: LoadOrderMechanism, other: object) -> bool: ...
     def __str__(self: LoadOrderMechanism) -> str: ...
-
-
 
 class ModState(Enum):
     EXISTS = ...
@@ -158,10 +149,8 @@ class ModState(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __and__(self: ModState, other: ModState) -> ModState: ...
     def __eq__(self: ModState, other: object) -> bool: ...
     def __ge__(self: ModState, other: ModState) -> bool: ...
@@ -178,8 +167,6 @@ class ModState(Enum):
     def __str__(self: ModState) -> str: ...
     def __xor__(self: ModState, other: ModState) -> ModState: ...
 
-
-
 class PluginState(Enum):
     MISSING = ...
     INACTIVE = ...
@@ -187,10 +174,8 @@ class PluginState(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __and__(self: PluginState, other: PluginState) -> PluginState: ...
     def __eq__(self: PluginState, other: object) -> bool: ...
     def __ge__(self: PluginState, other: PluginState) -> bool: ...
@@ -207,8 +192,6 @@ class PluginState(Enum):
     def __str__(self: PluginState) -> str: ...
     def __xor__(self: PluginState, other: PluginState) -> PluginState: ...
 
-
-
 class ProfileSetting(Enum):
     MODS = ...
     CONFIGURATION = ...
@@ -217,10 +200,8 @@ class ProfileSetting(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __and__(self: ProfileSetting, other: ProfileSetting) -> ProfileSetting: ...
     def __eq__(self: ProfileSetting, other: object) -> bool: ...
     def __ge__(self: ProfileSetting, other: ProfileSetting) -> bool: ...
@@ -237,8 +218,6 @@ class ProfileSetting(Enum):
     def __str__(self: ProfileSetting) -> str: ...
     def __xor__(self: ProfileSetting, other: ProfileSetting) -> ProfileSetting: ...
 
-
-
 class ReleaseType(Enum):
     FINAL = ...
     CANDIDATE = ...
@@ -248,16 +227,12 @@ class ReleaseType(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: ReleaseType, other: object) -> bool: ...
     def __int__(self: ReleaseType) -> int: ...
     def __ne__(self: ReleaseType, other: object) -> bool: ...
     def __str__(self: ReleaseType) -> str: ...
-
-
 
 class SortMechanism(Enum):
     NONE = ...
@@ -267,16 +242,12 @@ class SortMechanism(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: SortMechanism, other: object) -> bool: ...
     def __int__(self: SortMechanism) -> int: ...
     def __ne__(self: SortMechanism, other: object) -> bool: ...
     def __str__(self: SortMechanism) -> str: ...
-
-
 
 class TrackedState(Enum):
     TRACKED_FALSE = ...
@@ -285,10 +256,8 @@ class TrackedState(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: TrackedState, other: object) -> bool: ...
     def __ge__(self: TrackedState, other: TrackedState) -> bool: ...
     def __gt__(self: TrackedState, other: TrackedState) -> bool: ...
@@ -297,8 +266,6 @@ class TrackedState(Enum):
     def __lt__(self: TrackedState, other: TrackedState) -> bool: ...
     def __ne__(self: TrackedState, other: object) -> bool: ...
     def __str__(self: TrackedState) -> str: ...
-
-
 
 class VersionScheme(Enum):
     DISCOVER = ...
@@ -310,89 +277,34 @@ class VersionScheme(Enum):
 
     @property
     def value(self) -> int: ...
-
     @property
     def name(self) -> str: ...
-
     def __eq__(self: VersionScheme, other: object) -> bool: ...
     def __int__(self: VersionScheme) -> int: ...
     def __ne__(self: VersionScheme, other: object) -> bool: ...
     def __str__(self: VersionScheme) -> str: ...
 
-
-
-class BSAInvalidation(GameFeature):
-    def __init__(self: BSAInvalidation) -> None: ...
-    @abc.abstractmethod
-    def activate(self: BSAInvalidation, profile: IProfile) -> None: ...
-    @abc.abstractmethod
-    def deactivate(self: BSAInvalidation, profile: IProfile) -> None: ...
-    @abc.abstractmethod
-    def isInvalidationBSA(self: BSAInvalidation, name: str) -> bool: ...
-
-
-class DataArchives(GameFeature):
-    def __init__(self: DataArchives) -> None: ...
-    @abc.abstractmethod
-    def addArchive(self: DataArchives, profile: IProfile, index: int, name: str) -> None:
-        """
-        Add an archive to the archive list.
-
-        Args:
-            profile: Profile to add the archive to.
-            index: Index to insert before. Use 0 for the beginning of the list or INT_MAX for
-                the end of the list).
-            name: Name of the archive to add.
-        """
-        ...
-    @abc.abstractmethod
-    def archives(self: DataArchives, profile: IProfile) -> Sequence[str]:
-        """
-        Retrieve the list of archives in the given profile.
-
-        Args:
-            profile: Profile to retrieve archives from.
-
-        Returns:
-            The list of archives in the given profile.
-        """
-        ...
-    @abc.abstractmethod
-    def removeArchive(self: DataArchives, profile: IProfile, name: str) -> None:
-        """
-        Remove the given archive from the given profile.
-
-        Args:
-            profile: Profile to remove the archive from.
-            name: Name of the archive to remove.
-        """
-        ...
-    @abc.abstractmethod
-    def vanillaArchives(self: DataArchives) -> Sequence[str]:
-        """
-        Retrieve the list of vanilla archives.
-
-        Vanilla archives are archive files that are shipped with the original
-        game.
-
-        Returns:
-            The list of vanilla archives.
-        """
-        ...
-
-
 class ExecutableForcedLoadSetting:
-    def __init__(self: ExecutableForcedLoadSetting, process: str, library: str) -> None: ...
+    def __init__(
+        self: ExecutableForcedLoadSetting, process: str, library: str
+    ) -> None: ...
     def enabled(self: ExecutableForcedLoadSetting) -> bool: ...
     def forced(self: ExecutableForcedLoadSetting) -> bool: ...
     def library(self: ExecutableForcedLoadSetting) -> str: ...
     def process(self: ExecutableForcedLoadSetting) -> str: ...
-    def withEnabled(self: ExecutableForcedLoadSetting, enabled: bool) -> ExecutableForcedLoadSetting: ...
-    def withForced(self: ExecutableForcedLoadSetting, forced: bool) -> ExecutableForcedLoadSetting: ...
-
+    def withEnabled(
+        self: ExecutableForcedLoadSetting, enabled: bool
+    ) -> ExecutableForcedLoadSetting: ...
+    def withForced(
+        self: ExecutableForcedLoadSetting, forced: bool
+    ) -> ExecutableForcedLoadSetting: ...
 
 class ExecutableInfo:
-    def __init__(self: ExecutableInfo, title: str, binary: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]) -> None: ...
+    def __init__(
+        self: ExecutableInfo,
+        title: str,
+        binary: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
+    ) -> None: ...
     def arguments(self: ExecutableInfo) -> Sequence[str]: ...
     def asCustom(self: ExecutableInfo) -> ExecutableInfo: ...
     def binary(self: ExecutableInfo) -> PyQt6.QtCore.QFileInfo: ...
@@ -402,9 +314,10 @@ class ExecutableInfo:
     def title(self: ExecutableInfo) -> str: ...
     def withArgument(self: ExecutableInfo, argument: str) -> ExecutableInfo: ...
     def withSteamAppId(self: ExecutableInfo, app_id: str) -> ExecutableInfo: ...
-    def withWorkingDirectory(self: ExecutableInfo, directory: Union[str, os.PathLike[str], PyQt6.QtCore.QDir]) -> ExecutableInfo: ...
+    def withWorkingDirectory(
+        self: ExecutableInfo, directory: Union[str, os.PathLike[str], PyQt6.QtCore.QDir]
+    ) -> ExecutableInfo: ...
     def workingDirectory(self: ExecutableInfo) -> PyQt6.QtCore.QDir: ...
-
 
 class FileInfo:
     """
@@ -415,23 +328,19 @@ class FileInfo:
     def archive(self) -> str: ...
     @archive.setter
     def archive(self, arg0: str) -> None: ...
-
     @property
     def filePath(self) -> str: ...
     @filePath.setter
     def filePath(self, arg0: str) -> None: ...
-
     @property
     def origins(self) -> list[str]: ...
     @origins.setter
     def origins(self, arg0: list[str]) -> None: ...
-
     def __init__(self: FileInfo) -> None:
         """
         Creates an uninitialized FileInfo.
         """
         ...
-
 
 class FileTreeEntry:
     """
@@ -456,26 +365,43 @@ class FileTreeEntry:
 
         @property
         def value(self) -> int: ...
-
         @property
         def name(self) -> str: ...
-
-        def __and__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> FileTreeEntry.FileTypes: ...
+        def __and__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> FileTreeEntry.FileTypes: ...
         def __eq__(self: FileTreeEntry.FileTypes, other: object) -> bool: ...
-        def __ge__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> bool: ...
-        def __gt__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> bool: ...
+        def __ge__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> bool: ...
+        def __gt__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> bool: ...
         def __int__(self: FileTreeEntry.FileTypes) -> int: ...
         def __invert__(self: FileTreeEntry.FileTypes) -> FileTreeEntry.FileTypes: ...
-        def __le__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> bool: ...
-        def __lt__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> bool: ...
+        def __le__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> bool: ...
+        def __lt__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> bool: ...
         def __ne__(self: FileTreeEntry.FileTypes, other: object) -> bool: ...
-        def __or__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> FileTreeEntry.FileTypes: ...
-        def __rand__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> FileTreeEntry.FileTypes: ...
-        def __ror__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> FileTreeEntry.FileTypes: ...
-        def __rxor__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> FileTreeEntry.FileTypes: ...
+        def __or__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> FileTreeEntry.FileTypes: ...
+        def __rand__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> FileTreeEntry.FileTypes: ...
+        def __ror__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> FileTreeEntry.FileTypes: ...
+        def __rxor__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> FileTreeEntry.FileTypes: ...
         def __str__(self: FileTreeEntry.FileTypes) -> str: ...
-        def __xor__(self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes) -> FileTreeEntry.FileTypes: ...
-
+        def __xor__(
+            self: FileTreeEntry.FileTypes, other: FileTreeEntry.FileTypes
+        ) -> FileTreeEntry.FileTypes: ...
 
     DIRECTORY: FileTypes = ...
     FILE: FileTypes = ...
@@ -556,7 +482,7 @@ class FileTreeEntry:
         or the parent tree is unreachable.
         """
         ...
-    def path(self: FileTreeEntry, sep: str = '\\') -> str:
+    def path(self: FileTreeEntry, sep: str = "\\") -> str:
         """
         Retrieve the path from this entry up to the root of the tree.
 
@@ -570,7 +496,7 @@ class FileTreeEntry:
             The path from this entry to the root, including the name of this entry.
         """
         ...
-    def pathFrom(self: FileTreeEntry, tree: IFileTree, sep: str = '\\') -> str:
+    def pathFrom(self: FileTreeEntry, tree: IFileTree, sep: str = "\\") -> str:
         """
         Retrieve the path from the given tree to this entry.
 
@@ -595,7 +521,6 @@ class FileTreeEntry:
         """
         ...
 
-
 class GameFeature(abc.ABC):
     """
     Base class for all game features, cannot be inherited, used only for typing
@@ -603,29 +528,6 @@ class GameFeature(abc.ABC):
     """
 
     ...
-class GamePlugins(GameFeature):
-    def __init__(self: GamePlugins) -> None: ...
-    @abc.abstractmethod
-    def getLoadOrder(self: GamePlugins) -> Sequence[str]: ...
-    @abc.abstractmethod
-    def lightPluginsAreSupported(self: GamePlugins) -> bool:
-        """
-        Returns:
-            True if light plugins are supported, False otherwise.
-        """
-        ...
-    @abc.abstractmethod
-    def mediumPluginsAreSupported(self: GamePlugins) -> bool:
-        """
-        Returns:
-            True if medium plugins are supported, False otherwise.
-        """
-        ...
-    @abc.abstractmethod
-    def readPluginLists(self: GamePlugins, plugin_list: IPluginList) -> None: ...
-    @abc.abstractmethod
-    def writePluginLists(self: GamePlugins, plugin_list: IPluginList) -> None: ...
-
 
 class GuessedString:
     """
@@ -642,7 +544,9 @@ class GuessedString:
         """
         ...
     @overload
-    def __init__(self: GuessedString, value: str, quality: GuessQuality = GuessQuality.USER) -> None:
+    def __init__(
+        self: GuessedString, value: str, quality: GuessQuality = GuessQuality.USER
+    ) -> None:
         """
         Creates a GuessedString with the given value and quality.
 
@@ -688,7 +592,9 @@ class GuessedString:
             This GuessedString object.
         """
         ...
-    def setFilter(self: GuessedString, filter: Callable[[str], Union[str, bool]]) -> None:
+    def setFilter(
+        self: GuessedString, filter: Callable[[str], Union[str, bool]]
+    ) -> None:
         """
         Set the filter for this GuessedString.
 
@@ -740,7 +646,6 @@ class GuessedString:
         """
         ...
 
-
 class IDownloadManager:
     def downloadPath(self: IDownloadManager, id: int) -> str:
         """
@@ -754,7 +659,9 @@ class IDownloadManager:
         may not exist yet if the download is incomplete.
         """
         ...
-    def onDownloadComplete(self: IDownloadManager, callback: Callable[[int], None]) -> bool:
+    def onDownloadComplete(
+        self: IDownloadManager, callback: Callable[[int], None]
+    ) -> bool:
         """
         Installs a handler to be called when a download completes.
 
@@ -765,7 +672,9 @@ class IDownloadManager:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onDownloadFailed(self: IDownloadManager, callback: Callable[[int], None]) -> bool:
+    def onDownloadFailed(
+        self: IDownloadManager, callback: Callable[[int], None]
+    ) -> bool:
         """
         Installs a handler to be called when a download fails.
 
@@ -776,7 +685,9 @@ class IDownloadManager:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onDownloadPaused(self: IDownloadManager, callback: Callable[[int], None]) -> bool:
+    def onDownloadPaused(
+        self: IDownloadManager, callback: Callable[[int], None]
+    ) -> bool:
         """
         Installs a handler to be called when a download is paused.
 
@@ -787,7 +698,9 @@ class IDownloadManager:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onDownloadRemoved(self: IDownloadManager, callback: Callable[[int], None]) -> bool:
+    def onDownloadRemoved(
+        self: IDownloadManager, callback: Callable[[int], None]
+    ) -> bool:
         """
         Installs a handler to be called when a download is removed.
 
@@ -798,7 +711,9 @@ class IDownloadManager:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def startDownloadNexusFile(self: IDownloadManager, mod_id: int, file_id: int) -> int:
+    def startDownloadNexusFile(
+        self: IDownloadManager, mod_id: int, file_id: int
+    ) -> int:
         """
         Download a file from www.nexusmods.com/<game>. <game> is always the game
         currently being managed.
@@ -826,415 +741,14 @@ class IDownloadManager:
         """
         ...
 
-
-class IFileTree(FileTreeEntry):
-    """
-    Interface to classes that provides way to visualize and alter file trees. The tree
-    may not correspond to an actual file tree on the disk (e.g., inside an archive,
-    from a QTree Widget, ...).
-
-    Read-only operations on the tree are thread-safe, even when the tree has not been populated
-    yet.
-
-    In order to prevent wrong usage of the tree, implementing classes may throw
-    UnsupportedOperationException if an operation is not supported. By default, all operations
-    are supported, but some may not make sense in many situations.
-
-    The goal of this is not reflect the change made to a IFileTree to the disk, but child
-    classes may override relevant methods to do so.
-
-    The tree is built upon FileTreeEntry. A given tree holds shared pointers to its entries
-    while each entry holds a weak pointer to its parent, this means that the descending link
-    are strong (shared pointers) but the uplink are weak.
-
-    Accessing the parent is always done by locking the weak pointer so that returned pointer
-    or either null or valid. This structure implies that as long as the initial root lives,
-    entry should not be destroyed, unless the entry are detached from the root and no shared
-    pointers are kept.
-
-    However, it is not guarantee that one can go up the tree from a single node entry. If the
-    root node is destroyed, it will not be possible to go up the tree, even if we still have
-    a valid shared pointer.
-    """
-
-    class InsertPolicy(Enum):
-        FAIL_IF_EXISTS = ...
-        REPLACE = ...
-        MERGE = ...
-
-        @property
-        def value(self) -> int: ...
-
-        @property
-        def name(self) -> str: ...
-
-        def __eq__(self: IFileTree.InsertPolicy, other: object) -> bool: ...
-        def __int__(self: IFileTree.InsertPolicy) -> int: ...
-        def __ne__(self: IFileTree.InsertPolicy, other: object) -> bool: ...
-        def __str__(self: IFileTree.InsertPolicy) -> str: ...
-
-
-    class WalkReturn(Enum):
-        """
-        Enumeration that can be returned by the callback for the `walk()` method to stop the
-        walking operation early.
-        """
-
-        CONTINUE = ...
-        STOP = ...
-        SKIP = ...
-
-        @property
-        def value(self) -> int: ...
-
-        @property
-        def name(self) -> str: ...
-
-        def __eq__(self: IFileTree.WalkReturn, other: object) -> bool: ...
-        def __int__(self: IFileTree.WalkReturn) -> int: ...
-        def __ne__(self: IFileTree.WalkReturn, other: object) -> bool: ...
-        def __str__(self: IFileTree.WalkReturn) -> str: ...
-
-
-    CONTINUE: WalkReturn = ...
-    FAIL_IF_EXISTS: InsertPolicy = ...
-    MERGE: InsertPolicy = ...
-    REPLACE: InsertPolicy = ...
-    SKIP: WalkReturn = ...
-    STOP: WalkReturn = ...
-
-    def __bool__(self: IFileTree) -> bool:
-        """
-        Returns:
-            True if this tree is not empty, False otherwise.
-        """
-        ...
-    def __getitem__(self: IFileTree, index: int) -> FileTreeEntry:
-        """
-        Retrieve the entry at the given index in this tree.
-
-        Args:
-            index: Index of the entry to retrieve, must be less than the size.
-
-        Returns:
-            The entry at the given index.
-
-        Raises:
-            IndexError: If the given index is not in range for this tree.
-        """
-        ...
-    def __iter__(self: IFileTree) -> Iterator[FileTreeEntry]:
-        """
-        Retrieves an iterator for entries directly under this tree.
-
-        This method does not recurse into subtrees, see `walk()` for this.
-
-        Returns:
-            An iterator object that can be used to iterate over entries in this tree.
-        """
-        ...
-    def __len__(self: IFileTree) -> int:
-        """
-        Returns:
-            The number of entries directly under this tree.
-        """
-        ...
-    def addDirectory(self: IFileTree, path: str) -> IFileTree:
-        """
-        Create a new directory tree under this tree.
-
-        This method will create missing folders in the given path and will
-        not fail if the directory already exists but will fail if the given
-        path contains "." or "..".
-        This method invalidates iterators to this tree and all the subtrees
-        present in the given path.
-
-        Args:
-            path: Path to the directory to create.
-
-        Returns:
-            An IFileTree corresponding to the created directory.
-
-        Raises:
-            RuntimeError: If the directory could not be created.
-        """
-        ...
-    def addFile(self: IFileTree, path: str, replace_if_exists: bool = False) -> FileTreeEntry:
-        """
-        Create a new file directly under this tree.
-
-        This method will fail if the file already exists and `replace_if_exists` is `False`.
-        This method invalidates iterators to this tree and all the subtrees present in the
-        given path.
-
-        Args:
-            path: Path to the file to create.
-            replace_if_exists: If True and an entry already exists at the given location, it will be replaced by
-                a new entry. This will replace both files and directories.
-
-        Returns:
-            A FileTreeEntry corresponding to the created file.
-
-        Raises:
-            RuntimeError: If the file could not be created.
-        """
-        ...
-    def clear(self: IFileTree) -> bool:
-        """
-        Delete (detach) all the entries from this tree.
-
-        This method will go through the entries in this tree and stop at the first
-        entry that cannot be deleted, this means that the tree can be partially cleared.
-
-        Returns:
-            True if all entries have been detached, False otherwise.
-        """
-        ...
-    def copy(self: IFileTree, entry: FileTreeEntry, path: str = '', insert_policy: IFileTree.InsertPolicy = InsertPolicy.FAIL_IF_EXISTS) -> FileTreeEntry:
-        """
-        Move the given entry to the given path under this tree.
-
-        The entry must not be a parent tree of this tree. This method can also be used
-        to rename entries.
-
-        If the insert policy if FAIL_IF_EXISTS, the call will fail if an entry
-        at the same location already exists. If the policy is REPLACE, an existing
-        entry will be replaced. If MERGE, the entry will be merged with the existing
-        one (if the entry is a file, and a file exists, the file will be replaced).
-
-        This method invalidates iterator to this tree, to the parent tree of the given
-        entry, and to subtrees of this tree if the insert policy is MERGE.
-
-        Args:
-            entry: Entry to copy.
-            path: The path to copy the entry to. If the path ends with / or \\, the entry will
-                be copied in the corresponding directory instead of replacing it. If the
-                given path is empty (`""`), the entry is copied directly under this tree.
-            insert_policy: Policy to use to resolve conflicts.
-
-        Returns:
-            The new entry (copy of the specified entry).
-
-        Raises:
-            RuntimeError: If the entry could not be copied.
-        """
-        ...
-    def createOrphanTree(self: IFileTree, name: str = '') -> IFileTree:
-        """
-        Create a new orphan empty tree.
-
-        Args:
-            name: Name of the tree.
-
-        Returns:
-            A new tree without any parent.
-        """
-        ...
-    def exists(self: IFileTree, path: str, type: FileTreeEntry.FileTypes = FileTreeEntry.FileTypes.FILE_OR_DIRECTORY) -> bool:
-        """
-        Check if the given entry exists.
-
-        Args:
-            path: Path to the entry, separated by / or \\.
-            type: The type of the entry to check.
-
-        Returns:
-            True if the entry was found, False otherwise.
-        """
-        ...
-    def find(self: IFileTree, path: str, type: FileTreeEntry.FileTypes = FileTreeEntry.FileTypes.FILE_OR_DIRECTORY) -> IFileTree | FileTreeEntry | None:
-        """
-        Retrieve the given entry.
-
-        If no entry exists at the given path, or if the entry is not of the right
-        type, `None` is returned.
-
-        Args:
-            path: Path to the entry, separated by / or \\.
-            type: The type of the entry to check.
-
-        Returns:
-            The entry at the given location, or `None` if the entry was not found or
-        was not of the correct type.
-        """
-        ...
-    def insert(self: IFileTree, entry: FileTreeEntry, policy: IFileTree.InsertPolicy = InsertPolicy.FAIL_IF_EXISTS) -> bool:
-        """
-        Insert the given entry in this tree, removing it from its
-        previous parent.
-
-        The entry must not be this tree or a parent entry of this tree.
-
-          - If the insert policy if `FAIL_IF_EXISTS`, the call will fail if an entry
-            with the same name already exists.
-          - If the policy is `REPLACE`, an existing entry will be replaced by the given entry.
-          - If the policy is `MERGE`:
-
-            - If there is no entry with the same name, the new entry is inserted.
-            - If there is an entry with the same name:
-
-              - If both entries are files, the old file is replaced by the given entry.
-              - If both entries are directories, a merge is performed as if using merge().
-              - Otherwise the insertion fails (two entries with different types).
-
-        This method invalidates iterator to this tree, to the parent tree of the given
-        entry, and to subtrees of this tree if the insert policy is MERGE.
-
-        Args:
-            entry: Entry to insert.
-            policy: Policy to use to resolve conflicts.
-
-        Returns:
-            True if the entry was insert, False otherwise.
-        """
-        ...
-    def merge(self: IFileTree, other: IFileTree, overwrites: bool = False) -> Union[dict[FileTreeEntry, FileTreeEntry], int]:
-        """
-        Merge the given tree with this tree, i.e., insert all entries
-        of the given tree into this tree.
-
-        The tree must not be this tree or a parent entry of this tree. Files present in both tree
-        will be replaced by files in the given tree. After a merge, the source tree will be
-        empty but still attached to its parent.
-
-        If `overwrites` is `True`, a map from overridden files to new files will be returned.
-
-        Note that the merge process makes no distinction between files and directories
-        when merging: if a directory is present in this tree and a file from source
-        is in conflict with it, the tree will be removed and the file inserted; if a file
-        is in this tree and a directory from source is in conflict with it, the file will
-        be replaced with the directory.
-
-        This method invalidates iterators to this tree, all the subtrees under this tree
-        present in the given path, and all the subtrees of the given source.
-
-        Args:
-            other: Tree to merge.
-            overwrites: If True, a mapping from overridden files to new files will be returned.
-
-        Returns:
-            If `overwrites` is True, a mapping from overridden files to new files, otherwise
-        the number of overwritten entries.
-
-        Raises:
-            RuntimeError: If the merge failed.
-        """
-        ...
-    def move(self: IFileTree, entry: FileTreeEntry, path: str, policy: IFileTree.InsertPolicy = InsertPolicy.FAIL_IF_EXISTS) -> bool:
-        """
-        Move the given entry to the given path under this tree.
-
-        The entry must not be a parent tree of this tree. This method can also be used
-        to rename entries.
-
-        If the insert policy if FAIL_IF_EXISTS, the call will fail if an entry
-        at the same location already exists. If the policy is REPLACE, an existing
-        entry will be replaced. If MERGE, the entry will be merged with the existing
-        one (if the entry is a file, and a file exists, the file will be replaced).
-
-        This method invalidates iterator to this tree, to the parent tree of the given
-        entry, and to subtrees of this tree if the insert policy is MERGE.
-
-        Args:
-            entry: Entry to move.
-            path: The path to move the entry to. If the path ends with / or \\, the entry will
-                be inserted in the corresponding directory instead of replacing it. If the
-                given path is empty (`""`), this is equivalent to `insert()`.
-            policy: Policy to use to resolve conflicts.
-
-        Returns:
-            True if the entry was moved correctly, False otherwise.
-        """
-        ...
-    def pathTo(self: IFileTree, entry: FileTreeEntry, sep: str = '\\') -> str:
-        """
-        Retrieve the path from this tree to the given entry.
-
-        Args:
-            entry: The entry to reach, must be in this tree.
-            sep: The type of separator to use to create the path.
-
-        Returns:
-            The path from this tree to the given entry, including the name of the entry, or
-        an empty string if the given entry was not found under this tree.
-        """
-        ...
-    @overload
-    def remove(self: IFileTree, name: str) -> bool:
-        """
-        Delete the entry with the given name.
-
-        This method does not recurse into subtrees, so the entry should be
-        accessible directly from this tree.
-
-        Args:
-            name: Name of the entry to delete.
-
-        Returns:
-            True if the entry was deleted, False otherwise.
-        """
-        ...
-    @overload
-    def remove(self: IFileTree, entry: FileTreeEntry) -> bool:
-        """
-        Delete the given entry.
-
-        Args:
-            entry: Entry to delete. The entry must belongs to this tree (and not to a subtree).
-
-        Returns:
-            True if the entry was deleted, False otherwise.
-        """
-        ...
-    def removeAll(self: IFileTree, names: Sequence[str]) -> int:
-        """
-        Delete the entries with the given names from the tree.
-
-        This method does not recurse into subtrees, so only entries accessible
-        directly from this tree will be removed. This method invalidates iterators.
-
-        Args:
-            names: Names of the entries to delete.
-
-        Returns:
-            The number of deleted entry.
-        """
-        ...
-    def removeIf(self: IFileTree, filter: Callable[[FileTreeEntry], bool]) -> int:
-        """
-        Delete entries matching the given predicate from the tree.
-
-        This method does not recurse into subtrees, so only entries accessible
-        directly from this tree will be removed. This method invalidates iterators.
-
-        Args:
-            filter: Predicate that should return true for entries to delete.
-
-        Returns:
-            The number of deleted entry.
-        """
-        ...
-    def walk(self: IFileTree, callback: Callable[[str, FileTreeEntry], IFileTree.WalkReturn], sep: str = '\\') -> None:
-        """
-        Walk this tree, calling the given function for each entry in it.
-
-        The given callback will be called with two parameters: the path from this tree to the given entry
-        (with a trailing separator, not including the entry name), and the actual entry. The method returns
-        a `WalkReturn` object to indicates what to do.
-
-        Args:
-            callback: Method to call for each entry in the tree.
-            sep: Type of separator to use to construct the path.
-        """
-        ...
-
-
 class IGameFeatures:
     """
     Interface for the game features, accessible through IOrganizer.gameFeatures().
     """
 
-    def gameFeature(self: IGameFeatures, feature_type: Type[GameFeatureType]) -> GameFeatureType:
+    def gameFeature(
+        self: IGameFeatures, feature_type: Type[GameFeatureType]
+    ) -> GameFeatureType:
         """
         Retrieve the given game feature, if one exists.
 
@@ -1247,7 +761,13 @@ class IGameFeatures:
         """
         ...
     @overload
-    def registerFeature(self: IGameFeatures, games: Sequence[str], feature: GameFeature, priority: int, replace: bool = False) -> bool:
+    def registerFeature(
+        self: IGameFeatures,
+        games: Sequence[str],
+        feature: GameFeature,
+        priority: int,
+        replace: bool = False,
+    ) -> bool:
         """
         Register game feature for the specified game.
 
@@ -1279,7 +799,13 @@ class IGameFeatures:
         """
         ...
     @overload
-    def registerFeature(self: IGameFeatures, game: IPluginGame, feature: GameFeature, priority: int, replace: bool = False) -> bool:
+    def registerFeature(
+        self: IGameFeatures,
+        game: IPluginGame,
+        feature: GameFeature,
+        priority: int,
+        replace: bool = False,
+    ) -> bool:
         """
         Register game feature for the specified game.
 
@@ -1311,7 +837,9 @@ class IGameFeatures:
         """
         ...
     @overload
-    def registerFeature(self: IGameFeatures, feature: GameFeature, priority: int, replace: bool = False) -> bool:
+    def registerFeature(
+        self: IGameFeatures, feature: GameFeature, priority: int, replace: bool = False
+    ) -> bool:
         """
         Register game feature for all games.
 
@@ -1354,7 +882,9 @@ class IGameFeatures:
             True if the feature was successfully unregistered, False otherwise.
         """
         ...
-    def unregisterFeatures(self: IGameFeatures, feature_type: Type[GameFeatureType]) -> int:
+    def unregisterFeatures(
+        self: IGameFeatures, feature_type: Type[GameFeatureType]
+    ) -> int:
         """
         Unregister all features of the given type registered by the calling plugin.
 
@@ -1368,7 +898,6 @@ class IGameFeatures:
             The number of unregistered features.
         """
         ...
-
 
 class IInstallationManager:
     def createFile(self: IInstallationManager, entry: FileTreeEntry) -> str:
@@ -1389,7 +918,9 @@ class IInstallationManager:
             The path to the created file, or an empty string if the file could not be created.
         """
         ...
-    def extractFile(self: IInstallationManager, entry: FileTreeEntry, silent: bool = False) -> str:
+    def extractFile(
+        self: IInstallationManager, entry: FileTreeEntry, silent: bool = False
+    ) -> str:
         """
         Extract the specified file from the currently opened archive to a temporary
         location.
@@ -1409,7 +940,9 @@ class IInstallationManager:
             The absolute path to the temporary file, or an empty string if the file was not extracted.
         """
         ...
-    def extractFiles(self: IInstallationManager, entries: list[FileTreeEntry], silent: bool = False) -> Sequence[str]:
+    def extractFiles(
+        self: IInstallationManager, entries: list[FileTreeEntry], silent: bool = False
+    ) -> Sequence[str]:
         """
         Extract the specified files from the currently opened archive to a temporary
         location.
@@ -1435,7 +968,12 @@ class IInstallationManager:
             The extensions of archives supported by this installation manager.
         """
         ...
-    def installArchive(self: IInstallationManager, mod_name: GuessedString, archive: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo], mod_id: int = 0) -> tuple[InstallResult, str, int]:
+    def installArchive(
+        self: IInstallationManager,
+        mod_name: GuessedString,
+        archive: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
+        mod_id: int = 0,
+    ) -> tuple[InstallResult, str, int]:
         """
         Install the given archive.
 
@@ -1448,7 +986,6 @@ class IInstallationManager:
             The result of the installation.
         """
         ...
-
 
 class IModInterface:
     def absolutePath(self: IModInterface) -> str:
@@ -1481,7 +1018,9 @@ class IModInterface:
             The list of categories this mod belongs to.
         """
         ...
-    def clearPluginSettings(self: IModInterface, plugin_name: str) -> dict[str, MoVariant]:
+    def clearPluginSettings(
+        self: IModInterface, plugin_name: str
+    ) -> dict[str, MoVariant]:
         """
         Remove all the settings of the specified plugin this mod.
 
@@ -1605,7 +1144,9 @@ class IModInterface:
             The notes for this mod, if any.
         """
         ...
-    def pluginSetting(self: IModInterface, plugin_name: str, key: str, default: MoVariant = None) -> MoVariant:
+    def pluginSetting(
+        self: IModInterface, plugin_name: str, key: str, default: MoVariant = None
+    ) -> MoVariant:
         """
         Retrieve the specified setting in this mod for a plugin.
 
@@ -1687,7 +1228,9 @@ class IModInterface:
             nexus_id: Thew new Nexus ID of this mod.
         """
         ...
-    def setPluginSetting(self: IModInterface, plugin_name: str, key: str, value: MoVariant) -> bool:
+    def setPluginSetting(
+        self: IModInterface, plugin_name: str, key: str, value: MoVariant
+    ) -> bool:
         """
         Set the specified setting in this mod for a plugin.
 
@@ -1749,7 +1292,6 @@ class IModInterface:
         """
         ...
 
-
 class IModList:
     """
     Interface to the mod-list.
@@ -1766,7 +1308,9 @@ class IModList:
             A list containing the internal names of all installed mods.
         """
         ...
-    def allModsByProfilePriority(self: IModList, profile: IProfile  | None = None) -> Sequence[str]:
+    def allModsByProfilePriority(
+        self: IModList, profile: IProfile | None = None
+    ) -> Sequence[str]:
         """
         Returns:
             The list of mod (names), sorted according to the current profile priorities.
@@ -1798,7 +1342,9 @@ class IModList:
             An interface to the given mod, or `None` if there is no mod with this name.
         """
         ...
-    def onModInstalled(self: IModList, callback: Callable[[IModInterface], None]) -> bool:
+    def onModInstalled(
+        self: IModList, callback: Callable[[IModInterface], None]
+    ) -> bool:
         """
         Install a new handler to be called when a new mod is installed.
 
@@ -1834,7 +1380,9 @@ class IModList:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onModStateChanged(self: IModList, callback: Callable[[dict[str, ModState]], None]) -> bool:
+    def onModStateChanged(
+        self: IModList, callback: Callable[[dict[str, ModState]], None]
+    ) -> bool:
         """
         Install a handler to be called when mod states change (enabled/disabled, endorsed, ...).
 
@@ -1942,77 +1490,6 @@ class IModList:
         """
         ...
 
-
-class IModRepositoryBridge(PyQt6.QtCore.QObject):
-    descriptionAvailable: PyQt6.QtCore.pyqtSignal = ...
-    filesAvailable: PyQt6.QtCore.pyqtSignal = ...
-    fileInfoAvailable: PyQt6.QtCore.pyqtSignal = ...
-    downloadURLsAvailable: PyQt6.QtCore.pyqtSignal = ...
-    endorsementsAvailable: PyQt6.QtCore.pyqtSignal = ...
-    endorsementToggled: PyQt6.QtCore.pyqtSignal = ...
-    trackedModsAvailable: PyQt6.QtCore.pyqtSignal = ...
-    trackingToggled: PyQt6.QtCore.pyqtSignal = ...
-    requestFailed: PyQt6.QtCore.pyqtSignal = ...
-
-    def __getattr__(self: IModRepositoryBridge, arg0: str) -> object: ...
-    def _object(self: IModRepositoryBridge) -> PyQt6.QtCore.QObject:
-        """
-        Returns:
-            The underlying `QObject` for the bridge.
-        """
-        ...
-    def requestDescription(self: IModRepositoryBridge, game_name: str, mod_id: int, user_data: MoVariant) -> None:
-        """
-        Request description of a mod.
-
-        Args:
-            game_name: Name of the game containing the mod.
-            mod_id: Nexus ID of the mod.
-            user_data: User data to be returned with the result.
-        """
-        ...
-    def requestDownloadURL(self: IModRepositoryBridge, game_name: str, mod_id: int, file_id: int, user_data: MoVariant) -> None:
-        """
-        Request download URL for mod file.0
-
-        Args:
-            game_name: Name of the game containing the mod.
-            mod_id: Nexus ID of the mod.
-            file_id: ID of the file for which a URL should be returned.
-            user_data: User data to be returned with the result.
-        """
-        ...
-    def requestFileInfo(self: IModRepositoryBridge, game_name: str, mod_id: int, file_id: int, user_data: MoVariant) -> None:
-        """
-        Args:
-            game_name: Name of the game containing the mod.
-            mod_id: Nexus ID of the mod.
-            file_id: ID of the file for which information is requested.
-            user_data: User data to be returned with the result.
-        """
-        ...
-    def requestFiles(self: IModRepositoryBridge, game_name: str, mod_id: int, user_data: MoVariant) -> None:
-        """
-        Request the list of files belonging to a mod.
-
-        Args:
-            game_name: Name of the game containing the mod.
-            mod_id: Nexus ID of the mod.
-            user_data: User data to be returned with the result.
-        """
-        ...
-    def requestToggleEndorsement(self: IModRepositoryBridge, game_name: str, mod_id: int, mod_version: str, endorse: bool, user_data: MoVariant) -> None:
-        """
-        Args:
-            game_name: Name of the game containing the mod.
-            mod_id: Nexus ID of the mod.
-            mod_version: Version of the mod.
-            endorse:
-            user_data: User data to be returned with the result.
-        """
-        ...
-
-
 class IOrganizer:
     """
     Interface to class that provides information about the running session
@@ -2066,7 +1543,11 @@ class IOrganizer:
             The absolute path to the download directory.
         """
         ...
-    def findFileInfos(self: IOrganizer, path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir], filter: Callable[[FileInfo], bool]) -> Sequence[FileInfo]:
+    def findFileInfos(
+        self: IOrganizer,
+        path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir],
+        filter: Callable[[FileInfo], bool],
+    ) -> Sequence[FileInfo]:
         """
         Find files in the virtual directory matching the specified filter.
 
@@ -2079,7 +1560,11 @@ class IOrganizer:
         """
         ...
     @overload
-    def findFiles(self: IOrganizer, path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir], filter: Callable[[str], bool]) -> Sequence[str]:
+    def findFiles(
+        self: IOrganizer,
+        path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir],
+        filter: Callable[[str], bool],
+    ) -> Sequence[str]:
         """
         Find files in the given folder that matches the given filter.
 
@@ -2092,7 +1577,11 @@ class IOrganizer:
         """
         ...
     @overload
-    def findFiles(self: IOrganizer, path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir], patterns: Sequence[str]) -> Sequence[str]:
+    def findFiles(
+        self: IOrganizer,
+        path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir],
+        patterns: Sequence[str],
+    ) -> Sequence[str]:
         """
         Find files in the given folder that matches one of the given glob patterns.
 
@@ -2105,7 +1594,11 @@ class IOrganizer:
         """
         ...
     @overload
-    def findFiles(self: IOrganizer, path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir], pattern: str) -> Sequence[str]:
+    def findFiles(
+        self: IOrganizer,
+        path: Union[str, os.PathLike[str], PyQt6.QtCore.QDir],
+        pattern: str,
+    ) -> Sequence[str]:
         """
         Find files in the given folder that matches the given glob pattern.
 
@@ -2155,7 +1648,11 @@ class IOrganizer:
             The directory for plugin data, typically plugins/data.
         """
         ...
-    def installMod(self: IOrganizer, filename: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo], name_suggestion: str = '') -> IModInterface:
+    def installMod(
+        self: IOrganizer,
+        filename: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
+        name_suggestion: str = "",
+    ) -> IModInterface:
         """
         Install a mod archive at the specified location.
 
@@ -2229,7 +1726,9 @@ class IOrganizer:
         """
         ...
     @overload
-    def onAboutToRun(self: IOrganizer, callback: Callable[[str, PyQt6.QtCore.QDir, str], bool]) -> bool:
+    def onAboutToRun(
+        self: IOrganizer, callback: Callable[[str, PyQt6.QtCore.QDir, str], bool]
+    ) -> bool:
         """
         Install a new handler to be called when an application is about to run.
 
@@ -2278,7 +1777,11 @@ class IOrganizer:
         this to fail).
         """
         ...
-    def onNextRefresh(self: IOrganizer, callback: Callable[[], None], immediate_if_possible: bool = True) -> bool:
+    def onNextRefresh(
+        self: IOrganizer,
+        callback: Callable[[], None],
+        immediate_if_possible: bool = True,
+    ) -> bool:
         """
         Install a new handler to be called on the next refresh or immediately.
 
@@ -2301,7 +1804,9 @@ class IOrganizer:
         """
         ...
     @overload
-    def onPluginDisabled(self: IOrganizer, name: str, callback: Callable[[], None]) -> None:
+    def onPluginDisabled(
+        self: IOrganizer, name: str, callback: Callable[[], None]
+    ) -> None:
         """
         Install a new handler to be called when the given plugin is disabled.
 
@@ -2320,7 +1825,9 @@ class IOrganizer:
         """
         ...
     @overload
-    def onPluginEnabled(self: IOrganizer, name: str, callback: Callable[[], None]) -> None:
+    def onPluginEnabled(
+        self: IOrganizer, name: str, callback: Callable[[], None]
+    ) -> None:
         """
         Install a new handler to be called when the given plugin is enabled.
 
@@ -2329,7 +1836,9 @@ class IOrganizer:
             callback: The function to call when the plugin is enabled.
         """
         ...
-    def onPluginSettingChanged(self: IOrganizer, callback: Callable[[str, str, MoVariant, MoVariant], None]) -> bool:
+    def onPluginSettingChanged(
+        self: IOrganizer, callback: Callable[[str, str, MoVariant, MoVariant], None]
+    ) -> bool:
         """
         Install a new handler to be called when a plugin setting is changed.
 
@@ -2342,7 +1851,9 @@ class IOrganizer:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onProfileChanged(self: IOrganizer, callback: Callable[[IProfile, IProfile], None]) -> bool:
+    def onProfileChanged(
+        self: IOrganizer, callback: Callable[[IProfile, IProfile], None]
+    ) -> bool:
         """
         Install a new handler to be called when the current profile is changed.
 
@@ -2358,7 +1869,9 @@ class IOrganizer:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onProfileCreated(self: IOrganizer, callback: Callable[[IProfile], None]) -> bool:
+    def onProfileCreated(
+        self: IOrganizer, callback: Callable[[IProfile], None]
+    ) -> bool:
         """
         Install a new handler to be called when a new profile is created.
 
@@ -2385,7 +1898,9 @@ class IOrganizer:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onProfileRenamed(self: IOrganizer, callback: Callable[[IProfile, str, str], None]) -> bool:
+    def onProfileRenamed(
+        self: IOrganizer, callback: Callable[[IProfile, str, str], None]
+    ) -> bool:
         """
         Install a new handler to be called when a profile is renamed.
 
@@ -2397,7 +1912,9 @@ class IOrganizer:
             True if the handler was installed properly (there are currently no reasons for this to fail).
         """
         ...
-    def onUserInterfaceInitialized(self: IOrganizer, callback: Callable[[PyQt6.QtWidgets.QMainWindow], None]) -> bool:
+    def onUserInterfaceInitialized(
+        self: IOrganizer, callback: Callable[[PyQt6.QtWidgets.QMainWindow], None]
+    ) -> bool:
         """
         Install a new handler to be called when the UI has been fully initialized.
 
@@ -2415,7 +1932,9 @@ class IOrganizer:
             The (absolute) path to the overwrite directory.
         """
         ...
-    def persistent(self: IOrganizer, plugin_name: str, key: str, default: MoVariant = None) -> MoVariant:
+    def persistent(
+        self: IOrganizer, plugin_name: str, key: str, default: MoVariant = None
+    ) -> MoVariant:
         """
         Retrieve the specified persistent value for a plugin.
 
@@ -2492,7 +2011,9 @@ class IOrganizer:
             save_changes: If True, the relevant profile information is saved first (enabled mods and order of mods).
         """
         ...
-    def resolvePath(self: IOrganizer, filename: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]) -> str:
+    def resolvePath(
+        self: IOrganizer, filename: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]
+    ) -> str:
         """
         Resolves a path relative to the virtual data directory to its absolute real path.
 
@@ -2503,7 +2024,13 @@ class IOrganizer:
             The absolute real path, or an empty string if the path was not found.
         """
         ...
-    def setPersistent(self: IOrganizer, plugin_name: str, key: str, value: MoVariant, sync: bool = True) -> None:
+    def setPersistent(
+        self: IOrganizer,
+        plugin_name: str,
+        key: str,
+        value: MoVariant,
+        sync: bool = True,
+    ) -> None:
         """
         Set the specified persistent value for a plugin.
 
@@ -2517,7 +2044,9 @@ class IOrganizer:
             sync: If True, the storage is immediately written to disc. This costs performance but is safer against data loss.
         """
         ...
-    def setPluginSetting(self: IOrganizer, plugin_name: str, key: str, value: MoVariant) -> None:
+    def setPluginSetting(
+        self: IOrganizer, plugin_name: str, key: str, value: MoVariant
+    ) -> None:
         """
         Set the specified setting for a plugin.
 
@@ -2530,7 +2059,15 @@ class IOrganizer:
             value: New value for the setting.
         """
         ...
-    def startApplication(self: IOrganizer, executable: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo], args: Sequence[str] = [], cwd: Union[str, os.PathLike[str], PyQt6.QtCore.QDir] = '', profile: str = '', forcedCustomOverwrite: str = '', ignoreCustomOverwrite: bool = False) -> int:
+    def startApplication(
+        self: IOrganizer,
+        executable: Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo],
+        args: Sequence[str] = [],
+        cwd: Union[str, os.PathLike[str], PyQt6.QtCore.QDir] = "",
+        profile: str = "",
+        forcedCustomOverwrite: str = "",
+        ignoreCustomOverwrite: bool = False,
+    ) -> int:
         """
         Starts an application with virtual filesystem active.
 
@@ -2557,7 +2094,9 @@ class IOrganizer:
             An IFileTree representing the virtual file tree.
         """
         ...
-    def waitForApplication(self: IOrganizer, handle: int, refresh: bool = True) -> tuple[bool, int]:
+    def waitForApplication(
+        self: IOrganizer, handle: int, refresh: bool = True
+    ) -> tuple[bool, int]:
         """
         Wait for the application corresponding to the given handle to finish.
 
@@ -2575,7 +2114,6 @@ class IOrganizer:
         completed successfully, and `exitcode` is the exit code of the application.
         """
         ...
-
 
 class IPlugin(abc.ABC):
     """
@@ -2694,6 +2232,1352 @@ class IPlugin(abc.ABC):
         """
         ...
 
+class IPluginList:
+    """
+    Primary interface to the list of plugins.
+    """
+
+    def hasLightExtension(self: IPluginList, name: str) -> bool:
+        """
+        Determine if a plugin has a .esl extension.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            True if the given file has a .esl extension, False otherwise or if the
+        file does not exist.
+        """
+        ...
+    def hasMasterExtension(self: IPluginList, name: str) -> bool:
+        """
+        Determine if a plugin has a .esm extension.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            True if the given file has a .esm extension, False otherwise or if the
+        file does not exist.
+        """
+        ...
+    def hasNoRecords(self: IPluginList, name: str) -> bool:
+        """
+        Determine if a plugin has no records.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            True if the given file plugin contains no records, False if it does OR if the
+        file does not exist.
+        """
+        ...
+    def isLightFlagged(self: IPluginList, name: str) -> bool:
+        """
+        Determine if a plugin is flagged as light.
+
+        In gamebryo games, a master file will usually have a .esl file extension but
+        technically an esp can be flagged as light.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            True if the given plugin is a light plugin, False otherwise or if the
+        file does not exist.
+        """
+        ...
+    def isMasterFlagged(self: IPluginList, name: str) -> bool:
+        """
+        Determine if a plugin is flagged as mater, i.e., a library, reference by
+        other plugins.
+
+        In gamebryo games, a master file will usually have a .esm file extension but
+        technically an esp can be flagged as master and an esm might not be.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            True if the given plugin is a master plugin, False otherwise or if the
+        file does not exist.
+        """
+        ...
+    def isMediumFlagged(self: IPluginList, name: str) -> bool:
+        """
+        Determine if a plugin is flagged as medium.
+
+        This plugin flag was added in Starfield and signifies plugin records that
+        update existing records
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            True if the given plugin is a medium plugin, False otherwise or if the
+        file does not exist.
+        """
+        ...
+    def loadOrder(self: IPluginList, name: str) -> int:
+        """
+        Retrieve the load order of a plugin.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            The load order of the plugin (the order in which the game loads it). If all plugins are enabled this
+        is the same as the priority but disabled plugins will have a load order of -1. This also returns -1
+        if the plugin does not exist.
+        """
+        ...
+    def masters(self: IPluginList, name: str) -> Sequence[str]:
+        """
+        Retrieve the list of masters required for a plugin.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            The list of masters for the plugin (filenames with extension, no path).
+        """
+        ...
+    def onPluginMoved(
+        self: IPluginList, callback: Callable[[str, int, int], None]
+    ) -> bool:
+        """
+        Install a new handler to be called when a plugin is moved.
+
+        Args:
+            callback: The function to call when a plugin is moved. The first parameter is the plugin name, the
+                second the old priority of the plugin and the third one the new priority.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onPluginStateChanged(
+        self: IPluginList, callback: Callable[[dict[str, PluginState]], None]
+    ) -> bool:
+        """
+        Install a new handler to be called when plugin states change.
+
+        Args:
+            callback: The function to call when a plugin states change. The parameter is a map from plugin names to new
+                plugin states for the plugin whose states have changed.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def onRefreshed(self: IPluginList, callback: Callable[[], None]) -> bool:
+        """
+        Install a new handler to be called when the list of plugins is refreshed.
+
+        Args:
+            callback: The function to call when the list of plugins is refreshed.
+
+        Returns:
+            True if the handler was installed properly (there are currently no reasons for this to fail).
+        """
+        ...
+    def origin(self: IPluginList, name: str) -> str:
+        """
+        Retrieve the origin of a plugin. This is either the (internal) name of a mod, `"overwrite"` or `"data"`.
+
+        The internal name of a mod can differ from the display name for disambiguation.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            The name of the origin of the plugin, or an empty string if the plugin does not exist.
+        """
+        ...
+    def pluginNames(self: IPluginList) -> Sequence[str]:
+        """
+        Returns:
+            The list of all plugin names.
+        """
+        ...
+    def priority(self: IPluginList, name: str) -> int:
+        """
+        Retrieve the priority of a plugin.
+
+        The higher the priority, the more important.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            The priority of the given plugin, or -1 if the plugin does not exist.
+        """
+        ...
+    def setLoadOrder(self: IPluginList, loadorder: Sequence[str]) -> None:
+        """
+        Set the load order.
+
+        Plugins not included in the list will be placed at highest priority in the order they
+        were before.
+
+        Args:
+            loadorder: The new load order, specified by the list of plugin names, sorted.
+        """
+        ...
+    def setPriority(self: IPluginList, name: str, priority: int) -> bool:
+        """
+        Change the priority of a plugin.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+            priority: New priority of the plugin.
+
+        Returns:
+            True on success, False if the priority change was not possible. This is usually because
+        one of the parameters is invalid. The function returns true even if the plugin was not moved
+        at the specified priority (e.g. when trying to move a non-master plugin before a master one).
+        """
+        ...
+    def setState(self: IPluginList, name: str, state: PluginState) -> None:
+        """
+        Set the state of a plugin.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+            state: New state of the plugin (`INACTIVE` or `ACTIVE`).
+        """
+        ...
+    def state(self: IPluginList, name: str) -> PluginState:
+        """
+        Retrieve the state of a plugin.
+
+        Args:
+            name: Filename of the plugin (without path but with file extension).
+
+        Returns:
+            The state of the plugin.
+        """
+        ...
+
+class IPluginRequirement:
+    """
+    Class representing requirements for plugins.
+    """
+
+    class Problem:
+        """
+        Class representing a problem found by a requirement.
+        """
+
+        def __init__(
+            self: IPluginRequirement.Problem,
+            short_description: str,
+            long_description: str = "",
+        ) -> None:
+            """
+            Args:
+                short_description: Short description of the problem.
+                long_description: Long description of the problem.
+            """
+            ...
+        def longDescription(self: IPluginRequirement.Problem) -> str:
+            """
+            Returns:
+                A long description of the problem.
+            """
+            ...
+        def shortDescription(self: IPluginRequirement.Problem) -> str:
+            """
+            Returns:
+                A short description of the problem.
+            """
+            ...
+
+    def check(
+        self: IPluginRequirement, organizer: IOrganizer
+    ) -> Optional[IPluginRequirement.Problem]:
+        """
+        Check if the requirement is met, and return a problem if not.
+
+        Args:
+            organizer: The IOrganizer instance.
+
+        Returns:
+            The problem found if the requirement is not met, otherwise None.
+        """
+        ...
+
+class IProfile:
+    """
+    Interface to interact with Mod Organizer 2 profiles.
+    """
+
+    def absoluteIniFilePath(self: IProfile, inifile: str) -> str:
+        """
+        Retrieve the absolute file path to the corresponding INI file for this profile.
+
+        If iniFile does not correspond to a file in the list of INI files for the
+        current game (as returned by IPluginGame::iniFiles), the path to the global
+        file will be returned (if iniFile is absolute, iniFile is returned, otherwise
+        the path is assumed relative to the game documents directory).
+
+        Args:
+            inifile: INI file to retrieve a path for. This can either be the name of a file or a path to the
+                absolute file outside of the profile.
+
+        Returns:
+            The absolute path for the given INI file for this profile.
+        """
+        ...
+    def absolutePath(self: IProfile) -> str:
+        """
+        Returns:
+            The absolute path to the profile folder.
+        """
+        ...
+    def invalidationActive(self: IProfile) -> tuple[bool, bool]:
+        """
+        Returns:
+            True if automatic archive invalidation is enabled for this profile, False otherwise.
+        """
+        ...
+    def localSavesEnabled(self: IProfile) -> bool:
+        """
+        Returns:
+            True if profile-specific saves are enabled for this profile, False otherwise.
+        """
+        ...
+    def localSettingsEnabled(self: IProfile) -> bool:
+        """
+        Returns:
+            True if profile-specific game settings are enabled for this profile, False otherwise.
+        """
+        ...
+    def name(self: IProfile) -> str:
+        """
+        Returns:
+            The name of this profile.
+        """
+        ...
+
+class ISaveGame:
+    """
+    Base class for information about what is in a save game.
+    """
+
+    def __init__(self: ISaveGame) -> None: ...
+    def allFiles(
+        self: ISaveGame,
+    ) -> Sequence[Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]]:
+        """
+        Returns:
+            The list of all files related to this save.
+        """
+        ...
+    def getCreationTime(self: ISaveGame) -> PyQt6.QtCore.QDateTime:
+        """
+        Retrieve the creation time of the save.
+
+        The creation time of a save is not always the same as the creation time of
+        the file containing the save.
+
+        Returns:
+            The creation time of the save.
+        """
+        ...
+    def getFilepath(
+        self: ISaveGame,
+    ) -> Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]:
+        """
+        Returns:
+            The path name to the (main) file or folder for the save.
+        """
+        ...
+    def getName(self: ISaveGame) -> str:
+        """
+        Returns:
+            The name of this save, for display purpose.
+        """
+        ...
+    def getSaveGroupIdentifier(self: ISaveGame) -> str:
+        """
+        Retrieve the name of the group this files belong to.
+
+        The name can be used to identify sets of saves to transfer between profiles. For
+        RPG games, this is usually the name of a character.
+
+        Returns:
+            The group identifier for this save game.
+        """
+        ...
+
+class Mapping:
+    @property
+    def createTarget(self) -> bool: ...
+    @createTarget.setter
+    def createTarget(self, arg0: bool) -> None: ...
+    @property
+    def destination(self) -> str: ...
+    @destination.setter
+    def destination(self, arg0: str) -> None: ...
+    @property
+    def isDirectory(self) -> bool: ...
+    @isDirectory.setter
+    def isDirectory(self, arg0: bool) -> None: ...
+    @property
+    def source(self) -> str: ...
+    @source.setter
+    def source(self, arg0: str) -> None: ...
+    @overload
+    def __init__(self: Mapping) -> None:
+        """
+        Creates an empty Mapping.
+        """
+        ...
+    @overload
+    def __init__(
+        self: Mapping,
+        source: str,
+        destination: str,
+        is_directory: bool,
+        create_target: bool = False,
+    ) -> None:
+        """
+        Creates a Mapping with the given parameters.
+
+        Args:
+            source: The source of this mapping (absolute path), i.e. the path to the actual file.
+            destination: Destination of this mapping (absolute path), i.e. the path in the virtual file system.
+            is_directory: True if this mapping corresponds to a directory, False otherwise.
+            create_target: True if file creation (including move or copy) should be redirected to source.
+        """
+        ...
+    def __str__(self: Mapping) -> str: ...
+
+class ModRepositoryFileInfo:
+    @property
+    def categoryID(self) -> int: ...
+    @categoryID.setter
+    def categoryID(self, arg0: int) -> None: ...
+    @property
+    def description(self) -> str: ...
+    @description.setter
+    def description(self, arg0: str) -> None: ...
+    @property
+    def fileCategory(self) -> int: ...
+    @fileCategory.setter
+    def fileCategory(self, arg0: int) -> None: ...
+    @property
+    def fileID(self) -> int: ...
+    @fileID.setter
+    def fileID(self, arg0: int) -> None: ...
+    @property
+    def fileName(self) -> str: ...
+    @fileName.setter
+    def fileName(self, arg0: str) -> None: ...
+    @property
+    def fileSize(self) -> int: ...
+    @fileSize.setter
+    def fileSize(self, arg0: int) -> None: ...
+    @property
+    def fileTime(self) -> PyQt6.QtCore.QDateTime: ...
+    @fileTime.setter
+    def fileTime(self, arg0: PyQt6.QtCore.QDateTime) -> None: ...
+    @property
+    def gameName(self) -> str: ...
+    @gameName.setter
+    def gameName(self, arg0: str) -> None: ...
+    @property
+    def modID(self) -> int: ...
+    @modID.setter
+    def modID(self, arg0: int) -> None: ...
+    @property
+    def modName(self) -> str: ...
+    @modName.setter
+    def modName(self, arg0: str) -> None: ...
+    @property
+    def name(self) -> str: ...
+    @name.setter
+    def name(self, arg0: str) -> None: ...
+    @property
+    def newestVersion(self) -> VersionInfo: ...
+    @newestVersion.setter
+    def newestVersion(self, arg0: VersionInfo) -> None: ...
+    @property
+    def repository(self) -> str: ...
+    @repository.setter
+    def repository(self, arg0: str) -> None: ...
+    @property
+    def uri(self) -> str: ...
+    @uri.setter
+    def uri(self, arg0: str) -> None: ...
+    @property
+    def userData(self) -> MoVariant: ...
+    @userData.setter
+    def userData(self, arg0: MoVariant) -> None: ...
+    @property
+    def version(self) -> VersionInfo: ...
+    @version.setter
+    def version(self, arg0: VersionInfo) -> None: ...
+    @overload
+    def __init__(self: ModRepositoryFileInfo, other: ModRepositoryFileInfo) -> None: ...
+    @overload
+    def __init__(
+        self: ModRepositoryFileInfo,
+        game_name: str = "",
+        mod_id: int = 0,
+        file_id: int = 0,
+    ) -> None: ...
+    def __str__(self: ModRepositoryFileInfo) -> str: ...
+    @staticmethod
+    def createFromJson(data: str) -> ModRepositoryFileInfo: ...
+
+class PluginRequirementFactory:
+    @staticmethod
+    def basic(
+        checker: Callable[[IOrganizer], bool], description: str
+    ) -> IPluginRequirement:
+        """
+        Create a basic requirement.
+
+        Args:
+            checker: The callable to use to check if the requirement is met. Should return True
+                if the requirement is met, False otherwise.
+            description: The description of the problem, when the requirement is not met.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @staticmethod
+    def diagnose(diagnose: IPluginDiagnose) -> IPluginRequirement:
+        """
+        Construct a requirement from a diagnose plugin.
+
+        If the wrapped diagnose plugin reports a problem, the requirement fails
+        and the associated message is the one from the diagnose plugin (or the
+        list of messages if multiple problems were reported).
+
+        Args:
+            diagnose: The diagnose plugin to wrap in this requirement.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def gameDependency(games: Sequence[str]) -> IPluginRequirement:
+        """
+        Create a new game dependency requirement.
+
+        The requirement is met when the managed game is one of the specified game.
+
+        Args:
+            games: The names of the required games.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def gameDependency(game: str) -> IPluginRequirement:
+        """
+        Create a new game dependency requirement.
+
+        The requirement is met when the managed game is the specified game.
+
+        Args:
+            game: The name of the required game.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def pluginDependency(plugins: Sequence[str]) -> IPluginRequirement:
+        """
+        Create a new plugin dependency requirement.
+
+        The requirement is met when one of the specified plugins is enabled.
+
+        Args:
+            plugins: The name of the plugins.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+    @overload
+    @staticmethod
+    def pluginDependency(plugin: str) -> IPluginRequirement:
+        """
+        Create a new plugin dependency requirement.
+
+        The requirement is met when the specified plugin is enabled.
+
+        Args:
+            plugin: The name of the plugin that must be enabled.
+
+        Returns:
+            The constructed requirement.
+        """
+        ...
+
+class PluginSetting:
+    """
+    Class to hold the user-configurable parameters a plugin accepts. The purpose of this class is
+    only to inform the application what settings to offer to the user, it does not hold the actual value.
+    """
+
+    @property
+    def default_value(self) -> MoVariant: ...
+    @default_value.setter
+    def default_value(self, arg0: MoVariant) -> None: ...
+    @property
+    def description(self) -> str: ...
+    @description.setter
+    def description(self, arg0: str) -> None: ...
+    @property
+    def key(self) -> str: ...
+    @key.setter
+    def key(self, arg0: str) -> None: ...
+    def __init__(
+        self: PluginSetting, key: str, description: str, default_value: MoVariant
+    ) -> None:
+        """
+        Args:
+            key: Name of the setting.
+            description: Description of the setting.
+            default_value: Default value of the setting.
+        """
+        ...
+
+class VersionInfo:
+    """
+    Represents the version of a mod or plugin.
+    """
+
+    @overload
+    def __init__(self: VersionInfo) -> None:
+        """
+        Construct an invalid VersionInfo.
+        """
+        ...
+    @overload
+    def __init__(
+        self: VersionInfo, value: str, scheme: VersionScheme = VersionScheme.DISCOVER
+    ) -> None:
+        """
+        Construct a VersionInfo by parsing the given string according to the given scheme.
+
+        Args:
+            value: String to parse.
+            scheme: Scheme to use to parse the string.
+        """
+        ...
+    @overload
+    def __init__(
+        self: VersionInfo,
+        major: int,
+        minor: int,
+        subminor: int,
+        subsubminor: int,
+        release_type: ReleaseType = ReleaseType.FINAL,
+    ) -> None:
+        """
+        Construct a VersionInfo using the given elements.
+
+        Args:
+            major: Major version.
+            minor: Minor version.
+            subminor: Subminor version.
+            subsubminor: Subsubminor version.
+            release_type: Type of release.
+        """
+        ...
+    @overload
+    def __init__(
+        self: VersionInfo,
+        major: int,
+        minor: int,
+        subminor: int,
+        release_type: ReleaseType = ReleaseType.FINAL,
+    ) -> None:
+        """
+        Construct a VersionInfo using the given elements.
+
+        Args:
+            major: Major version.
+            minor: Minor version.
+            subminor: Subminor version.
+            release_type: Type of release.
+        """
+        ...
+    def __eq__(self: VersionInfo, other: object) -> bool: ...
+    def __ge__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
+    def __gt__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
+    def __le__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
+    def __lt__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
+    def __ne__(self: VersionInfo, other: object) -> bool: ...
+    def __str__(self: VersionInfo) -> str:
+        """
+        Returns:
+            See `canonicalString()`.
+        """
+        ...
+    def canonicalString(self: VersionInfo) -> str:
+        """
+        Returns:
+            A canonical string representing this version, that can be stored and then parsed using the parse() method.
+        """
+        ...
+    def clear(self: VersionInfo) -> None:
+        """
+        Resets this VersionInfo to an invalid version.
+        """
+        ...
+    def displayString(self: VersionInfo, forced_segments: int = 2) -> str:
+        """
+        Args:
+            forced_segments: The number of version segments to display even if the version is 0. 1 is major, 2 is major
+                and minor, etc. The only implemented ranges are (-inf,2] for major/minor, [3] for major/minor/subminor,
+                and [4,inf) for major/minor/subminor/subsubminor. This only versions with a regular scheme.
+
+        Returns:
+            A string for display to the user. The returned string may not contain enough information to reconstruct this version info.
+        """
+        ...
+    def isValid(self: VersionInfo) -> bool:
+        """
+        Returns:
+            True if this VersionInfo is valid, False otherwise.
+        """
+        ...
+    def parse(
+        self: VersionInfo,
+        value: str,
+        scheme: VersionScheme = VersionScheme.DISCOVER,
+        is_manual: bool = False,
+    ) -> None:
+        """
+        Update this VersionInfo by parsing the given string using the given scheme.
+
+        Args:
+            value: String to parse.
+            scheme: Scheme to use to parse the string.
+            is_manual: True if the given string should be treated as user input.
+        """
+        ...
+    def scheme(self: VersionInfo) -> VersionScheme:
+        """
+        Returns:
+            The version scheme in effect for this VersionInfo.
+        """
+        ...
+
+class BSAInvalidation(GameFeature):
+    def __init__(self: BSAInvalidation) -> None: ...
+    @abc.abstractmethod
+    def activate(self: BSAInvalidation, profile: IProfile) -> None: ...
+    @abc.abstractmethod
+    def deactivate(self: BSAInvalidation, profile: IProfile) -> None: ...
+    @abc.abstractmethod
+    def isInvalidationBSA(self: BSAInvalidation, name: str) -> bool: ...
+
+class DataArchives(GameFeature):
+    def __init__(self: DataArchives) -> None: ...
+    @abc.abstractmethod
+    def addArchive(
+        self: DataArchives, profile: IProfile, index: int, name: str
+    ) -> None:
+        """
+        Add an archive to the archive list.
+
+        Args:
+            profile: Profile to add the archive to.
+            index: Index to insert before. Use 0 for the beginning of the list or INT_MAX for
+                the end of the list).
+            name: Name of the archive to add.
+        """
+        ...
+    @abc.abstractmethod
+    def archives(self: DataArchives, profile: IProfile) -> Sequence[str]:
+        """
+        Retrieve the list of archives in the given profile.
+
+        Args:
+            profile: Profile to retrieve archives from.
+
+        Returns:
+            The list of archives in the given profile.
+        """
+        ...
+    @abc.abstractmethod
+    def removeArchive(self: DataArchives, profile: IProfile, name: str) -> None:
+        """
+        Remove the given archive from the given profile.
+
+        Args:
+            profile: Profile to remove the archive from.
+            name: Name of the archive to remove.
+        """
+        ...
+    @abc.abstractmethod
+    def vanillaArchives(self: DataArchives) -> Sequence[str]:
+        """
+        Retrieve the list of vanilla archives.
+
+        Vanilla archives are archive files that are shipped with the original
+        game.
+
+        Returns:
+            The list of vanilla archives.
+        """
+        ...
+
+class GamePlugins(GameFeature):
+    def __init__(self: GamePlugins) -> None: ...
+    @abc.abstractmethod
+    def getLoadOrder(self: GamePlugins) -> Sequence[str]: ...
+    @abc.abstractmethod
+    def lightPluginsAreSupported(self: GamePlugins) -> bool:
+        """
+        Returns:
+            True if light plugins are supported, False otherwise.
+        """
+        ...
+    @abc.abstractmethod
+    def mediumPluginsAreSupported(self: GamePlugins) -> bool:
+        """
+        Returns:
+            True if medium plugins are supported, False otherwise.
+        """
+        ...
+    @abc.abstractmethod
+    def readPluginLists(self: GamePlugins, plugin_list: IPluginList) -> None: ...
+    @abc.abstractmethod
+    def writePluginLists(self: GamePlugins, plugin_list: IPluginList) -> None: ...
+
+class IFileTree(FileTreeEntry):
+    """
+    Interface to classes that provides way to visualize and alter file trees. The tree
+    may not correspond to an actual file tree on the disk (e.g., inside an archive,
+    from a QTree Widget, ...).
+
+    Read-only operations on the tree are thread-safe, even when the tree has not been populated
+    yet.
+
+    In order to prevent wrong usage of the tree, implementing classes may throw
+    UnsupportedOperationException if an operation is not supported. By default, all operations
+    are supported, but some may not make sense in many situations.
+
+    The goal of this is not reflect the change made to a IFileTree to the disk, but child
+    classes may override relevant methods to do so.
+
+    The tree is built upon FileTreeEntry. A given tree holds shared pointers to its entries
+    while each entry holds a weak pointer to its parent, this means that the descending link
+    are strong (shared pointers) but the uplink are weak.
+
+    Accessing the parent is always done by locking the weak pointer so that returned pointer
+    or either null or valid. This structure implies that as long as the initial root lives,
+    entry should not be destroyed, unless the entry are detached from the root and no shared
+    pointers are kept.
+
+    However, it is not guarantee that one can go up the tree from a single node entry. If the
+    root node is destroyed, it will not be possible to go up the tree, even if we still have
+    a valid shared pointer.
+    """
+
+    class InsertPolicy(Enum):
+        FAIL_IF_EXISTS = ...
+        REPLACE = ...
+        MERGE = ...
+
+        @property
+        def value(self) -> int: ...
+        @property
+        def name(self) -> str: ...
+        def __eq__(self: IFileTree.InsertPolicy, other: object) -> bool: ...
+        def __int__(self: IFileTree.InsertPolicy) -> int: ...
+        def __ne__(self: IFileTree.InsertPolicy, other: object) -> bool: ...
+        def __str__(self: IFileTree.InsertPolicy) -> str: ...
+
+    class WalkReturn(Enum):
+        """
+        Enumeration that can be returned by the callback for the `walk()` method to stop the
+        walking operation early.
+        """
+
+        CONTINUE = ...
+        STOP = ...
+        SKIP = ...
+
+        @property
+        def value(self) -> int: ...
+        @property
+        def name(self) -> str: ...
+        def __eq__(self: IFileTree.WalkReturn, other: object) -> bool: ...
+        def __int__(self: IFileTree.WalkReturn) -> int: ...
+        def __ne__(self: IFileTree.WalkReturn, other: object) -> bool: ...
+        def __str__(self: IFileTree.WalkReturn) -> str: ...
+
+    CONTINUE: WalkReturn = ...
+    FAIL_IF_EXISTS: InsertPolicy = ...
+    MERGE: InsertPolicy = ...
+    REPLACE: InsertPolicy = ...
+    SKIP: WalkReturn = ...
+    STOP: WalkReturn = ...
+
+    def __bool__(self: IFileTree) -> bool:
+        """
+        Returns:
+            True if this tree is not empty, False otherwise.
+        """
+        ...
+    def __getitem__(self: IFileTree, index: int) -> FileTreeEntry:
+        """
+        Retrieve the entry at the given index in this tree.
+
+        Args:
+            index: Index of the entry to retrieve, must be less than the size.
+
+        Returns:
+            The entry at the given index.
+
+        Raises:
+            IndexError: If the given index is not in range for this tree.
+        """
+        ...
+    def __iter__(self: IFileTree) -> Iterator[FileTreeEntry]:
+        """
+        Retrieves an iterator for entries directly under this tree.
+
+        This method does not recurse into subtrees, see `walk()` for this.
+
+        Returns:
+            An iterator object that can be used to iterate over entries in this tree.
+        """
+        ...
+    def __len__(self: IFileTree) -> int:
+        """
+        Returns:
+            The number of entries directly under this tree.
+        """
+        ...
+    def addDirectory(self: IFileTree, path: str) -> IFileTree:
+        """
+        Create a new directory tree under this tree.
+
+        This method will create missing folders in the given path and will
+        not fail if the directory already exists but will fail if the given
+        path contains "." or "..".
+        This method invalidates iterators to this tree and all the subtrees
+        present in the given path.
+
+        Args:
+            path: Path to the directory to create.
+
+        Returns:
+            An IFileTree corresponding to the created directory.
+
+        Raises:
+            RuntimeError: If the directory could not be created.
+        """
+        ...
+    def addFile(
+        self: IFileTree, path: str, replace_if_exists: bool = False
+    ) -> FileTreeEntry:
+        """
+        Create a new file directly under this tree.
+
+        This method will fail if the file already exists and `replace_if_exists` is `False`.
+        This method invalidates iterators to this tree and all the subtrees present in the
+        given path.
+
+        Args:
+            path: Path to the file to create.
+            replace_if_exists: If True and an entry already exists at the given location, it will be replaced by
+                a new entry. This will replace both files and directories.
+
+        Returns:
+            A FileTreeEntry corresponding to the created file.
+
+        Raises:
+            RuntimeError: If the file could not be created.
+        """
+        ...
+    def clear(self: IFileTree) -> bool:
+        """
+        Delete (detach) all the entries from this tree.
+
+        This method will go through the entries in this tree and stop at the first
+        entry that cannot be deleted, this means that the tree can be partially cleared.
+
+        Returns:
+            True if all entries have been detached, False otherwise.
+        """
+        ...
+    def copy(
+        self: IFileTree,
+        entry: FileTreeEntry,
+        path: str = "",
+        insert_policy: IFileTree.InsertPolicy = InsertPolicy.FAIL_IF_EXISTS,
+    ) -> FileTreeEntry:
+        """
+        Move the given entry to the given path under this tree.
+
+        The entry must not be a parent tree of this tree. This method can also be used
+        to rename entries.
+
+        If the insert policy if FAIL_IF_EXISTS, the call will fail if an entry
+        at the same location already exists. If the policy is REPLACE, an existing
+        entry will be replaced. If MERGE, the entry will be merged with the existing
+        one (if the entry is a file, and a file exists, the file will be replaced).
+
+        This method invalidates iterator to this tree, to the parent tree of the given
+        entry, and to subtrees of this tree if the insert policy is MERGE.
+
+        Args:
+            entry: Entry to copy.
+            path: The path to copy the entry to. If the path ends with / or \\, the entry will
+                be copied in the corresponding directory instead of replacing it. If the
+                given path is empty (`""`), the entry is copied directly under this tree.
+            insert_policy: Policy to use to resolve conflicts.
+
+        Returns:
+            The new entry (copy of the specified entry).
+
+        Raises:
+            RuntimeError: If the entry could not be copied.
+        """
+        ...
+    def createOrphanTree(self: IFileTree, name: str = "") -> IFileTree:
+        """
+        Create a new orphan empty tree.
+
+        Args:
+            name: Name of the tree.
+
+        Returns:
+            A new tree without any parent.
+        """
+        ...
+    def exists(
+        self: IFileTree,
+        path: str,
+        type: FileTreeEntry.FileTypes = FileTreeEntry.FileTypes.FILE_OR_DIRECTORY,
+    ) -> bool:
+        """
+        Check if the given entry exists.
+
+        Args:
+            path: Path to the entry, separated by / or \\.
+            type: The type of the entry to check.
+
+        Returns:
+            True if the entry was found, False otherwise.
+        """
+        ...
+    def find(
+        self: IFileTree,
+        path: str,
+        type: FileTreeEntry.FileTypes = FileTreeEntry.FileTypes.FILE_OR_DIRECTORY,
+    ) -> IFileTree | FileTreeEntry | None:
+        """
+        Retrieve the given entry.
+
+        If no entry exists at the given path, or if the entry is not of the right
+        type, `None` is returned.
+
+        Args:
+            path: Path to the entry, separated by / or \\.
+            type: The type of the entry to check.
+
+        Returns:
+            The entry at the given location, or `None` if the entry was not found or
+        was not of the correct type.
+        """
+        ...
+    def insert(
+        self: IFileTree,
+        entry: FileTreeEntry,
+        policy: IFileTree.InsertPolicy = InsertPolicy.FAIL_IF_EXISTS,
+    ) -> bool:
+        """
+        Insert the given entry in this tree, removing it from its
+        previous parent.
+
+        The entry must not be this tree or a parent entry of this tree.
+
+          - If the insert policy if `FAIL_IF_EXISTS`, the call will fail if an entry
+            with the same name already exists.
+          - If the policy is `REPLACE`, an existing entry will be replaced by the given entry.
+          - If the policy is `MERGE`:
+
+            - If there is no entry with the same name, the new entry is inserted.
+            - If there is an entry with the same name:
+
+              - If both entries are files, the old file is replaced by the given entry.
+              - If both entries are directories, a merge is performed as if using merge().
+              - Otherwise the insertion fails (two entries with different types).
+
+        This method invalidates iterator to this tree, to the parent tree of the given
+        entry, and to subtrees of this tree if the insert policy is MERGE.
+
+        Args:
+            entry: Entry to insert.
+            policy: Policy to use to resolve conflicts.
+
+        Returns:
+            True if the entry was insert, False otherwise.
+        """
+        ...
+    def merge(
+        self: IFileTree, other: IFileTree, overwrites: bool = False
+    ) -> Union[dict[FileTreeEntry, FileTreeEntry], int]:
+        """
+        Merge the given tree with this tree, i.e., insert all entries
+        of the given tree into this tree.
+
+        The tree must not be this tree or a parent entry of this tree. Files present in both tree
+        will be replaced by files in the given tree. After a merge, the source tree will be
+        empty but still attached to its parent.
+
+        If `overwrites` is `True`, a map from overridden files to new files will be returned.
+
+        Note that the merge process makes no distinction between files and directories
+        when merging: if a directory is present in this tree and a file from source
+        is in conflict with it, the tree will be removed and the file inserted; if a file
+        is in this tree and a directory from source is in conflict with it, the file will
+        be replaced with the directory.
+
+        This method invalidates iterators to this tree, all the subtrees under this tree
+        present in the given path, and all the subtrees of the given source.
+
+        Args:
+            other: Tree to merge.
+            overwrites: If True, a mapping from overridden files to new files will be returned.
+
+        Returns:
+            If `overwrites` is True, a mapping from overridden files to new files, otherwise
+        the number of overwritten entries.
+
+        Raises:
+            RuntimeError: If the merge failed.
+        """
+        ...
+    def move(
+        self: IFileTree,
+        entry: FileTreeEntry,
+        path: str,
+        policy: IFileTree.InsertPolicy = InsertPolicy.FAIL_IF_EXISTS,
+    ) -> bool:
+        """
+        Move the given entry to the given path under this tree.
+
+        The entry must not be a parent tree of this tree. This method can also be used
+        to rename entries.
+
+        If the insert policy if FAIL_IF_EXISTS, the call will fail if an entry
+        at the same location already exists. If the policy is REPLACE, an existing
+        entry will be replaced. If MERGE, the entry will be merged with the existing
+        one (if the entry is a file, and a file exists, the file will be replaced).
+
+        This method invalidates iterator to this tree, to the parent tree of the given
+        entry, and to subtrees of this tree if the insert policy is MERGE.
+
+        Args:
+            entry: Entry to move.
+            path: The path to move the entry to. If the path ends with / or \\, the entry will
+                be inserted in the corresponding directory instead of replacing it. If the
+                given path is empty (`""`), this is equivalent to `insert()`.
+            policy: Policy to use to resolve conflicts.
+
+        Returns:
+            True if the entry was moved correctly, False otherwise.
+        """
+        ...
+    def pathTo(self: IFileTree, entry: FileTreeEntry, sep: str = "\\") -> str:
+        """
+        Retrieve the path from this tree to the given entry.
+
+        Args:
+            entry: The entry to reach, must be in this tree.
+            sep: The type of separator to use to create the path.
+
+        Returns:
+            The path from this tree to the given entry, including the name of the entry, or
+        an empty string if the given entry was not found under this tree.
+        """
+        ...
+    @overload
+    def remove(self: IFileTree, name: str) -> bool:
+        """
+        Delete the entry with the given name.
+
+        This method does not recurse into subtrees, so the entry should be
+        accessible directly from this tree.
+
+        Args:
+            name: Name of the entry to delete.
+
+        Returns:
+            True if the entry was deleted, False otherwise.
+        """
+        ...
+    @overload
+    def remove(self: IFileTree, entry: FileTreeEntry) -> bool:
+        """
+        Delete the given entry.
+
+        Args:
+            entry: Entry to delete. The entry must belongs to this tree (and not to a subtree).
+
+        Returns:
+            True if the entry was deleted, False otherwise.
+        """
+        ...
+    def removeAll(self: IFileTree, names: Sequence[str]) -> int:
+        """
+        Delete the entries with the given names from the tree.
+
+        This method does not recurse into subtrees, so only entries accessible
+        directly from this tree will be removed. This method invalidates iterators.
+
+        Args:
+            names: Names of the entries to delete.
+
+        Returns:
+            The number of deleted entry.
+        """
+        ...
+    def removeIf(self: IFileTree, filter: Callable[[FileTreeEntry], bool]) -> int:
+        """
+        Delete entries matching the given predicate from the tree.
+
+        This method does not recurse into subtrees, so only entries accessible
+        directly from this tree will be removed. This method invalidates iterators.
+
+        Args:
+            filter: Predicate that should return true for entries to delete.
+
+        Returns:
+            The number of deleted entry.
+        """
+        ...
+    def walk(
+        self: IFileTree,
+        callback: Callable[[str, FileTreeEntry], IFileTree.WalkReturn],
+        sep: str = "\\",
+    ) -> None:
+        """
+        Walk this tree, calling the given function for each entry in it.
+
+        The given callback will be called with two parameters: the path from this tree to the given entry
+        (with a trailing separator, not including the entry name), and the actual entry. The method returns
+        a `WalkReturn` object to indicates what to do.
+
+        Args:
+            callback: Method to call for each entry in the tree.
+            sep: Type of separator to use to construct the path.
+        """
+        ...
+
+class IModRepositoryBridge(PyQt6.QtCore.QObject):
+    descriptionAvailable: PyQt6.QtCore.pyqtSignal = ...
+    filesAvailable: PyQt6.QtCore.pyqtSignal = ...
+    fileInfoAvailable: PyQt6.QtCore.pyqtSignal = ...
+    downloadURLsAvailable: PyQt6.QtCore.pyqtSignal = ...
+    endorsementsAvailable: PyQt6.QtCore.pyqtSignal = ...
+    endorsementToggled: PyQt6.QtCore.pyqtSignal = ...
+    trackedModsAvailable: PyQt6.QtCore.pyqtSignal = ...
+    trackingToggled: PyQt6.QtCore.pyqtSignal = ...
+    requestFailed: PyQt6.QtCore.pyqtSignal = ...
+
+    def __getattr__(self: IModRepositoryBridge, arg0: str) -> object: ...
+    def _object(self: IModRepositoryBridge) -> PyQt6.QtCore.QObject:
+        """
+        Returns:
+            The underlying `QObject` for the bridge.
+        """
+        ...
+    def requestDescription(
+        self: IModRepositoryBridge, game_name: str, mod_id: int, user_data: MoVariant
+    ) -> None:
+        """
+        Request description of a mod.
+
+        Args:
+            game_name: Name of the game containing the mod.
+            mod_id: Nexus ID of the mod.
+            user_data: User data to be returned with the result.
+        """
+        ...
+    def requestDownloadURL(
+        self: IModRepositoryBridge,
+        game_name: str,
+        mod_id: int,
+        file_id: int,
+        user_data: MoVariant,
+    ) -> None:
+        """
+        Request download URL for mod file.0
+
+        Args:
+            game_name: Name of the game containing the mod.
+            mod_id: Nexus ID of the mod.
+            file_id: ID of the file for which a URL should be returned.
+            user_data: User data to be returned with the result.
+        """
+        ...
+    def requestFileInfo(
+        self: IModRepositoryBridge,
+        game_name: str,
+        mod_id: int,
+        file_id: int,
+        user_data: MoVariant,
+    ) -> None:
+        """
+        Args:
+            game_name: Name of the game containing the mod.
+            mod_id: Nexus ID of the mod.
+            file_id: ID of the file for which information is requested.
+            user_data: User data to be returned with the result.
+        """
+        ...
+    def requestFiles(
+        self: IModRepositoryBridge, game_name: str, mod_id: int, user_data: MoVariant
+    ) -> None:
+        """
+        Request the list of files belonging to a mod.
+
+        Args:
+            game_name: Name of the game containing the mod.
+            mod_id: Nexus ID of the mod.
+            user_data: User data to be returned with the result.
+        """
+        ...
+    def requestToggleEndorsement(
+        self: IModRepositoryBridge,
+        game_name: str,
+        mod_id: int,
+        mod_version: str,
+        endorse: bool,
+        user_data: MoVariant,
+    ) -> None:
+        """
+        Args:
+            game_name: Name of the game containing the mod.
+            mod_id: Nexus ID of the mod.
+            mod_version: Version of the mod.
+            endorse:
+            user_data: User data to be returned with the result.
+        """
+        ...
 
 class IPluginDiagnose(IPlugin):
     """
@@ -2783,7 +3667,6 @@ class IPluginDiagnose(IPlugin):
         """
         ...
 
-
 class IPluginFileMapper(IPlugin):
     """
     Plugins that adds virtual file links.
@@ -2797,7 +3680,6 @@ class IPluginFileMapper(IPlugin):
             Mapping for the virtual file system (VFS).
         """
         ...
-
 
 class IPluginGame(IPlugin):
     """
@@ -2875,7 +3757,9 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def executableForcedLoads(self: IPluginGame) -> Sequence[ExecutableForcedLoadSetting]:
+    def executableForcedLoads(
+        self: IPluginGame,
+    ) -> Sequence[ExecutableForcedLoadSetting]:
         """
         Returns:
             A list of automatically discovered libraries that can be force loaded with executables.
@@ -2963,7 +3847,9 @@ class IPluginGame(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def initializeProfile(self: IPluginGame, directory: PyQt6.QtCore.QDir, settings: ProfileSetting) -> None:
+    def initializeProfile(
+        self: IPluginGame, directory: PyQt6.QtCore.QDir, settings: ProfileSetting
+    ) -> None:
         """
         Initialize a profile for this game.
 
@@ -3139,7 +4025,6 @@ class IPluginGame(IPlugin):
         """
         ...
 
-
 class IPluginInstaller(IPlugin):
     """
     This is the top-level class for installer. Actual installers should inherit either:
@@ -3183,7 +4068,9 @@ class IPluginInstaller(IPlugin):
             True if this installer is a manual installer, False otherwise.
         """
         ...
-    def onInstallationEnd(self: IPluginInstaller, result: InstallResult, new_mod: IModInterface) -> None:
+    def onInstallationEnd(
+        self: IPluginInstaller, result: InstallResult, new_mod: IModInterface
+    ) -> None:
         """
         Method calls at the end of the installation process. This method is only called once
         per installation process, even for recursive installations (e.g. with the bundle installer).
@@ -3194,7 +4081,12 @@ class IPluginInstaller(IPlugin):
                 installed mod, otherwise it contains a null pointer.
         """
         ...
-    def onInstallationStart(self: IPluginInstaller, archive: str, reinstallation: bool, current_mod: IModInterface) -> None:
+    def onInstallationStart(
+        self: IPluginInstaller,
+        archive: str,
+        reinstallation: bool,
+        current_mod: IModInterface,
+    ) -> None:
         """
         Method calls at the start of the installation process, before any other methods.
         This method is only called once per installation process, even for recursive
@@ -3225,7 +4117,9 @@ class IPluginInstaller(IPlugin):
             The priority of this installer.
         """
         ...
-    def setInstallationManager(self: IPluginInstaller, manager: IInstallationManager) -> None:
+    def setInstallationManager(
+        self: IPluginInstaller, manager: IInstallationManager
+    ) -> None:
         """
         Set the installation manager for this installer.
 
@@ -3236,7 +4130,9 @@ class IPluginInstaller(IPlugin):
             manager: The installation manager.
         """
         ...
-    def setParentWidget(self: IPluginInstaller, parent: PyQt6.QtWidgets.QWidget) -> None:
+    def setParentWidget(
+        self: IPluginInstaller, parent: PyQt6.QtWidgets.QWidget
+    ) -> None:
         """
         Set the parent widget for this installer.
 
@@ -3247,333 +4143,6 @@ class IPluginInstaller(IPlugin):
             parent: The parent widget.
         """
         ...
-
-
-class IPluginInstallerCustom(IPluginInstaller):
-    """
-    Custom installer for mods. Custom installers receive the archive name and have to go
-    from there. They have to be able to extract the archive themselves.
-
-    Example of such installers are the external NCC installer or the OMOD installer.
-    """
-
-    def __init__(self: IPluginInstallerCustom) -> None: ...
-    @abc.abstractmethod
-    def install(self: IPluginInstallerCustom, mod_name: GuessedString, game_name: str, archive_name: str, version: str, nexus_id: int) -> InstallResult:
-        """
-        Install the given archive.
-
-        The mod needs to be created by calling `IOrganizer.createMod` first.
-
-        Args:
-            mod_name: Name of the mod to install. As an input parameter this is the suggested name
-                (e.g. from meta data) The installer may change this parameter to rename the mod).
-            game_name: Name of the game for which the mod is installed.
-            archive_name: Name of the archive to install.
-            version: Version of the mod. May be empty if the version is not yet known. The plugin is responsible
-                for setting the version on the created mod.
-            nexus_id: ID of the mod or -1 if unknown. The plugin is responsible for setting the mod ID for the
-                created mod.
-
-        Returns:
-            The result of the installation process.
-        """
-        ...
-    @overload
-    @abc.abstractmethod
-    def isArchiveSupported(self: IPluginInstaller, tree: IFileTree) -> bool:
-        """
-        Check if the given file tree corresponds to a supported archive for this installer.
-
-        Args:
-            tree: The tree representing the content of the archive.
-
-        Returns:
-            True if this installer can handle the archive, False otherwise.
-        """
-        ...
-    @overload
-    @abc.abstractmethod
-    def isArchiveSupported(self: IPluginInstallerCustom, archive_name: str) -> bool:
-        """
-        Check if the given file is a supported archive for this installer.
-
-        Args:
-            archive_name: Name of the archive.
-
-        Returns:
-            True if this installer can handle the archive, False otherwise.
-        """
-        ...
-    @abc.abstractmethod
-    def supportedExtensions(self: IPluginInstallerCustom) -> set[str]:
-        """
-        Returns:
-            A list of file extensions that this installer can handle.
-        """
-        ...
-
-
-class IPluginInstallerSimple(IPluginInstaller):
-    """
-    Simple installer for mods. Simple installers only deal with an in-memory structure
-    representing the archive and can modify what to install and where by editing this structure.
-    Actually extracting the archive is handled by the manager.
-    """
-
-    def __init__(self: IPluginInstallerSimple) -> None: ...
-    @abc.abstractmethod
-    def install(self: IPluginInstallerSimple, name: GuessedString, tree: IFileTree, version: str, nexus_id: int) -> Union[InstallResult, IFileTree, tuple[InstallResult, IFileTree, str, int]]:
-        """
-        Install a mod from an archive filetree.
-
-        The installer can modify the given tree and use the manager to extract or create new
-        files.
-
-        This method returns different type of objects depending on the actual result of the
-        installation. The C++ bindings for this method always returns a tuple (result, tree,
-        version, id).
-
-        Args:
-            name: Name of the mod to install. As an input parameter this is the suggested name
-                (e.g. from meta data) The installer may change this parameter to rename the mod).
-            tree: In-memory representation of the archive content.
-            version: Version of the mod, or an empty string is unknown.
-            nexus_id: ID of the mod, or -1 if unknown.
-
-        Returns:
-            In case of failure, the result of the installation, otherwise the modified tree or
-        a tuple (result, tree, version, id) containing the result of the installation, the
-        modified tree, the new version and the new ID. The tuple can be returned even if the
-        installation did not succeed.
-        """
-        ...
-
-
-class IPluginList:
-    """
-    Primary interface to the list of plugins.
-    """
-
-    def hasLightExtension(self: IPluginList, name: str) -> bool:
-        """
-        Determine if a plugin has a .esl extension.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            True if the given file has a .esl extension, False otherwise or if the
-        file does not exist.
-        """
-        ...
-    def hasMasterExtension(self: IPluginList, name: str) -> bool:
-        """
-        Determine if a plugin has a .esm extension.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            True if the given file has a .esm extension, False otherwise or if the
-        file does not exist.
-        """
-        ...
-    def hasNoRecords(self: IPluginList, name: str) -> bool:
-        """
-        Determine if a plugin has no records.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            True if the given file plugin contains no records, False if it does OR if the
-        file does not exist.
-        """
-        ...
-    def isLightFlagged(self: IPluginList, name: str) -> bool:
-        """
-        Determine if a plugin is flagged as light.
-
-        In gamebryo games, a master file will usually have a .esl file extension but
-        technically an esp can be flagged as light.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            True if the given plugin is a light plugin, False otherwise or if the
-        file does not exist.
-        """
-        ...
-    def isMasterFlagged(self: IPluginList, name: str) -> bool:
-        """
-        Determine if a plugin is flagged as mater, i.e., a library, reference by
-        other plugins.
-
-        In gamebryo games, a master file will usually have a .esm file extension but
-        technically an esp can be flagged as master and an esm might not be.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            True if the given plugin is a master plugin, False otherwise or if the
-        file does not exist.
-        """
-        ...
-    def isMediumFlagged(self: IPluginList, name: str) -> bool:
-        """
-        Determine if a plugin is flagged as medium.
-
-        This plugin flag was added in Starfield and signifies plugin records that
-        update existing records
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            True if the given plugin is a medium plugin, False otherwise or if the
-        file does not exist.
-        """
-        ...
-    def loadOrder(self: IPluginList, name: str) -> int:
-        """
-        Retrieve the load order of a plugin.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            The load order of the plugin (the order in which the game loads it). If all plugins are enabled this
-        is the same as the priority but disabled plugins will have a load order of -1. This also returns -1
-        if the plugin does not exist.
-        """
-        ...
-    def masters(self: IPluginList, name: str) -> Sequence[str]:
-        """
-        Retrieve the list of masters required for a plugin.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            The list of masters for the plugin (filenames with extension, no path).
-        """
-        ...
-    def onPluginMoved(self: IPluginList, callback: Callable[[str, int, int], None]) -> bool:
-        """
-        Install a new handler to be called when a plugin is moved.
-
-        Args:
-            callback: The function to call when a plugin is moved. The first parameter is the plugin name, the
-                second the old priority of the plugin and the third one the new priority.
-
-        Returns:
-            True if the handler was installed properly (there are currently no reasons for this to fail).
-        """
-        ...
-    def onPluginStateChanged(self: IPluginList, callback: Callable[[dict[str, PluginState]], None]) -> bool:
-        """
-        Install a new handler to be called when plugin states change.
-
-        Args:
-            callback: The function to call when a plugin states change. The parameter is a map from plugin names to new
-                plugin states for the plugin whose states have changed.
-
-        Returns:
-            True if the handler was installed properly (there are currently no reasons for this to fail).
-        """
-        ...
-    def onRefreshed(self: IPluginList, callback: Callable[[], None]) -> bool:
-        """
-        Install a new handler to be called when the list of plugins is refreshed.
-
-        Args:
-            callback: The function to call when the list of plugins is refreshed.
-
-        Returns:
-            True if the handler was installed properly (there are currently no reasons for this to fail).
-        """
-        ...
-    def origin(self: IPluginList, name: str) -> str:
-        """
-        Retrieve the origin of a plugin. This is either the (internal) name of a mod, `"overwrite"` or `"data"`.
-
-        The internal name of a mod can differ from the display name for disambiguation.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            The name of the origin of the plugin, or an empty string if the plugin does not exist.
-        """
-        ...
-    def pluginNames(self: IPluginList) -> Sequence[str]:
-        """
-        Returns:
-            The list of all plugin names.
-        """
-        ...
-    def priority(self: IPluginList, name: str) -> int:
-        """
-        Retrieve the priority of a plugin.
-
-        The higher the priority, the more important.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            The priority of the given plugin, or -1 if the plugin does not exist.
-        """
-        ...
-    def setLoadOrder(self: IPluginList, loadorder: Sequence[str]) -> None:
-        """
-        Set the load order.
-
-        Plugins not included in the list will be placed at highest priority in the order they
-        were before.
-
-        Args:
-            loadorder: The new load order, specified by the list of plugin names, sorted.
-        """
-        ...
-    def setPriority(self: IPluginList, name: str, priority: int) -> bool:
-        """
-        Change the priority of a plugin.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-            priority: New priority of the plugin.
-
-        Returns:
-            True on success, False if the priority change was not possible. This is usually because
-        one of the parameters is invalid. The function returns true even if the plugin was not moved
-        at the specified priority (e.g. when trying to move a non-master plugin before a master one).
-        """
-        ...
-    def setState(self: IPluginList, name: str, state: PluginState) -> None:
-        """
-        Set the state of a plugin.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-            state: New state of the plugin (`INACTIVE` or `ACTIVE`).
-        """
-        ...
-    def state(self: IPluginList, name: str) -> PluginState:
-        """
-        Retrieve the state of a plugin.
-
-        Args:
-            name: Filename of the plugin (without path but with file extension).
-
-        Returns:
-            The state of the plugin.
-        """
-        ...
-
 
 class IPluginModPage(IPlugin):
     def __init__(self: IPluginModPage) -> None: ...
@@ -3591,7 +4160,12 @@ class IPluginModPage(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def handlesDownload(self: IPluginModPage, page_url: PyQt6.QtCore.QUrl, download_url: PyQt6.QtCore.QUrl, fileinfo: ModRepositoryFileInfo) -> bool:
+    def handlesDownload(
+        self: IPluginModPage,
+        page_url: PyQt6.QtCore.QUrl,
+        download_url: PyQt6.QtCore.QUrl,
+        fileinfo: ModRepositoryFileInfo,
+    ) -> bool:
         """
         Check if the plugin handles the specified download.
 
@@ -3642,7 +4216,6 @@ class IPluginModPage(IPlugin):
         """
         ...
 
-
 class IPluginPreview(IPlugin):
     """
     These plugins add support for previewing files in the data pane. Right now all image formats supported
@@ -3651,7 +4224,12 @@ class IPluginPreview(IPlugin):
 
     def __init__(self: IPluginPreview) -> None: ...
     @abc.abstractmethod
-    def genDataPreview(self: IPluginPreview, file_data: PyQt6.QtCore.QByteArray, filename: str, max_size: PyQt6.QtCore.QSize) -> PyQt6.QtWidgets.QWidget:
+    def genDataPreview(
+        self: IPluginPreview,
+        file_data: PyQt6.QtCore.QByteArray,
+        filename: str,
+        max_size: PyQt6.QtCore.QSize,
+    ) -> PyQt6.QtWidgets.QWidget:
         """
         Generate a preview widget from in-memory data.
 
@@ -3665,7 +4243,9 @@ class IPluginPreview(IPlugin):
         """
         ...
     @abc.abstractmethod
-    def genFilePreview(self: IPluginPreview, filename: str, max_size: PyQt6.QtCore.QSize) -> PyQt6.QtWidgets.QWidget:
+    def genFilePreview(
+        self: IPluginPreview, filename: str, max_size: PyQt6.QtCore.QSize
+    ) -> PyQt6.QtWidgets.QWidget:
         """
         Generate a preview widget for the specified file.
 
@@ -3693,51 +4273,6 @@ class IPluginPreview(IPlugin):
             True if the plugin supports preview from raw data, False otherwise.
         """
         ...
-
-
-class IPluginRequirement:
-    """
-    Class representing requirements for plugins.
-    """
-
-    class Problem:
-        """
-        Class representing a problem found by a requirement.
-        """
-
-        def __init__(self: IPluginRequirement.Problem, short_description: str, long_description: str = '') -> None:
-            """
-            Args:
-                short_description: Short description of the problem.
-                long_description: Long description of the problem.
-            """
-            ...
-        def longDescription(self: IPluginRequirement.Problem) -> str:
-            """
-            Returns:
-                A long description of the problem.
-            """
-            ...
-        def shortDescription(self: IPluginRequirement.Problem) -> str:
-            """
-            Returns:
-                A short description of the problem.
-            """
-            ...
-
-
-    def check(self: IPluginRequirement, organizer: IOrganizer) -> Optional[IPluginRequirement.Problem]:
-        """
-        Check if the requirement is met, and return a problem if not.
-
-        Args:
-            organizer: The IOrganizer instance.
-
-        Returns:
-            The problem found if the requirement is not met, otherwise None.
-        """
-        ...
-
 
 class IPluginTool(IPlugin):
     """
@@ -3795,115 +4330,14 @@ class IPluginTool(IPlugin):
         """
         ...
 
-
-class IProfile:
-    """
-    Interface to interact with Mod Organizer 2 profiles.
-    """
-
-    def absoluteIniFilePath(self: IProfile, inifile: str) -> str:
-        """
-        Retrieve the absolute file path to the corresponding INI file for this profile.
-
-        If iniFile does not correspond to a file in the list of INI files for the
-        current game (as returned by IPluginGame::iniFiles), the path to the global
-        file will be returned (if iniFile is absolute, iniFile is returned, otherwise
-        the path is assumed relative to the game documents directory).
-
-        Args:
-            inifile: INI file to retrieve a path for. This can either be the name of a file or a path to the
-                absolute file outside of the profile.
-
-        Returns:
-            The absolute path for the given INI file for this profile.
-        """
-        ...
-    def absolutePath(self: IProfile) -> str:
-        """
-        Returns:
-            The absolute path to the profile folder.
-        """
-        ...
-    def invalidationActive(self: IProfile) -> tuple[bool, bool]:
-        """
-        Returns:
-            True if automatic archive invalidation is enabled for this profile, False otherwise.
-        """
-        ...
-    def localSavesEnabled(self: IProfile) -> bool:
-        """
-        Returns:
-            True if profile-specific saves are enabled for this profile, False otherwise.
-        """
-        ...
-    def localSettingsEnabled(self: IProfile) -> bool:
-        """
-        Returns:
-            True if profile-specific game settings are enabled for this profile, False otherwise.
-        """
-        ...
-    def name(self: IProfile) -> str:
-        """
-        Returns:
-            The name of this profile.
-        """
-        ...
-
-
-class ISaveGame:
-    """
-    Base class for information about what is in a save game.
-    """
-
-    def __init__(self: ISaveGame) -> None: ...
-    def allFiles(self: ISaveGame) -> Sequence[Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]]:
-        """
-        Returns:
-            The list of all files related to this save.
-        """
-        ...
-    def getCreationTime(self: ISaveGame) -> PyQt6.QtCore.QDateTime:
-        """
-        Retrieve the creation time of the save.
-
-        The creation time of a save is not always the same as the creation time of
-        the file containing the save.
-
-        Returns:
-            The creation time of the save.
-        """
-        ...
-    def getFilepath(self: ISaveGame) -> Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]:
-        """
-        Returns:
-            The path name to the (main) file or folder for the save.
-        """
-        ...
-    def getName(self: ISaveGame) -> str:
-        """
-        Returns:
-            The name of this save, for display purpose.
-        """
-        ...
-    def getSaveGroupIdentifier(self: ISaveGame) -> str:
-        """
-        Retrieve the name of the group this files belong to.
-
-        The name can be used to identify sets of saves to transfer between profiles. For
-        RPG games, this is usually the name of a character.
-
-        Returns:
-            The group identifier for this save game.
-        """
-        ...
-
-
 class ISaveGameInfoWidget(PyQt6.QtWidgets.QWidget):
     """
     Base class for a save game info widget.
     """
 
-    def __init__(self: ISaveGameInfoWidget, parent: PyQt6.QtWidgets.QWidget  | None = None) -> None:
+    def __init__(
+        self: ISaveGameInfoWidget, parent: PyQt6.QtWidgets.QWidget | None = None
+    ) -> None:
         """
         Args:
             parent: Parent widget.
@@ -3926,56 +4360,14 @@ class ISaveGameInfoWidget(PyQt6.QtWidgets.QWidget):
         """
         ...
 
-
 class LocalSavegames(GameFeature):
     def __init__(self: LocalSavegames) -> None: ...
     @abc.abstractmethod
-    def mappings(self: LocalSavegames, profile_save_dir: PyQt6.QtCore.QDir) -> list[Mapping]: ...
+    def mappings(
+        self: LocalSavegames, profile_save_dir: PyQt6.QtCore.QDir
+    ) -> list[Mapping]: ...
     @abc.abstractmethod
     def prepareProfile(self: LocalSavegames, profile: IProfile) -> bool: ...
-
-
-class Mapping:
-    @property
-    def createTarget(self) -> bool: ...
-    @createTarget.setter
-    def createTarget(self, arg0: bool) -> None: ...
-
-    @property
-    def destination(self) -> str: ...
-    @destination.setter
-    def destination(self, arg0: str) -> None: ...
-
-    @property
-    def isDirectory(self) -> bool: ...
-    @isDirectory.setter
-    def isDirectory(self, arg0: bool) -> None: ...
-
-    @property
-    def source(self) -> str: ...
-    @source.setter
-    def source(self, arg0: str) -> None: ...
-
-    @overload
-    def __init__(self: Mapping) -> None:
-        """
-        Creates an empty Mapping.
-        """
-        ...
-    @overload
-    def __init__(self: Mapping, source: str, destination: str, is_directory: bool, create_target: bool = False) -> None:
-        """
-        Creates a Mapping with the given parameters.
-
-        Args:
-            source: The source of this mapping (absolute path), i.e. the path to the actual file.
-            destination: Destination of this mapping (absolute path), i.e. the path in the virtual file system.
-            is_directory: True if this mapping corresponds to a directory, False otherwise.
-            create_target: True if file creation (including move or copy) should be redirected to source.
-        """
-        ...
-    def __str__(self: Mapping) -> str: ...
-
 
 class ModDataChecker(GameFeature):
     """
@@ -3989,15 +4381,12 @@ class ModDataChecker(GameFeature):
 
         @property
         def value(self) -> int: ...
-
         @property
         def name(self) -> str: ...
-
         def __eq__(self: ModDataChecker.CheckReturn, other: object) -> bool: ...
         def __int__(self: ModDataChecker.CheckReturn) -> int: ...
         def __ne__(self: ModDataChecker.CheckReturn, other: object) -> bool: ...
         def __str__(self: ModDataChecker.CheckReturn) -> str: ...
-
 
     FIXABLE: CheckReturn = ...
     INVALID: CheckReturn = ...
@@ -4005,7 +4394,9 @@ class ModDataChecker(GameFeature):
 
     def __init__(self: ModDataChecker) -> None: ...
     @abc.abstractmethod
-    def dataLooksValid(self: ModDataChecker, filetree: IFileTree) -> ModDataChecker.CheckReturn:
+    def dataLooksValid(
+        self: ModDataChecker, filetree: IFileTree
+    ) -> ModDataChecker.CheckReturn:
         """
         Check that the given filetree represent a valid mod layout, or can be easily
         fixed.
@@ -4042,7 +4433,6 @@ class ModDataChecker(GameFeature):
             The fixed tree, or a null pointer if the tree could not be fixed.
         """
         ...
-
 
 class ModDataContent(GameFeature):
     """
@@ -4094,14 +4484,17 @@ class ModDataContent(GameFeature):
     class Content:
         @property
         def icon(self) -> str: ...
-
         @property
         def id(self) -> int: ...
-
         @property
         def name(self) -> str: ...
-
-        def __init__(self: ModDataContent.Content, id: int, name: str, icon: str, filter_only: bool = False) -> None:
+        def __init__(
+            self: ModDataContent.Content,
+            id: int,
+            name: str,
+            icon: str,
+            filter_only: bool = False,
+        ) -> None:
             """
             Args:
                 id: ID of this content.
@@ -4119,7 +4512,6 @@ class ModDataContent(GameFeature):
                 True if this content is only meant to be used as a filter criteria.
             """
             ...
-
 
     def __init__(self: ModDataContent) -> None: ...
     @abc.abstractmethod
@@ -4142,221 +4534,6 @@ class ModDataContent(GameFeature):
         """
         ...
 
-
-class ModRepositoryFileInfo:
-    @property
-    def categoryID(self) -> int: ...
-    @categoryID.setter
-    def categoryID(self, arg0: int) -> None: ...
-
-    @property
-    def description(self) -> str: ...
-    @description.setter
-    def description(self, arg0: str) -> None: ...
-
-    @property
-    def fileCategory(self) -> int: ...
-    @fileCategory.setter
-    def fileCategory(self, arg0: int) -> None: ...
-
-    @property
-    def fileID(self) -> int: ...
-    @fileID.setter
-    def fileID(self, arg0: int) -> None: ...
-
-    @property
-    def fileName(self) -> str: ...
-    @fileName.setter
-    def fileName(self, arg0: str) -> None: ...
-
-    @property
-    def fileSize(self) -> int: ...
-    @fileSize.setter
-    def fileSize(self, arg0: int) -> None: ...
-
-    @property
-    def fileTime(self) -> PyQt6.QtCore.QDateTime: ...
-    @fileTime.setter
-    def fileTime(self, arg0: PyQt6.QtCore.QDateTime) -> None: ...
-
-    @property
-    def gameName(self) -> str: ...
-    @gameName.setter
-    def gameName(self, arg0: str) -> None: ...
-
-    @property
-    def modID(self) -> int: ...
-    @modID.setter
-    def modID(self, arg0: int) -> None: ...
-
-    @property
-    def modName(self) -> str: ...
-    @modName.setter
-    def modName(self, arg0: str) -> None: ...
-
-    @property
-    def name(self) -> str: ...
-    @name.setter
-    def name(self, arg0: str) -> None: ...
-
-    @property
-    def newestVersion(self) -> VersionInfo: ...
-    @newestVersion.setter
-    def newestVersion(self, arg0: VersionInfo) -> None: ...
-
-    @property
-    def repository(self) -> str: ...
-    @repository.setter
-    def repository(self, arg0: str) -> None: ...
-
-    @property
-    def uri(self) -> str: ...
-    @uri.setter
-    def uri(self, arg0: str) -> None: ...
-
-    @property
-    def userData(self) -> MoVariant: ...
-    @userData.setter
-    def userData(self, arg0: MoVariant) -> None: ...
-
-    @property
-    def version(self) -> VersionInfo: ...
-    @version.setter
-    def version(self, arg0: VersionInfo) -> None: ...
-
-    @overload
-    def __init__(self: ModRepositoryFileInfo, other: ModRepositoryFileInfo) -> None: ...
-    @overload
-    def __init__(self: ModRepositoryFileInfo, game_name: str = '', mod_id: int = 0, file_id: int = 0) -> None: ...
-    def __str__(self: ModRepositoryFileInfo) -> str: ...
-    @staticmethod
-    def createFromJson(data: str) -> ModRepositoryFileInfo: ...
-
-
-class PluginRequirementFactory:
-    @staticmethod
-    def basic(checker: Callable[[IOrganizer], bool], description: str) -> IPluginRequirement:
-        """
-        Create a basic requirement.
-
-        Args:
-            checker: The callable to use to check if the requirement is met. Should return True
-                if the requirement is met, False otherwise.
-            description: The description of the problem, when the requirement is not met.
-
-        Returns:
-            The constructed requirement.
-        """
-        ...
-    @staticmethod
-    def diagnose(diagnose: IPluginDiagnose) -> IPluginRequirement:
-        """
-        Construct a requirement from a diagnose plugin.
-
-        If the wrapped diagnose plugin reports a problem, the requirement fails
-        and the associated message is the one from the diagnose plugin (or the
-        list of messages if multiple problems were reported).
-
-        Args:
-            diagnose: The diagnose plugin to wrap in this requirement.
-
-        Returns:
-            The constructed requirement.
-        """
-        ...
-    @overload
-    @staticmethod
-    def gameDependency(games: Sequence[str]) -> IPluginRequirement:
-        """
-        Create a new game dependency requirement.
-
-        The requirement is met when the managed game is one of the specified game.
-
-        Args:
-            games: The names of the required games.
-
-        Returns:
-            The constructed requirement.
-        """
-        ...
-    @overload
-    @staticmethod
-    def gameDependency(game: str) -> IPluginRequirement:
-        """
-        Create a new game dependency requirement.
-
-        The requirement is met when the managed game is the specified game.
-
-        Args:
-            game: The name of the required game.
-
-        Returns:
-            The constructed requirement.
-        """
-        ...
-    @overload
-    @staticmethod
-    def pluginDependency(plugins: Sequence[str]) -> IPluginRequirement:
-        """
-        Create a new plugin dependency requirement.
-
-        The requirement is met when one of the specified plugins is enabled.
-
-        Args:
-            plugins: The name of the plugins.
-
-        Returns:
-            The constructed requirement.
-        """
-        ...
-    @overload
-    @staticmethod
-    def pluginDependency(plugin: str) -> IPluginRequirement:
-        """
-        Create a new plugin dependency requirement.
-
-        The requirement is met when the specified plugin is enabled.
-
-        Args:
-            plugin: The name of the plugin that must be enabled.
-
-        Returns:
-            The constructed requirement.
-        """
-        ...
-
-
-class PluginSetting:
-    """
-    Class to hold the user-configurable parameters a plugin accepts. The purpose of this class is
-    only to inform the application what settings to offer to the user, it does not hold the actual value.
-    """
-
-    @property
-    def default_value(self) -> MoVariant: ...
-    @default_value.setter
-    def default_value(self, arg0: MoVariant) -> None: ...
-
-    @property
-    def description(self) -> str: ...
-    @description.setter
-    def description(self, arg0: str) -> None: ...
-
-    @property
-    def key(self) -> str: ...
-    @key.setter
-    def key(self, arg0: str) -> None: ...
-
-    def __init__(self: PluginSetting, key: str, description: str, default_value: MoVariant) -> None:
-        """
-        Args:
-            key: Name of the setting.
-            description: Description of the setting.
-            default_value: Default value of the setting.
-        """
-        ...
-
-
 class SaveGameInfo(GameFeature):
     """
     Feature to get hold of stuff to do with save games.
@@ -4364,7 +4541,9 @@ class SaveGameInfo(GameFeature):
 
     def __init__(self: SaveGameInfo) -> None: ...
     @abc.abstractmethod
-    def getMissingAssets(self: SaveGameInfo, save: ISaveGame) -> Dict[str, Sequence[str]]:
+    def getMissingAssets(
+        self: SaveGameInfo, save: ISaveGame
+    ) -> Dict[str, Sequence[str]]:
         """
         Retrieve missing assets from the save.
 
@@ -4376,7 +4555,9 @@ class SaveGameInfo(GameFeature):
         """
         ...
     @abc.abstractmethod
-    def getSaveGameWidget(self: SaveGameInfo, parent: PyQt6.QtWidgets.QWidget) -> ISaveGameInfoWidget | None:
+    def getSaveGameWidget(
+        self: SaveGameInfo, parent: PyQt6.QtWidgets.QWidget
+    ) -> ISaveGameInfoWidget | None:
         """
         Retrieve a widget to display over the save game list.
 
@@ -4389,7 +4570,6 @@ class SaveGameInfo(GameFeature):
             A SaveGameInfoWidget to display information about save game.
         """
         ...
-
 
 class ScriptExtender(GameFeature):
     def __init__(self: ScriptExtender) -> None: ...
@@ -4429,14 +4609,18 @@ class ScriptExtender(GameFeature):
         """
         ...
     @abc.abstractmethod
-    def loaderPath(self: ScriptExtender) -> Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]:
+    def loaderPath(
+        self: ScriptExtender,
+    ) -> Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]:
         """
         Returns:
             The full path to the script extender loader.
         """
         ...
     @abc.abstractmethod
-    def pluginPath(self: ScriptExtender) -> Union[str, os.PathLike[str], PyQt6.QtCore.QDir]:
+    def pluginPath(
+        self: ScriptExtender,
+    ) -> Union[str, os.PathLike[str], PyQt6.QtCore.QDir]:
         """
         Returns:
             The script extender plugin path, relative to the data folder.
@@ -4451,7 +4635,6 @@ class ScriptExtender(GameFeature):
             The extension of script extender save files (e.g. "skse").
         """
         ...
-
 
 class UnmanagedMods(GameFeature):
     def __init__(self: UnmanagedMods) -> None: ...
@@ -4480,7 +4663,9 @@ class UnmanagedMods(GameFeature):
         """
         ...
     @abc.abstractmethod
-    def referenceFile(self: UnmanagedMods, mod_name: str) -> Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]:
+    def referenceFile(
+        self: UnmanagedMods, mod_name: str
+    ) -> Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]:
         """
         Retrieve the reference file for the requested mod.
 
@@ -4495,7 +4680,9 @@ class UnmanagedMods(GameFeature):
         """
         ...
     @abc.abstractmethod
-    def secondaryFiles(self: UnmanagedMods, mod_name: str) -> Sequence[Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]]:
+    def secondaryFiles(
+        self: UnmanagedMods, mod_name: str
+    ) -> Sequence[Union[str, os.PathLike[str], PyQt6.QtCore.QFileInfo]]:
         """
         Retrieve the secondary files for the requested mod.
 
@@ -4510,108 +4697,114 @@ class UnmanagedMods(GameFeature):
         """
         ...
 
-
-class VersionInfo:
+class IPluginInstallerCustom(IPluginInstaller):
     """
-    Represents the version of a mod or plugin.
+    Custom installer for mods. Custom installers receive the archive name and have to go
+    from there. They have to be able to extract the archive themselves.
+
+    Example of such installers are the external NCC installer or the OMOD installer.
     """
 
+    def __init__(self: IPluginInstallerCustom) -> None: ...
+    @abc.abstractmethod
+    def install(
+        self: IPluginInstallerCustom,
+        mod_name: GuessedString,
+        game_name: str,
+        archive_name: str,
+        version: str,
+        nexus_id: int,
+    ) -> InstallResult:
+        """
+        Install the given archive.
+
+        The mod needs to be created by calling `IOrganizer.createMod` first.
+
+        Args:
+            mod_name: Name of the mod to install. As an input parameter this is the suggested name
+                (e.g. from meta data) The installer may change this parameter to rename the mod).
+            game_name: Name of the game for which the mod is installed.
+            archive_name: Name of the archive to install.
+            version: Version of the mod. May be empty if the version is not yet known. The plugin is responsible
+                for setting the version on the created mod.
+            nexus_id: ID of the mod or -1 if unknown. The plugin is responsible for setting the mod ID for the
+                created mod.
+
+        Returns:
+            The result of the installation process.
+        """
+        ...
     @overload
-    def __init__(self: VersionInfo) -> None:
+    @abc.abstractmethod
+    def isArchiveSupported(self: IPluginInstaller, tree: IFileTree) -> bool:
         """
-        Construct an invalid VersionInfo.
+        Check if the given file tree corresponds to a supported archive for this installer.
+
+        Args:
+            tree: The tree representing the content of the archive.
+
+        Returns:
+            True if this installer can handle the archive, False otherwise.
         """
         ...
     @overload
-    def __init__(self: VersionInfo, value: str, scheme: VersionScheme = VersionScheme.DISCOVER) -> None:
+    @abc.abstractmethod
+    def isArchiveSupported(self: IPluginInstallerCustom, archive_name: str) -> bool:
         """
-        Construct a VersionInfo by parsing the given string according to the given scheme.
+        Check if the given file is a supported archive for this installer.
 
         Args:
-            value: String to parse.
-            scheme: Scheme to use to parse the string.
+            archive_name: Name of the archive.
+
+        Returns:
+            True if this installer can handle the archive, False otherwise.
         """
         ...
-    @overload
-    def __init__(self: VersionInfo, major: int, minor: int, subminor: int, subsubminor: int, release_type: ReleaseType = ReleaseType.FINAL) -> None:
+    @abc.abstractmethod
+    def supportedExtensions(self: IPluginInstallerCustom) -> set[str]:
         """
-        Construct a VersionInfo using the given elements.
+        Returns:
+            A list of file extensions that this installer can handle.
+        """
+        ...
+
+class IPluginInstallerSimple(IPluginInstaller):
+    """
+    Simple installer for mods. Simple installers only deal with an in-memory structure
+    representing the archive and can modify what to install and where by editing this structure.
+    Actually extracting the archive is handled by the manager.
+    """
+
+    def __init__(self: IPluginInstallerSimple) -> None: ...
+    @abc.abstractmethod
+    def install(
+        self: IPluginInstallerSimple,
+        name: GuessedString,
+        tree: IFileTree,
+        version: str,
+        nexus_id: int,
+    ) -> Union[InstallResult, IFileTree, tuple[InstallResult, IFileTree, str, int]]:
+        """
+        Install a mod from an archive filetree.
+
+        The installer can modify the given tree and use the manager to extract or create new
+        files.
+
+        This method returns different type of objects depending on the actual result of the
+        installation. The C++ bindings for this method always returns a tuple (result, tree,
+        version, id).
 
         Args:
-            major: Major version.
-            minor: Minor version.
-            subminor: Subminor version.
-            subsubminor: Subsubminor version.
-            release_type: Type of release.
-        """
-        ...
-    @overload
-    def __init__(self: VersionInfo, major: int, minor: int, subminor: int, release_type: ReleaseType = ReleaseType.FINAL) -> None:
-        """
-        Construct a VersionInfo using the given elements.
-
-        Args:
-            major: Major version.
-            minor: Minor version.
-            subminor: Subminor version.
-            release_type: Type of release.
-        """
-        ...
-    def __eq__(self: VersionInfo, other: object) -> bool: ...
-    def __ge__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
-    def __gt__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
-    def __le__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
-    def __lt__(self: VersionInfo, arg0: VersionInfo) -> bool: ...
-    def __ne__(self: VersionInfo, other: object) -> bool: ...
-    def __str__(self: VersionInfo) -> str:
-        """
-        Returns:
-            See `canonicalString()`.
-        """
-        ...
-    def canonicalString(self: VersionInfo) -> str:
-        """
-        Returns:
-            A canonical string representing this version, that can be stored and then parsed using the parse() method.
-        """
-        ...
-    def clear(self: VersionInfo) -> None:
-        """
-        Resets this VersionInfo to an invalid version.
-        """
-        ...
-    def displayString(self: VersionInfo, forced_segments: int = 2) -> str:
-        """
-        Args:
-            forced_segments: The number of version segments to display even if the version is 0. 1 is major, 2 is major
-                and minor, etc. The only implemented ranges are (-inf,2] for major/minor, [3] for major/minor/subminor,
-                and [4,inf) for major/minor/subminor/subsubminor. This only versions with a regular scheme.
+            name: Name of the mod to install. As an input parameter this is the suggested name
+                (e.g. from meta data) The installer may change this parameter to rename the mod).
+            tree: In-memory representation of the archive content.
+            version: Version of the mod, or an empty string is unknown.
+            nexus_id: ID of the mod, or -1 if unknown.
 
         Returns:
-            A string for display to the user. The returned string may not contain enough information to reconstruct this version info.
+            In case of failure, the result of the installation, otherwise the modified tree or
+        a tuple (result, tree, version, id) containing the result of the installation, the
+        modified tree, the new version and the new ID. The tuple can be returned even if the
+        installation did not succeed.
         """
         ...
-    def isValid(self: VersionInfo) -> bool:
-        """
-        Returns:
-            True if this VersionInfo is valid, False otherwise.
-        """
-        ...
-    def parse(self: VersionInfo, value: str, scheme: VersionScheme = VersionScheme.DISCOVER, is_manual: bool = False) -> None:
-        """
-        Update this VersionInfo by parsing the given string using the given scheme.
-
-        Args:
-            value: String to parse.
-            scheme: Scheme to use to parse the string.
-            is_manual: True if the given string should be treated as user input.
-        """
-        ...
-    def scheme(self: VersionInfo) -> VersionScheme:
-        """
-        Returns:
-            The version scheme in effect for this VersionInfo.
-        """
-        ...
-
-

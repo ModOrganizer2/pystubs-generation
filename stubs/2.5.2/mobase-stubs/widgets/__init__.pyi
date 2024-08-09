@@ -13,7 +13,17 @@ class TaskDialog:
     Customizable choice dialog.
     """
 
-    def __init__(self: TaskDialog, parent: PyQt6.QtWidgets.QWidget  | None = None, title: str = '', main: str = '', content: str = '', details: str = '', icon: PyQt6.QtWidgets.QMessageBox.Icon = PyQt6.QtWidgets.QMessageBox.Icon.NoIcon, buttons: list[TaskDialogButton] = [], remember: Union[str, tuple[str, str]] = '') -> None:
+    def __init__(
+        self: TaskDialog,
+        parent: PyQt6.QtWidgets.QWidget | None = None,
+        title: str = "",
+        main: str = "",
+        content: str = "",
+        details: str = "",
+        icon: PyQt6.QtWidgets.QMessageBox.Icon = PyQt6.QtWidgets.QMessageBox.Icon.NoIcon,
+        buttons: list[TaskDialogButton] = [],
+        remember: Union[str, tuple[str, str]] = "",
+    ) -> None:
         """
         Construct a new TaskDialog.
 
@@ -91,7 +101,7 @@ class TaskDialog:
             main: Main message of the dialog.
         """
         ...
-    def setRemember(self: TaskDialog, action: str, file: str = '') -> TaskDialog:
+    def setRemember(self: TaskDialog, action: str, file: str = "") -> TaskDialog:
         """
         Configure the dialog to remember user-choice.
         """
@@ -113,7 +123,6 @@ class TaskDialog:
         """
         ...
 
-
 class TaskDialogButton:
     """
     Special button to be used inside TaskDialog widgets.
@@ -123,19 +132,21 @@ class TaskDialogButton:
     def button(self) -> PyQt6.QtWidgets.QMessageBox.StandardButton: ...
     @button.setter
     def button(self, arg0: PyQt6.QtWidgets.QMessageBox.StandardButton) -> None: ...
-
     @property
     def description(self) -> str: ...
     @description.setter
     def description(self, arg0: str) -> None: ...
-
     @property
     def text(self) -> str: ...
     @text.setter
     def text(self, arg0: str) -> None: ...
-
     @overload
-    def __init__(self: TaskDialogButton, text: str, description: str, button: PyQt6.QtWidgets.QMessageBox.StandardButton) -> None:
+    def __init__(
+        self: TaskDialogButton,
+        text: str,
+        description: str,
+        button: PyQt6.QtWidgets.QMessageBox.StandardButton,
+    ) -> None:
         """
         Create a TaskDialogButton.
 
@@ -146,7 +157,11 @@ class TaskDialogButton:
         """
         ...
     @overload
-    def __init__(self: TaskDialogButton, text: str, button: PyQt6.QtWidgets.QMessageBox.StandardButton) -> None:
+    def __init__(
+        self: TaskDialogButton,
+        text: str,
+        button: PyQt6.QtWidgets.QMessageBox.StandardButton,
+    ) -> None:
         """
         Create a TaskDialogButton without description.
 
@@ -155,5 +170,3 @@ class TaskDialogButton:
             button: Value returned by TaskDialog.exec() if this button is clicked.
         """
         ...
-
-

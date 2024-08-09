@@ -18,8 +18,7 @@ jobs:
           python-version: 3.12
       - uses: abatilo/actions-poetry@v2
       - name: Install
-        run: |
-          poetry install
+        run: poetry install
       - name: Install libgl1
         run: sudo apt install -y libgl1 libegl1 libglib2.0-0 libxkbcommon0 libdbus-1-3
       - name: Copy stubs

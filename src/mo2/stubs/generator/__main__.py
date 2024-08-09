@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Callable
 
 from .loader import load_mobase
-from .mtypes import Class, Constant, PyTyping
+from .mtypes import Class, Constant, Enum, Function, PyTyping
 from .parser import is_enum
 from .register import MobaseRegister
 from .utils import Settings, clean_class
@@ -198,6 +198,21 @@ def main() -> None:
         # create directory if required
         output_folder.mkdir(parents=True, exist_ok=True)
 
+        # sort the stubs
+        def _key_fn(o: Class | Constant | list[Function] | PyTyping) -> tuple[int, ...]:
+            # order is PyTyping -> Constant -> Function -> Enum -> Top-Level Class -> Child Level Classes
+            return (
+                not isinstance(o, PyTyping),
+                not isinstance(o, Constant),
+                not isinstance(o, list),
+                not isinstance(o, Enum),
+                isinstance(o, Class) and len(o.all_bases),
+            )
+
+        stub_objects = sorted(
+            (register.get_object(n) for n, _o in objects), key=_key_fn
+        )
+
         # write everything
         with open(output_folder.joinpath("__init__.pyi"), "w") as output:
             writer = Writer(package=name, output=output, settings=settings)
@@ -208,10 +223,7 @@ def main() -> None:
 
             module_headers[name](writer)
 
-            for n, _o in objects:
-                # Get the corresponding object:
-                c = register.get_object(n)
-
+            for c in stub_objects:
                 writer.print_object(c)
 
         subprocess.run(

@@ -109,7 +109,6 @@ import mobase
 import mobase.widgets
 ```
 
-
 **Note:** Most classes in `mobase` cannot be instantiated, so this is mostly intended
 for MO2 developers.
 

@@ -64,10 +64,8 @@ These plugins (shall eventually) implement all the game specific features and fu
 able to add support for further games.
 The plugin is also responsible to help MO determine if (and where) the game is installed in the first place.
 Since supporting a game properly requires extensions in many places of the UI.
-To allow this without creating one huge plugin interface that involves every aspect of MO, game plugins
-expose a *feature list*.
-The list of possible features can be found in the "game_features" project and each feature can itself be
-considered a plugin interface.
+To allow this without creating one huge plugin interface that involves every aspect of MO,
+game plugins can register only the features they need to MO2 using :meth:`registerFeature<mobase.IGameFeatures.registerFeature>`
 
 As an example for a game feature take BSA invalidation: If the game requires BSA invalidation it will implement
 this feature.
