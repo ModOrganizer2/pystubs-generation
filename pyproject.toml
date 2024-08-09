@@ -14,7 +14,6 @@ mo2-stubs-generator = "mo2.stubs.generator.__main__:main"
 python = "^3.12"
 pyqt6 = "6.7.1"
 pyyaml = "^6.0.1"
-sphinx = "<8"
 typing-extensions = "^4.12.2"
 
 [tool.poetry.group.dev.dependencies]
@@ -27,7 +26,7 @@ poethepoet = "^0.27.0"
 sphinx-rtd-theme = "^2.0.0"
 sphinx-autodoc-typehints = "^2.2.3"
 sphinx-automodapi = "^0.17.0"
-sphinx = "^7.3.7"
+sphinx = "<8"
 
 [build-system]
 requires = ["poetry-core"]
