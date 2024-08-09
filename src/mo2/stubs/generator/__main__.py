@@ -217,16 +217,16 @@ def main() -> None:
         subprocess.run(
             [
                 "ruff",
-                "--silent",
                 "format",
+                "--silent",
                 output_folder.joinpath("__init__.pyi").as_posix(),
             ]
         )
         subprocess.run(
             [
                 "ruff",
-                "--silent",
                 "check",
+                "--silent",
                 "--select",
                 "I",
                 "--fix",
