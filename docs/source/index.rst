@@ -18,7 +18,6 @@ This documentation is dedicated to writting MO2 **Python** plugins.
    plugin-types
    writing-plugins
    faq
-   mobase
 
 
 

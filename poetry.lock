@@ -12,6 +12,17 @@ files = [
 ]
 
 [[package]]
+name = "astroid"
+version = "3.3.1"
+description = "An abstract syntax tree for Python with inference support."
+optional = false
+python-versions = ">=3.9.0"
+files = [
+    {file = "astroid-3.3.1-py3-none-any.whl", hash = "sha256:a1a30b911ef8d74988c2a3a59d55ddf9cb973382f115479e213752a4fad36c7c"},
+    {file = "astroid-3.3.1.tar.gz", hash = "sha256:98eb59d8b92d141d618f92435407cbcd5c12dc9f5f4f0c5570fc2e4ba4ddc6aa"},
+]
+
+[[package]]
 name = "babel"
 version = "2.16.0"
 description = "Internationalization utilities"
@@ -568,6 +579,26 @@ lint = ["flake8 (>=6.0)", "importlib-metadata (>=6.0)", "mypy (==1.10.1)", "pyte
 test = ["cython (>=3.0)", "defusedxml (>=0.7.1)", "pytest (>=8.0)", "setuptools (>=70.0)", "typing_extensions (>=4.9)"]
 
 [[package]]
+name = "sphinx-autoapi"
+version = "3.2.1"
+description = "Sphinx API documentation generator"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "sphinx_autoapi-3.2.1-py2.py3-none-any.whl", hash = "sha256:72fe556abc579528a46494f4fcbeaeaaf3e0b031f6514f7b496f6c36754c5430"},
+    {file = "sphinx_autoapi-3.2.1.tar.gz", hash = "sha256:1f9d56b3a98d5653d1fad5644abeed2c042cec304a126ef72c236dae4af16b90"},
+]
+
+[package.dependencies]
+astroid = {version = ">=3.0.0a1", markers = "python_version >= \"3.12\""}
+Jinja2 = "*"
+PyYAML = "*"
+sphinx = ">=6.1.0"
+
+[package.extras]
+docs = ["furo", "sphinx", "sphinx-design"]
+
+[[package]]
 name = "sphinx-autodoc-typehints"
 version = "2.2.3"
 description = "Type hints (PEP 484) support for the Sphinx autodoc extension"
@@ -784,4 +815,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "a84158bffbc4f7ac0d6e8c9f8009d42abeb97bf648db79efd613c1bd9d455b69"
+content-hash = "97106de296f79cfdd92e616a411bccc7677d7dbe6f84be55e85093e9550b80fa"

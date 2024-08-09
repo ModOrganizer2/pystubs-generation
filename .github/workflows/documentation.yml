@@ -22,7 +22,9 @@ jobs:
       - name: Install libgl1
         run: sudo apt install -y libgl1 libegl1 libglib2.0-0 libxkbcommon0 libdbus-1-3
       - name: Copy stubs
-        run: cp stubs/2.5.2/mobase-stubs/__init__.pyi docs/mobase.py
+        run: |
+          mkdir -p docs/src
+          cp -r stubs/2.5.2/mobase-stubs docs/src/mobase
       - name: Build
         run: poetry run sphinx-build -b html docs/source docs/build
         env:

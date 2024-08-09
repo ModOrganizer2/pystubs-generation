@@ -27,8 +27,9 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx_autodoc_typehints",
     "sphinx.ext.napoleon",
+    "autoapi.extension",
     # "sphinx.ext.autosummary",
-    "sphinx_automodapi.automodapi",
+    # "sphinx_automodapi.automodapi",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -38,6 +39,9 @@ templates_path = ["_templates"]
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
+
+autoapi_dirs = ["../src"]
+autoapi_member_order = "groupwise"
 
 
 # -- Options for HTML output -------------------------------------------------

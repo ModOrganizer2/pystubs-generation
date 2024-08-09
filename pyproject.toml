@@ -27,6 +27,7 @@ sphinx-rtd-theme = "^2.0.0"
 sphinx-autodoc-typehints = "^2.2.3"
 sphinx-automodapi = "^0.17.0"
 sphinx = "<8"
+sphinx-autoapi = "^3.2.1"
 
 [build-system]
 requires = ["poetry-core"]
