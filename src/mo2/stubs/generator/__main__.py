@@ -146,9 +146,8 @@ def main() -> None:
             [
                 # the "real" IPlugin is IPluginBase
                 "IPlugin",
-
                 # this is deprecated
-                "PluginSetting"
+                "PluginSetting",
             ],
         ),
         "mobase.widgets": extract_objects(mobase.widgets),  # type: ignore
@@ -174,8 +173,7 @@ def main() -> None:
             # Create the corresponding object:
             c = register.make_object(n, o)
 
-
-        for n, o in objects:
+        for n, _o in objects:
             c = register.get_object(n)
 
             if isinstance(c, Class):
