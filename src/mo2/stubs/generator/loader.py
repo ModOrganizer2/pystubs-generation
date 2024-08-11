@@ -33,7 +33,7 @@ def load_mobase(path: os.PathLike[Any]) -> Module:
         os.add_dll_directory(str(path.joinpath("dlls")))  # type: ignore
 
     # We need to add plugins/data to sys.path, mainly for PyQt6
-    sys.path.insert(1, path.joinpath("plugins", "plugin_python", "libs").as_posix())
+    sys.path.insert(1, path.joinpath("proxies", "python", "libs").as_posix())
 
     import mobase  # type: ignore
 

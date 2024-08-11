@@ -234,6 +234,8 @@ def make_class(e: type, register: MobaseRegister) -> Class:
     # members to exclude
     EXCLUDED_MEMBERS = [
         "__init_subclass__",
+        "__dict__",
+        "__doc__",
         "__module__",
         "__subclasshook__",
         "__hash__",
@@ -346,7 +348,7 @@ def make_class(e: type, register: MobaseRegister) -> Class:
 
     direct_bases: list[Class] = []
     for c in e.__bases__:
-        if c.__module__ != "pybind11_builtins":
+        if c.__module__ not in ("pybind11_builtins", "builtins"):
             b = register.get_object(c.__name__)
             assert isinstance(b, Class)
             direct_bases.append(b)
