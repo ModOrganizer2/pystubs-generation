@@ -2252,7 +2252,6 @@ class IPlugin(abc.ABC):
             The list of requirements for this plugin.
         """
         ...
-    @abc.abstractmethod
     def settingGroups(self: IPlugin) -> Sequence[SettingGroup]:
         """
         Returns:

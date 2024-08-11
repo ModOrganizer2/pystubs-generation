@@ -2052,6 +2052,7 @@ mobase:
       returns: The list of requirements for this plugin.
 
     settingGroups:
+      abstract: false
       returns: A list of setting groups for this plugin.
 
     settings:
