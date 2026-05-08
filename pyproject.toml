@@ -1,37 +1,39 @@
-[tool.poetry]
+[project]
 name = "mo2-pystubs-generation"
-version = "0.1.0"
 description = ""
-authors = ["Holt59 <capelle.mikael@gmail.com>"]
 license = "MIT"
+version = "0.1.0"
 readme = "README.md"
-packages = [{ include = "mo2", from = "src" }]
+authors = [{ name = "Holt59", email = "capelle.mikael@gmail.com" }]
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "pyqt6 (==6.11.0)",
+    "pyyaml (>=6.0.3,<7.0.0)",
+    "typing-extensions (>=4.15.0,<5.0.0)",
+]
 
-[tool.poetry.scripts]
+[project.scripts]
 mo2-stubs-generator = "mo2.stubs.generator.__main__:main"
 
-[tool.poetry.dependencies]
-python = "^3.12"
-pyqt6 = "6.7.1"
-pyyaml = "^6.0.1"
-typing-extensions = "^4.12.2"
+[build-system]
+requires = ['poetry-core (>=2.0,<3.0)']
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [{ include = "mo2", from = "src" }]
 
 [tool.poetry.group.dev.dependencies]
-pyright = "^1.1.374"
-ruff = "^0.5.5"
-types-pyyaml = "^6.0.12.20240724"
-poethepoet = "^0.27.0"
+pyright = "^1.1.409"
+ruff = "^0.15.12"
+types-pyyaml = "^6.0.12.20260508"
+poethepoet = "^0.45.0"
 
 [tool.poetry.group.doc.dependencies]
-sphinx-rtd-theme = "^2.0.0"
-sphinx-autodoc-typehints = "^2.2.3"
-sphinx-automodapi = "^0.17.0"
-sphinx = "<8"
-sphinx-autoapi = "^3.2.1"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+sphinx-rtd-theme = "^3.0.2"
+sphinx-autodoc-typehints = "^3.2.0"
+sphinx-automodapi = "^0.20.0"
+sphinx = "^8.2.3"
+sphinx-autoapi = "^3.6.0"
 
 [tool.poe.tasks]
 format-imports = "ruff check --select I src --fix"
@@ -44,7 +46,7 @@ lint.sequence = ["lint-ruff", "lint-ruff-format", "lint-pyright"]
 lint.ignore_fail = "return_non_zero"
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py312"
 
 [tool.ruff.lint]
 extend-select = ["B", "Q", "I"]
