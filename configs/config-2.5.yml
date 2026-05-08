@@ -3,7 +3,7 @@
 version: 2
 
 # version of the stubs - this is overridden when publishing
-__version__: "2.5.2"
+__version__: "2.5.3-beta10"
 
 # This is the root of the mobase module and will contain everything
 # related to functions / classes, including their documentation.
@@ -354,6 +354,66 @@ mobase:
         The last extension of this entry, or an empty string if the file has no extension
         or is directory.
 
+  IExecutable:
+    title:
+      returns: The title of the executable.
+
+    binaryInfo:
+      returns: The file info of the executable binary.
+
+    arguments:
+      __doc__: |
+        Retrieve the arguments passed to the executable.
+
+        This API might be changed in the future to return a list of strings.
+      returns: The arguments to be passed to the executable.
+
+    steamAppID:
+      returns: The Steam App ID associated with this executable, or an empty string if there is none.
+
+    workingDirectory:
+      returns: The working directory for the executable.
+
+    isShownOnToolbar:
+      returns: True if the executable is shown on the toolbar.
+
+    usesOwnIcon:
+      returns: True if the executable's application icon is used for desktop shortcuts.
+
+    minimizeToSystemTray:
+      __doc__: |
+        Check if Mod Organizer should minimize to the system tray while this executable
+        is running.
+      returns: True if Mod Organizer should minimize to the system tray while this executable is running.
+
+    hide:
+      returns: True if this executable is hidden in the user interface.
+
+  IExecutablesList:
+    __doc__: Interface to the list of executables configured in Mod Organizer.
+
+    executables:
+      __doc__: Retrieve all configured executables.
+      returns: A generator yielding all configured executables.
+
+    getByTitle:
+      __doc__: Retrieve an executable by its title.
+      args:
+        title: Title of the executable to retrieve.
+      returns: The executable with the specified title, or `None` if not found.
+
+    getByBinary:
+      __doc__: Retrieve an executable by its binary file info.
+      args:
+        info: File info of the executable binary to retrieve.
+      returns: The executable with the specified binary, or `None` if not found.
+
+    contains:
+      __doc__: Check if an executable with the specified title exists.
+      args:
+        title: Title of the executable to check.
+      returns: True if an executable with the specified title exists, False otherwise.
+
   IGameFeatures:
     __doc__: |
       Interface for the game features, accessible through IOrganizer.gameFeatures().
@@ -495,6 +555,8 @@ mobase:
       returns: True if light plugins are supported, False otherwise.
     mediumPluginsAreSupported:
       returns: True if medium plugins are supported, False otherwise.
+    blueprintPluginsAreSupported:
+      returns: True if blueprint plugins are supported, False otherwise.
     readPluginLists:
       __doc__:
       args:
@@ -595,6 +657,14 @@ mobase:
         file_id: ID of the file to download.
       returns: An ID identifying the download.
 
+    startDownloadNexusFileForGame:
+      __doc__: Download a file from www.nexusmods.com.
+      args:
+        game_name: Short name of the game the mod is for.
+        mod_id: ID of the mod to download the file from.
+        file_id: ID of the file to download.
+      returns: An ID identifying the download.
+
     startDownloadURLs:
       __doc__: |
         Download a file by url.
@@ -661,6 +731,15 @@ mobase:
       However, it is not guarantee that one can go up the tree from a single node entry. If the
       root node is destroyed, it will not be possible to go up the tree, even if we still have
       a valid shared pointer.
+
+    GlobPatternType:
+      __doc__: |
+        Enumeration that can defines how the pattern is parsed in IFileTree.glob.
+      GLOB: Glob pattern, similar to pathlib.Path.glob.
+      REGEX: |
+        Regex pattern, i.e., each pattern of the pattern (between / and \) is considered
+        a regex, except for ** which has the same meaning as GLOB.
+
 
     InsertPolicy:
       __doc__:
@@ -803,6 +882,15 @@ mobase:
           was not of the correct type.
         type: IFileTree | FileTreeEntry | None
 
+    glob:
+      __doc__: Glob entries matching the given pattern in this tree.
+      args:
+        pattern: Glob pattern to match.
+        type: Type of the pattern.
+      returns:
+        __doc__: An iterator over entry of this tree matching the given pattern.
+        type: Iterator[FileTreeEntry]
+
     insert:
       __doc__: |
         Insert the given entry in this tree, removing it from its
@@ -925,7 +1013,7 @@ mobase:
         filter: Predicate that should return true for entries to delete.
       returns: The number of deleted entry.
 
-    walk:
+    walk.1:
       __doc__: |
         Walk this tree, calling the given function for each entry in it.
 
@@ -935,6 +1023,53 @@ mobase:
       args:
         callback: Method to call for each entry in the tree.
         sep: Type of separator to use to construct the path.
+
+    walk.2:
+      __doc__: |
+        Walk this tree and return the entries in it.
+
+        During the walk, parent tree are guaranteed to be visited before their children.
+        The current tree is not included in the return generator.
+      returns:
+        __doc__: An iterator over entry of this tree.
+        type: Iterator[FileTreeEntry]
+
+  IInstance:
+    __doc__: Represents a Mod Organizer instance, either global or portable.
+
+    displayName:
+      returns: The instance name; this is the directory name or "Portable" for portable instances.
+
+    gameName:
+      returns: The name of the game managed by this instance, or an empty string if the INI file could not be read.
+
+    gameDirectory:
+      returns: The directory where the game is installed, or an empty string if the INI file could not be read.
+
+    isPortable:
+      returns: True if this is a portable instance, False if it is a global one.
+
+  IInstanceManager:
+    __doc__: Interface to the instance manager of Mod Organizer.
+
+    currentInstance:
+      returns: The current instance.
+
+    globalInstancePaths:
+      __doc__: |
+        Retrieve the list of absolute paths to all global instances.
+
+        This does not include portable instances.
+      returns: The list of absolute paths to all global instances.
+
+    getGlobalInstance:
+      __doc__: Retrieve the global instance corresponding to the given name.
+      args:
+        instanceName: |
+          Name of the global instance to retrieve. This is the directory
+          name of the instance.
+      returns: The global instance corresponding to the given name, or `None` if no such instance exists.
+
 
   IInstallationManager:
     __doc__:
@@ -1000,6 +1135,9 @@ mobase:
   IModInterface:
     absolutePath:
       returns: Absolute path to the mod to be used in file system operations.
+
+    author:
+      returns: The author of this mode.
 
     isBackup:
       returns: True if this mod represents a backup.
@@ -1073,6 +1211,12 @@ mobase:
 
     color:
       returns: The color of the 'Notes' column chosen by the user.
+
+    uploader:
+      returns: The uploader of this mod.
+
+    uploaderUrl:
+      returns: The URL of the uploader of this mod.
 
     url:
       returns: |
@@ -1554,9 +1698,6 @@ mobase:
     getPluginDataPath:
       returns: The directory for plugin data, typically plugins/data.
 
-    appVersion:
-      returns: The running version of Mod Organizer.
-
     basePath:
       returns: The absolute path to the base directory of Mod Organizer.
 
@@ -1581,6 +1722,9 @@ mobase:
 
     downloadsPath:
       returns: The absolute path to the download directory.
+
+    executablesList:
+      returns: The interface to list of executables.
 
     findFileInfos:
       __doc__: Find files in the virtual directory matching the specified filter.
@@ -1629,12 +1773,29 @@ mobase:
         name: Name of the game (short name).
       returns: The plugin for the given game, or `None` if none was found.
 
+    getProfile:
+      __doc__: Retrieve a profile by name.
+      args:
+        name: Name of the profile.
+      returns: The profile with the specified name or None if no such profile exists.
+
     installMod:
       __doc__: Install a mod archive at the specified location.
       args:
         filename: Absolute filepath to the archive to install.
         name_suggestion: Suggested name for this mod. This can still be changed by the user.
       returns: An interface to the new installed mod, or `None` if no installation took place (canceled or failure).
+
+    instanceManager:
+      returns: The interface to the instance manager.
+
+    instanceName:
+      __doc__: |
+        Retrieve the name of the current instance.
+
+        For global instance, this corresponds to the directory name, for portable
+        instance this always returns "Portable".
+      returns: The name of the current instance.
 
     isPluginEnabled.1:
       __doc__: Check if a plugin is enabled.
@@ -1851,6 +2012,9 @@ mobase:
     profileName:
       returns: The name of the current profile, or an empty string if no profile has been loaded (yet).
 
+    profileNames:
+      returns: The names of all existing profiles.
+
     profilePath:
       returns: The absolute path to the active profile or an empty string if no profile has been loaded (yet).
 
@@ -1912,6 +2076,10 @@ mobase:
         ignoreCustomOverwrite: Set to true to ignore the profile's configured custom overwrite.
       returns: The handle to the started application, or 0 if the application failed to start.
 
+    version:
+      __doc__: Retrieve the running version of MO2.
+      returns: The running version of MO2.
+
     virtualFileTree:
       __doc__: Retrieve a IFileTree object representing the virtual file tree.
       returns: An IFileTree representing the virtual file tree.
@@ -1932,6 +2100,8 @@ mobase:
         completed successfully, and `exitcode` is the exit code of the application.
 
     # IOrganizer has a bunch of deprecated functions:
+    appVersion:
+      deprecated: true
     getMod:
       deprecated: true
     removeMod:
@@ -2129,6 +2299,9 @@ mobase:
     binaryName:
       returns: The name of the default executable to run (relative to the game folder).
 
+    blueprintPrefix:
+      returns: The blueprint plugin prefix for blueprint auto loading.
+
     dataDirectory:
       returns: The path to the directory containing data (absolute path).
 
@@ -2184,6 +2357,11 @@ mobase:
         The name of the launcher executable to run (relative to the game folder), or an
         empty string if there is no launcher.
 
+    getModMappings:
+      abstract: false
+      __doc__: Gets a virtualization mapping for mod directories.
+      returns:
+
     getSupportURL:
       returns: An URL for the support page of this game.
 
@@ -2229,6 +2407,11 @@ mobase:
       abstract: False
       returns: |
         The game name to use when calling LOOT from MO2, default to gameShortName().
+
+    modDataDirectory:
+      __doc__:
+      abstract: False
+      returns:
 
     nexusGameID:
       __doc__: |
@@ -2476,6 +2659,42 @@ mobase:
 
   IPluginList:
     __doc__: Primary interface to the list of plugins.
+
+    author:
+      __doc__: Retrieve the author of the plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The author of the plugin or an empty string if the plugin does not exist.
+
+    description:
+      __doc__: Retrieve the description of the plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The description of the plugin or an empty string if the plugin does not exist.
+
+    formVersion:
+      __doc__: Retrieve the form version of the plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The form version of the plugin or -1 if the plugin does not exist.
+
+    headerVersion:
+      __doc__: Retrieve the header version of the plugin.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: The header version of the plugin or -1 if the plugin does not exist.
+
+    isBlueprintFlagged:
+      __doc__: |
+        Determine if a plugin is flagged as blueprint.
+
+        Blueprint plugins were added in Starfield and are plugins that are hidden in
+        the Creation Kit and removed from plugins.txt on game launch.
+      args:
+        name: Filename of the plugin (without path but with file extension).
+      returns: |
+        True if the given plugin is a blueprint plugin, False otherwise or if the
+        file does not exist.
 
     isMaster:
       deprecated: True
@@ -3095,6 +3314,9 @@ mobase:
   ModRepositoryFileInfo:
     __doc__:
     properties[]:
+      author:
+        type: str
+        desc:
       categoryID:
         type: int
         desc:
@@ -3132,6 +3354,12 @@ mobase:
         type: VersionInfo
         desc:
       repository:
+        type: str
+        desc:
+      uploader:
+        type: str
+        desc:
+      uploaderUrl:
         type: str
         desc:
       uri:
@@ -3280,6 +3508,102 @@ mobase:
       args:
         mod_name: Internal name of the mod.
       returns: The secondary files (absolute paths) for the request mod.
+
+  Version:
+    __doc__: |
+      Class representing a version objects.
+
+      Valid versions are an "extension" of SemVer (see https://semver.org/) with the
+      following tweaks:
+      - version can have a sub-patch, i.e., x.y.z.p, which are normally not allowed by
+        SemVer,
+      - non-integer pre-release identifiers are limited to dev, alpha (a), beta (b) and rc,
+        and dev is lower than alpha (according to SemVer, the pre-release should be
+        ordered alphabetically),
+      - the '-' between version and pre-release can be made optional, and also the '.'
+        between pre-releases segment.
+
+      The extension from SemVer are only meant to be used by MO2 and USVFS versioning,
+      plugins and extensions should follow SemVer standard (and not use dev), this is
+      mainly
+      - for back-compatibility purposes, because USVFS versioning contains sub-patches and
+        there are old MO2 releases with sub-patch,
+      - because MO2 is not going to become MO3, so having an extra level make sense.
+
+      Unlike VersionInfo, this class is immutable and only hold valid versions.
+
+    ParseMode:
+      __doc__: Enumeration defining how to parse version from string.
+      SEMVER: Official semver parsing with pre-release limited to dev, alpha/a, beta/b and rc.
+      MO2: |
+        MO2 parsing, e.g., 2.5.1rc1 - this either parse a string with no pre-release
+        information (e.g. 2.5.1) or with a single pre-release + a version (e.g., 2.5.1a1
+        or 2.5.2rc1).
+
+        This mode can parse sub-patch (SemVer mode cannot).
+
+    FormatMode:
+      __doc__: Enumeration defining how to format version into string.
+      FORCE_SUBPATCH: Show sub-patch even if sub-patch is 0.
+      NO_SEPARATOR: |
+        Do not add separators between version and pre-release (-) or between pre-release
+        segments (.).
+      SHORT_ALPHA_BETA: Use short form for alpha and beta (a/b instead of alpha/beta).
+      NO_METADATA: Do not add metadata even if present.
+      CONDENSED: Condensed format, combination of NO_SEPARATOR, SHORT_ALPHA_BETA and NO_METADATA.
+
+    ReleaseType:
+      __doc__: Enumeration representing the release type of a version.
+      DEVELOPMENT:
+      ALPHA:
+      BETA:
+      RELEASE_CANDIDATE:
+
+    properties[]:
+      major:
+        type: int
+        desc: The major component of this version.
+
+      minor:
+        type: int
+        desc: The minor component of this version.
+
+      patch:
+        type: int
+        desc: The patch component of this version.
+
+      subpatch:
+        type: int
+        desc: The sub-patch component of this version.
+
+      prereleases:
+        type: list[int | ReleaseType]
+        desc: The pre-release components of this version.
+
+      build_metadata:
+        type: str
+        desc: The build-metadata component of this version, or an empty string.
+
+
+    isPreRelease:
+      __doc__: Check if this version represents a pre-release version.
+      returns: True if this version is a pre-release version, False otherwise.
+
+    parse:
+      __doc__: |
+        Parse version from the given string, throw InvalidVersionException if the
+        string cannot be parsed.
+      static: True
+      args:
+        value: Value to parse.
+        mode: Mode to use when parsing, see ParseMode for more details.
+      returns: The parsed version.
+
+    string:
+      __doc__: Convert this version to a string.
+      args:
+        mode: Combination of modes to use creating the string, see FormatMode.
+      returns: A string representing this version according to the given modes.
 
   VersionInfo:
     __doc__: Represents the version of a mod or plugin.
