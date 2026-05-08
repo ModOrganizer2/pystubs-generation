@@ -15,14 +15,14 @@ class MobaseRegister:
     objects: dict[str, Class | Constant | list[Function] | PyTyping]
 
     def __init__(self) -> None:
-        self.raw_objects: dict[str, type] = OrderedDict()
+        self.raw_objects: dict[str, object] = OrderedDict()
         self.objects = {}
 
-    def add_object(self, name: str, object: type) -> None:
-        self.raw_objects[name] = object
+    def add_object(self, n: str, o: object, /) -> None:
+        self.raw_objects[n] = o
 
     def make_object(
-        self, name: str, e: type | None = None
+        self, name: str, e: object | None = None
     ) -> Class | list[Function] | Constant | PyTyping:
         """
         Construct a Function, Class, Constant or Enum for the given object.

@@ -12,15 +12,15 @@ from .mtypes import Class, Constant, Enum, Function, PyTyping
 from .parser import is_enum
 from .register import MobaseRegister
 from .utils import Settings, clean_class
-from .writer import Writer, is_list_of_functions
+from .writer import Writer, is_list_of
 
 LOGGER = logging.getLogger(__package__)
 
 
 def extract_objects(
     module: object, skips: Sequence[str] = []
-) -> list[tuple[str, type]]:
-    objects: list[tuple[str, type]] = []
+) -> list[tuple[str, object]]:
+    objects: list[tuple[str, object]] = []
 
     assert hasattr(module, "__name__")
     module_name: str = module.__name__  # type: ignore
@@ -140,7 +140,7 @@ def main() -> None:
     }
 
     # list of objects directly in mobase
-    module_objects: dict[str, list[tuple[str, type]]] = {
+    module_objects: dict[str, list[tuple[str, object]]] = {
         "mobase": extract_objects(
             mobase,
             [
@@ -181,7 +181,7 @@ def main() -> None:
             elif isinstance(c, (PyTyping, Constant)):
                 ...
 
-            elif is_list_of_functions(c):
+            elif is_list_of(c, Function):
                 settings.patch_functions(c)
 
             else:

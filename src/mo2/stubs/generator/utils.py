@@ -215,7 +215,7 @@ class Settings:
                 # Check the args:
                 if function_settings.args is not None:
                     if len(function_settings.args) != len(fn.args):
-                        LOGGER.warn(
+                        LOGGER.warning(
                             f"Mismatch number of arguments for function "
                             f"mobase.{setting_name}."
                         )
@@ -243,7 +243,7 @@ class Settings:
                 fn.deprecated = function_settings.deprecated
 
             else:
-                LOGGER.warn(
+                LOGGER.warning(
                     "Missing settings for function mobase.{}.".format(setting_name)
                 )
 
@@ -268,7 +268,7 @@ class Settings:
         class_settings = self._get_class_settings(cls.canonical_name)
 
         if class_settings is None:
-            LOGGER.warn("Class {} not found in settings.".format(cls.canonical_name))
+            LOGGER.warning("Class {} not found in settings.".format(cls.canonical_name))
             return
 
         if "__doc__" in class_settings and class_settings["__doc__"] is not None:
@@ -306,7 +306,7 @@ class Settings:
                 if "type" in settings_property:
                     prop.type = PyType(settings_property["type"])
                 else:
-                    LOGGER.warn(
+                    LOGGER.warning(
                         "Missing type for property {}.{}.".format(
                             cls.canonical_name, prop.name
                         )
@@ -320,7 +320,7 @@ class Settings:
                         prop.doc = settings_property["desc"]
 
                 else:
-                    LOGGER.warn(
+                    LOGGER.warning(
                         "Missing description for property {}.{}.".format(
                             cls.canonical_name, prop.name
                         )
@@ -366,7 +366,7 @@ class Settings:
                     if function_settings.args is not None:
                         method_arguments = m.args if m.is_static() else m.args[1:]
                         if len(function_settings.args) != len(method_arguments):
-                            LOGGER.warn(
+                            LOGGER.warning(
                                 "Mismatch number of arguments for method {}.{}.".format(
                                     cls.canonical_name, settings_name
                                 )
@@ -380,7 +380,7 @@ class Settings:
                                 not method_arg.name.startswith("arg")
                                 and method_arg.name != settings_arg.name
                             ):
-                                LOGGER.warn(
+                                LOGGER.warning(
                                     (
                                         "Mismatch argument name for method {}.{}: "
                                         "{} {}, using {}."
@@ -429,7 +429,7 @@ class Settings:
 
             if n_overloads > 0 and missing_settings:
                 for settings_name in missing_settings:
-                    LOGGER.warn(
+                    LOGGER.warning(
                         "Missing settings for method {}.{}.".format(
                             cls.canonical_name, settings_name
                         )
@@ -447,7 +447,7 @@ class Settings:
         # Print items missing in mobase
         missing_items = [k for k, v in keys.items() if not v]
         if missing_items:
-            LOGGER.warn(
+            LOGGER.warning(
                 "The following members were found in settings but not in the actual"
                 " class {}: {}.".format(cls.canonical_name, ", ".join(missing_items))
             )

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Iterable, TextIO
+from typing import Any, TextIO
 
 from typing_extensions import TypeIs
 
@@ -9,10 +9,12 @@ from .utils import Settings
 LOGGER = logging.getLogger(__package__)
 
 
-def is_list_of_functions(e: Any | Iterable[Any]) -> TypeIs[list[Function]]:
-    if not isinstance(e, list):
-        return False
-    return all(isinstance(x, Function) for x in e)
+def is_list_of_any(e: Any) -> TypeIs[list[Any]]:
+    return isinstance(e, list)
+
+
+def is_list_of[T](e: Any, t: type[T]) -> TypeIs[list[T]]:
+    return is_list_of_any(e) and all(isinstance(x, t) for x in e)
 
 
 class Writer:
@@ -270,7 +272,7 @@ class Writer:
         if isinstance(e, Class):
             self.print_class(e)
 
-        elif is_list_of_functions(e):
+        elif is_list_of(e, Function):
             for fn in e:
                 self.print_function(fn)
 
